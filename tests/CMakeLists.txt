@@ -43,6 +43,6 @@ add_test(NAME echidna_tests COMMAND echidna_tests)
 if(BUILD_SHARED_LIBS)
     set_tests_properties(echidna_tests PROPERTIES
         ENVIRONMENT_MODIFICATION
-            "PATH=path_list_append:$<TARGET_FILE_DIR:echidna::echidna>;PATH=path_list_append:$<TARGET_FILE_DIR:snitch::snitch>"
+            "PATH=path_list_append:$<TARGET_FILE_DIR:echidna::echidna>;PATH=path_list_append:$<TARGET_FILE_DIR:snitch::snitch>;PATH=path_list_append:$<TARGET_FILE_DIR:wgpu>"
     )
 endif()
