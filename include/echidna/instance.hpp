@@ -33,7 +33,7 @@ public:
 
     auto process_events() const -> void;
     auto create_surface(const WGPUSurfaceDescriptor& descriptor) const -> surface;
-    auto request_adapter(const adapter_request_options& options) const -> adapter;
+    auto request_adapter(const WGPURequestAdapterOptions& options) const -> adapter;
 };
 
 } // namespace echidna

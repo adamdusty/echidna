@@ -4,10 +4,6 @@
 
 namespace echidna {
 
-using wgpu_limits           = WGPULimits;
-using wgpu_required_limits  = WGPURequiredLimits;
-using wgpu_supported_limits = WGPUSupportedLimits;
-
 constexpr auto wgpu_limits_zero() {
     return WGPULimits{
         .maxTextureDimension1D                     = 0,

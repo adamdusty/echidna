@@ -39,5 +39,11 @@ TEST_CASE("Instance methods", "[instance]") {
     auto dev      = adapt.request_device(dev_desc);
     REQUIRE(dev);
 
+    auto queue = dev.get_queue();
+    REQUIRE(queue);
+
+    auto surf_conf = surface_configuration(dev, 1920, 1080);
+    surf.configure(surf_conf);
+
     SDL_DestroyWindow(window);
 }

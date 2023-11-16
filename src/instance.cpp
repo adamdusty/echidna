@@ -33,7 +33,7 @@ auto instance::create_surface(const WGPUSurfaceDescriptor& descriptor) const -> 
     return surface(surf);
 }
 
-auto instance::request_adapter(const adapter_request_options& options) const -> adapter {
+auto instance::request_adapter(const WGPURequestAdapterOptions& options) const -> adapter {
     struct user_data {
         WGPUAdapter adapter = nullptr;
         bool request_ended  = false;

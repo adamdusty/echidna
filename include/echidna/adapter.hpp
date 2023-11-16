@@ -13,10 +13,6 @@
 
 namespace echidna {
 
-using adapter_properties      = WGPUAdapterProperties;
-using adapter_features        = WGPUFeatureName;
-using adapter_request_options = WGPURequestAdapterOptions;
-
 constexpr auto adapter_options(const surface& surf,
                                power_preference pref = power_preference::undefined,
                                backend_type backend  = backend_type::undefined,
@@ -33,8 +29,8 @@ constexpr auto adapter_options(const surface& surf,
 class adapter {
     HANDLE_IMPL(adapter, WGPUAdapter)
 
-    auto limits() const -> wgpu_supported_limits;
-    auto properties() const -> adapter_properties;
+    auto limits() const -> WGPUSupportedLimits;
+    auto properties() const -> WGPUAdapterProperties;
     auto features() const -> std::vector<feature_name>;
     auto has_feature(feature_name feature) const -> bool;
     auto request_device(const WGPUDeviceDescriptor& desc) const -> device;

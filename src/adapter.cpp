@@ -6,14 +6,14 @@
 
 namespace echidna {
 
-auto adapter::limits() const -> wgpu_supported_limits {
-    auto limits = wgpu_supported_limits{};
+auto adapter::limits() const -> WGPUSupportedLimits {
+    auto limits = WGPUSupportedLimits{};
     wgpuAdapterGetLimits(_handle, &limits);
     return limits;
 }
 
-auto adapter::properties() const -> adapter_properties {
-    auto props = adapter_properties{};
+auto adapter::properties() const -> WGPUAdapterProperties {
+    auto props = WGPUAdapterProperties{};
     wgpuAdapterGetProperties(_handle, &props);
     return props;
 }
