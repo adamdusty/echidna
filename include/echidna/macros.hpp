@@ -3,10 +3,10 @@
 #include <utility>
 
 #define HANDLE_IMPL(name, wgpu_type)                                                                                   \
-    wgpu_type _handle;                                                                                                 \
+    wgpu_type _handle{nullptr};                                                                                        \
                                                                                                                        \
 public:                                                                                                                \
-    explicit operator bool() {                                                                                         \
+    constexpr explicit operator bool() {                                                                               \
         return _handle != nullptr;                                                                                     \
     }                                                                                                                  \
     constexpr operator wgpu_type() const {                                                                             \
