@@ -35,3 +35,5 @@ SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
+
+PenaltyReturnTypeOnItsOwnLine: 1000000

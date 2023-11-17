@@ -13,10 +13,19 @@
 #include "echidna/queue.hpp"
 #include "echidna/render_pipeline.hpp"
 #include <algorithm>
+#include <iostream>
 #include <vector>
 #include <webgpu.h>
 
 namespace echidna {
+
+// Device error callback that prints wgpu error message to stderr
+static constexpr auto device_error_stderr = [](WGPUErrorType type, const char* msg, void*) {
+    std::cerr << "Device error: " << type;
+    if(msg != nullptr) {
+        std::cerr << "(message: " << msg << ")";
+    }
+};
 
 auto device_descriptor(const char* label,
                        const std::vector<feature_name>& required_features,
@@ -46,8 +55,8 @@ class device {
     auto limits() const -> WGPUSupportedLimits;
     auto has_feature(feature_name feature) const -> bool;
     auto get_queue() const -> queue;
-    auto set_label(const char* label) const -> void;
-    auto set_uncaptured_error_callback(WGPUErrorCallback callback, void* user_data) const -> void;
+    // auto set_label(const char* label) const -> void; Unimplemented by wgpu-native
+    auto set_uncaptured_error_callback(WGPUErrorCallback callback, void* user_data = nullptr) const -> void;
 };
 
 } // namespace echidna

@@ -4,7 +4,6 @@
 #include "echidna/enums.hpp"
 #include <webgpu.h>
 
-
 namespace echidna {
 
 constexpr auto surface_descriptor_from_android_native_window(void* window) {
@@ -63,5 +62,8 @@ constexpr auto surface_descriptor_from_xlib_window(void* display, std::uint32_t 
 constexpr auto surface_descriptor(const WGPUChainedStruct& next, const char* label) {
     return WGPUSurfaceDescriptor{.nextInChain = &next, .label = label};
 }
+
+// TODO: Implement surface descriptor functions for each window type so `surface_descriptor` can be called with any
+// window specific descriptor
 
 } // namespace echidna

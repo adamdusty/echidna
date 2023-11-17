@@ -24,6 +24,8 @@ target_sources(echidna_echidna PRIVATE
     src/surface.cpp
     src/adapter.cpp
     src/device.cpp
+    src/queue.cpp
+    src/buffer.cpp
 )
 
 # Add include directory

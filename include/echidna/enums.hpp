@@ -1,12 +1,25 @@
 #pragma once
 
+#include "echidna/macros.hpp"
 #include <cstdint>
 #include <vector>
 #include <webgpu.h>
 
 namespace echidna {
 
-enum feature_name : std::uint32_t {
+enum class map_mode_flags : std::uint32_t {
+    none  = WGPUMapMode_None,
+    read  = WGPUMapMode_Read,
+    write = WGPUMapMode_Write,
+};
+
+enum class buffer_map_state : std::uint32_t {
+    unmapped = WGPUBufferMapState_Unmapped,
+    pending  = WGPUBufferMapState_Pending,
+    mapped   = WGPUBufferMapState_Mapped,
+};
+
+enum class feature_name : std::uint32_t {
     undefined                  = WGPUFeatureName_Undefined,
     depth_clip_control         = WGPUFeatureName_DepthClipControl,
     depth32_float_stencil8     = WGPUFeatureName_Depth32FloatStencil8,

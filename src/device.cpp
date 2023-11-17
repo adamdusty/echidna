@@ -99,9 +99,9 @@ auto device::get_queue() const -> queue {
     return queue{wgpuDeviceGetQueue(_handle)};
 }
 
-auto device::set_label(const char* label) const -> void {
-    wgpuDeviceSetLabel(_handle, label);
-}
+// auto device::set_label(const char* label) const -> void {
+//     wgpuDeviceSetLabel(_handle, label);
+// }
 
 auto device::set_uncaptured_error_callback(WGPUErrorCallback callback, void* user_data) const -> void {
     wgpuDeviceSetUncapturedErrorCallback(_handle, callback, user_data);

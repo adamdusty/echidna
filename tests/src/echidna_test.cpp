@@ -12,7 +12,7 @@
 using namespace echidna;
 
 TEST_CASE("Instance methods", "[instance]") {
-    auto window =
+    auto* window =
         SDL_CreateWindow("test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_HIDDEN);
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
@@ -37,6 +37,7 @@ TEST_CASE("Instance methods", "[instance]") {
 
     auto dev_desc = device_descriptor();
     auto dev      = adapt.request_device(dev_desc);
+    dev.set_uncaptured_error_callback(device_error_stderr);
     REQUIRE(dev);
 
     auto queue = dev.get_queue();
