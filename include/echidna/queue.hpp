@@ -2,6 +2,7 @@
 
 #include "echidna/buffer.hpp"
 #include "echidna/command_buffer.hpp"
+#include "echidna/export.hpp"
 #include "echidna/macros.hpp"
 #include <cstddef>
 #include <cstdint>
@@ -17,8 +18,13 @@ constexpr auto queue_descriptor(const char* label = nullptr) {
     };
 }
 
-class queue {
+class ECHIDNA_EXPORT queue {
     HANDLE_IMPL(queue, WGPUQueue)
+    ~queue() {
+        if(_handle != nullptr) {
+            wgpuQueueRelease(_handle);
+        }
+    }
 
     // auto set_label(const char* label) const -> void; Unimplemented by wgpu-native
     auto submit(std::vector<command_buffer>& commands) const -> void;

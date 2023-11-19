@@ -4,6 +4,7 @@
 
 #include "echidna/adapter.hpp"
 #include "echidna/chained.hpp"
+#include "echidna/export.hpp"
 #include "echidna/macros.hpp"
 #include "echidna/surface.hpp"
 
@@ -17,8 +18,14 @@ constexpr auto instance_descriptor() {
     return WGPUInstanceDescriptor{.nextInChain = nullptr};
 }
 
-class instance {
+class ECHIDNA_EXPORT instance {
     HANDLE_IMPL(instance, WGPUInstance)
+    instance(const WGPUInstanceDescriptor& desc) : _handle(wgpuCreateInstance(&desc)) {}
+    ~instance() {
+        if(_handle != nullptr) {
+            wgpuInstanceRelease(_handle);
+        }
+    }
 
     auto process_events() const -> void;
     auto create_surface(const WGPUSurfaceDescriptor& descriptor) const -> surface;

@@ -6,6 +6,7 @@
 #include "echidna/command_encoder.hpp"
 #include "echidna/compute_pipeline.hpp"
 #include "echidna/enums.hpp"
+#include "echidna/export.hpp"
 #include "echidna/limits.hpp"
 #include "echidna/macros.hpp"
 #include "echidna/pipeline_layout.hpp"
@@ -27,21 +28,27 @@ static constexpr auto device_error_stderr = [](WGPUErrorType type, const char* m
     }
 };
 
-auto device_descriptor(const char* label,
-                       const std::vector<feature_name>& required_features,
-                       std::vector<WGPURequiredLimits>& required_limits,
-                       const WGPUQueueDescriptor& desc,
-                       WGPUDeviceLostCallback callback,
-                       void* user_data) -> WGPUDeviceDescriptor;
+ECHIDNA_EXPORT auto device_descriptor(const char* label,
+                                      const std::vector<feature_name>& required_features,
+                                      std::vector<WGPURequiredLimits>& required_limits,
+                                      const WGPUQueueDescriptor& desc,
+                                      WGPUDeviceLostCallback callback,
+                                      void* user_data) -> WGPUDeviceDescriptor;
 
-auto device_descriptor(const char* label,
-                       const std::vector<feature_name>& required_features,
-                       std::vector<WGPURequiredLimits>& required_limits) -> WGPUDeviceDescriptor;
+ECHIDNA_EXPORT auto device_descriptor(const char* label,
+                                      const std::vector<feature_name>& required_features,
+                                      std::vector<WGPURequiredLimits>& required_limits) -> WGPUDeviceDescriptor;
 
-auto device_descriptor(const char* label = nullptr) -> WGPUDeviceDescriptor;
+ECHIDNA_EXPORT auto device_descriptor(const char* label = nullptr) -> WGPUDeviceDescriptor;
 
-class device {
+class ECHIDNA_EXPORT device {
     HANDLE_IMPL(device, WGPUDevice)
+    ~device() {
+        if(_handle != nullptr) {
+            wgpuDeviceDestroy(_handle);
+            wgpuDeviceRelease(_handle);
+        }
+    }
 
     auto create_bind_group(const WGPUBindGroupDescriptor& desc) const -> bind_group;
     auto create_bind_group_layout(const WGPUBindGroupLayoutDescriptor& desc) const -> bind_group_layout;

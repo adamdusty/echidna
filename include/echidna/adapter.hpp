@@ -3,6 +3,7 @@
 #include "echidna/chained.hpp"
 #include "echidna/device.hpp"
 #include "echidna/enums.hpp"
+#include "echidna/export.hpp"
 #include "echidna/limits.hpp"
 #include "echidna/macros.hpp"
 #include "echidna/surface.hpp"
@@ -26,8 +27,13 @@ constexpr auto adapter_options(const surface& surf,
     };
 }
 
-class adapter {
+class ECHIDNA_EXPORT adapter {
     HANDLE_IMPL(adapter, WGPUAdapter)
+    ~adapter() {
+        if(_handle != nullptr) {
+            wgpuAdapterRelease(_handle);
+        }
+    }
 
     auto limits() const -> WGPUSupportedLimits;
     auto properties() const -> WGPUAdapterProperties;

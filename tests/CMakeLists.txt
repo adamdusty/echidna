@@ -34,7 +34,7 @@ target_sources(echidna_tests PRIVATE
 )
 
 # Link libs
-target_link_libraries(echidna_tests PRIVATE echidna::echidna snitch::snitch SDL2)
+target_link_libraries(echidna_tests PRIVATE echidna::echidna snitch::snitch SDL2 wgpu)
 
 # Add test
 add_test(NAME echidna_tests COMMAND echidna_tests)

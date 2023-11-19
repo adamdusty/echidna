@@ -9,9 +9,11 @@
         {
             "name": "base",
             "hidden": true,
+            "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_CXX_EXTENSIONS": "OFF",
                 "CMAKE_CXX_STANDARD": "20",
+                "CMAKE_CXX_COMPILER": "clang++",
                 "CMAKE_COLOR_DIAGNOSTICS": "ON",
                 "BUILD_SHARED_LIBS": "ON"
             }
@@ -65,7 +67,7 @@
         {
             "name": "dev",
             "configurePreset": "dev",
-            "configuration": "Debug",
+            "configuration": "debug",
             "output": {
                 "outputOnFailure": true
             }

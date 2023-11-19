@@ -5,25 +5,6 @@
 
 namespace echidna {
 
-instance::instance() {
-    auto desc = WGPUInstanceDescriptor{.nextInChain = nullptr};
-    _handle   = wgpuCreateInstance(&desc);
-}
-
-instance::instance(const WGPUInstanceDescriptor& desc) : _handle(wgpuCreateInstance(&desc)) {}
-
-instance::instance(instance&& other) noexcept : _handle(std::exchange(other._handle, nullptr)) {}
-auto instance::operator=(instance&& other) noexcept -> instance& {
-    _handle = std::exchange(other._handle, nullptr);
-    return *this;
-}
-
-instance::~instance() {
-    if(_handle != nullptr) {
-        wgpuInstanceRelease(_handle);
-    }
-}
-
 auto instance::process_events() const -> void {
     wgpuInstanceProcessEvents(_handle);
 }

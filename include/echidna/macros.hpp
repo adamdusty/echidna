@@ -15,7 +15,6 @@ public:                                                                         
     name(name&)           = delete;                                                                                    \
     auto operator=(name&) = delete;                                                                                    \
     name()                = default;                                                                                   \
-    ~name()               = default;                                                                                   \
     explicit name(wgpu_type handle) : _handle(handle) {}                                                               \
     name(name&& other) noexcept : _handle(std::exchange(other._handle, nullptr)) {}                                    \
     auto operator=(name&& other) noexcept -> name& {                                                                   \

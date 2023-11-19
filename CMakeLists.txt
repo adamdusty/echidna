@@ -26,14 +26,7 @@ target_sources(echidna_echidna PRIVATE
     src/device.cpp
     src/queue.cpp
     src/buffer.cpp
-)
-
-# Add include directory
-# warning_guard adds SYSTEM modifier if the project isn't top level
-target_include_directories(
-    echidna_echidna ${warning_guard}
-    PUBLIC
-    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+    src/texture.cpp
 )
 
 # Include and link dependencies
@@ -61,6 +54,21 @@ set_target_properties(
     EXPORT_NAME echidna
     OUTPUT_NAME echidna
 )
+
+# Add include directory
+# warning_guard adds SYSTEM modifier if the project isn't top level
+target_include_directories(
+    echidna_echidna ${warning_guard}
+    PUBLIC
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+)
+
+target_include_directories(
+    echidna_echidna SYSTEM
+    PUBLIC
+    "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>"
+)
+
 
 # Install rules
 if(NOT CMAKE_SKIP_INSTALL_RULES)

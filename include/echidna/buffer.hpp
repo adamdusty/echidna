@@ -1,6 +1,7 @@
 #pragma once
 
 #include "echidna/enums.hpp"
+#include "echidna/export.hpp"
 #include "echidna/macros.hpp"
 #include <cstddef>
 #include <cstdint>
@@ -10,8 +11,14 @@ namespace echidna {
 
 // TODO: Functions for buffer descriptor creation
 
-class buffer {
+class ECHIDNA_EXPORT buffer {
     HANDLE_IMPL(buffer, WGPUBuffer)
+    ~buffer() {
+        if(_handle != nullptr) {
+            wgpuBufferDestroy(_handle);
+            wgpuBufferRelease(_handle);
+        }
+    }
 
     auto get_mapped_range(size_t offset, size_t size) const -> void*;
     auto get_const_mapped_range(size_t offset, size_t size) const -> const void*;

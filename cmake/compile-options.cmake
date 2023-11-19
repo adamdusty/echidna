@@ -5,7 +5,6 @@ function(add_dev_compile_opts target)
             -D_FORTIFY_SOURCE=3
             -fstack-protector-strong
             -fcf-protection=full
-            -fstack-clash-protection
             -Wall
             -Wextra
             -Wpedantic
