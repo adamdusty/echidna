@@ -27,6 +27,7 @@ target_sources(echidna_echidna PRIVATE
     src/queue.cpp
     src/buffer.cpp
     src/texture.cpp
+    src/command_encoder.cpp
 )
 
 # Include and link dependencies
