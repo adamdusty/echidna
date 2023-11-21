@@ -28,6 +28,9 @@ target_sources(echidna_echidna PRIVATE
     src/buffer.cpp
     src/texture.cpp
     src/command_encoder.cpp
+    src/compute_pass_encoder.cpp
+    src/query_set.cpp
+    src/render_bundle_encoder.cpp
 )
 
 # Include and link dependencies
