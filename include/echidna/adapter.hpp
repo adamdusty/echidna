@@ -14,19 +14,6 @@
 
 namespace echidna {
 
-constexpr auto adapter_options(const surface& surf,
-                               power_preference pref = power_preference::undefined,
-                               backend_type backend  = backend_type::undefined,
-                               bool force_fallback   = false) {
-    return WGPURequestAdapterOptions{
-        .nextInChain          = nullptr,
-        .compatibleSurface    = surf,
-        .powerPreference      = static_cast<WGPUPowerPreference>(pref),
-        .backendType          = static_cast<WGPUBackendType>(backend),
-        .forceFallbackAdapter = static_cast<WGPUBool>(force_fallback),
-    };
-}
-
 class ECHIDNA_EXPORT adapter {
     HANDLE_IMPL(adapter, WGPUAdapter)
     ~adapter() {
@@ -41,5 +28,18 @@ class ECHIDNA_EXPORT adapter {
     auto has_feature(feature_name feature) const -> bool;
     auto request_device(const WGPUDeviceDescriptor& desc) const -> device;
 };
+
+constexpr auto adapter_options(const surface& surf,
+                               power_preference pref = power_preference::undefined,
+                               backend_type backend  = backend_type::undefined,
+                               bool force_fallback   = false) {
+    return WGPURequestAdapterOptions{
+        .nextInChain          = nullptr,
+        .compatibleSurface    = surf,
+        .powerPreference      = static_cast<WGPUPowerPreference>(pref),
+        .backendType          = static_cast<WGPUBackendType>(backend),
+        .forceFallbackAdapter = static_cast<WGPUBool>(force_fallback),
+    };
+}
 
 } // namespace echidna

@@ -1,5 +1,7 @@
 #include "echidna/device.hpp"
 
+#include "echidna/chained.hpp"
+
 namespace echidna {
 
 auto device_descriptor(const char* label,
@@ -105,6 +107,26 @@ auto device::get_queue() const -> queue {
 
 auto device::set_uncaptured_error_callback(WGPUErrorCallback callback, void* user_data) const -> void {
     wgpuDeviceSetUncapturedErrorCallback(_handle, callback, user_data);
+}
+
+auto device::create_texture(const WGPUTextureDescriptor& desc) const -> texture {
+    return texture{wgpuDeviceCreateTexture(_handle, &desc)};
+}
+
+auto device::create_shader_module(const WGPUShaderModuleDescriptor& desc) const -> shader_module {
+    return shader_module{wgpuDeviceCreateShaderModule(_handle, &desc)};
+}
+
+auto device::shader_moudle_from_wgsl(const char* code) const -> shader_module {
+    auto code_desc = wgsl_descriptor(code);
+    auto mod_desc  = WGPUShaderModuleDescriptor{
+         .nextInChain = &code_desc.chain,
+         .label       = nullptr,
+         .hintCount   = 0,
+         .hints       = nullptr,
+    };
+
+    return create_shader_module(mod_desc);
 }
 
 } // namespace echidna

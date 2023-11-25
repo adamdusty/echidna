@@ -11,13 +11,6 @@
 
 namespace echidna {
 
-constexpr auto queue_descriptor(const char* label = nullptr) {
-    return WGPUQueueDescriptor{
-        .nextInChain = nullptr,
-        .label       = label,
-    };
-}
-
 class ECHIDNA_EXPORT queue {
     HANDLE_IMPL(queue, WGPUQueue)
     ~queue() {
@@ -30,6 +23,13 @@ class ECHIDNA_EXPORT queue {
     auto submit(std::vector<command_buffer>& commands) const -> void;
     auto write_buffer(const buffer& buffer, std::uint64_t offset, const void* data, size_t size) const -> void;
 };
+
+constexpr auto queue_descriptor(const char* label = nullptr) {
+    return WGPUQueueDescriptor{
+        .nextInChain = nullptr,
+        .label       = label,
+    };
+}
 
 } // namespace echidna
 

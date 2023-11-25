@@ -13,33 +13,14 @@
 #include "echidna/query_set.hpp"
 #include "echidna/queue.hpp"
 #include "echidna/render_pipeline.hpp"
+#include "echidna/shader.hpp"
+#include "echidna/texture.hpp"
 #include <algorithm>
 #include <iostream>
 #include <vector>
 #include <webgpu.h>
 
 namespace echidna {
-
-// Device error callback that prints wgpu error message to stderr
-static constexpr auto device_error_stderr = [](WGPUErrorType type, const char* msg, void*) {
-    std::cerr << "Device error: " << type;
-    if(msg != nullptr) {
-        std::cerr << "(message: " << msg << ")";
-    }
-};
-
-ECHIDNA_EXPORT auto device_descriptor(const char* label,
-                                      const std::vector<feature_name>& required_features,
-                                      std::vector<WGPURequiredLimits>& required_limits,
-                                      const WGPUQueueDescriptor& desc,
-                                      WGPUDeviceLostCallback callback,
-                                      void* user_data) -> WGPUDeviceDescriptor;
-
-ECHIDNA_EXPORT auto device_descriptor(const char* label,
-                                      const std::vector<feature_name>& required_features,
-                                      std::vector<WGPURequiredLimits>& required_limits) -> WGPUDeviceDescriptor;
-
-ECHIDNA_EXPORT auto device_descriptor(const char* label = nullptr) -> WGPUDeviceDescriptor;
 
 class ECHIDNA_EXPORT device {
     HANDLE_IMPL(device, WGPUDevice)
@@ -62,9 +43,36 @@ class ECHIDNA_EXPORT device {
     auto limits() const -> WGPUSupportedLimits;
     auto has_feature(feature_name feature) const -> bool;
     auto get_queue() const -> queue;
-    // auto set_label(const char* label) const -> void; Unimplemented by wgpu-native
     auto set_uncaptured_error_callback(WGPUErrorCallback callback, void* user_data = nullptr) const -> void;
+
+    auto create_texture(const WGPUTextureDescriptor& desc) const -> texture;
+
+    auto create_shader_module(const WGPUShaderModuleDescriptor& desc) const -> shader_module;
+    auto shader_moudle_from_wgsl(const char* code) const -> shader_module;
+
+    // auto set_label(const char* label) const -> void; Unimplemented by wgpu-native
 };
+
+// Device error callback that prints wgpu error message to stderr
+static constexpr auto device_error_stderr = [](WGPUErrorType type, const char* msg, void*) {
+    std::cerr << "Device error: " << type;
+    if(msg != nullptr) {
+        std::cerr << "(message: " << msg << ")";
+    }
+};
+
+ECHIDNA_EXPORT auto device_descriptor(const char* label,
+                                      const std::vector<feature_name>& required_features,
+                                      std::vector<WGPURequiredLimits>& required_limits,
+                                      const WGPUQueueDescriptor& desc,
+                                      WGPUDeviceLostCallback callback,
+                                      void* user_data) -> WGPUDeviceDescriptor;
+
+ECHIDNA_EXPORT auto device_descriptor(const char* label,
+                                      const std::vector<feature_name>& required_features,
+                                      std::vector<WGPURequiredLimits>& required_limits) -> WGPUDeviceDescriptor;
+
+ECHIDNA_EXPORT auto device_descriptor(const char* label = nullptr) -> WGPUDeviceDescriptor;
 
 } // namespace echidna
 
@@ -73,7 +81,6 @@ class ECHIDNA_EXPORT device {
 // WGPU_EXPORT WGPURenderBundleEncoder wgpuDeviceCreateRenderBundleEncoder(WGPUDevice device, WGPURenderBundleEncoderDescriptor const * descriptor) WGPU_FUNCTION_ATTRIBUTE;
 // WGPU_EXPORT void wgpuDeviceCreateRenderPipelineAsync(WGPUDevice device, WGPURenderPipelineDescriptor const * descriptor, WGPUCreateRenderPipelineAsyncCallback callback, void * userdata) WGPU_FUNCTION_ATTRIBUTE;
 // WGPU_EXPORT WGPUSampler wgpuDeviceCreateSampler(WGPUDevice device, WGPU_NULLABLE WGPUSamplerDescriptor const * descriptor) WGPU_FUNCTION_ATTRIBUTE;
-// WGPU_EXPORT WGPUShaderModule wgpuDeviceCreateShaderModule(WGPUDevice device, WGPUShaderModuleDescriptor const * descriptor) WGPU_FUNCTION_ATTRIBUTE;
 // WGPU_EXPORT WGPUTexture wgpuDeviceCreateTexture(WGPUDevice device, WGPUTextureDescriptor const * descriptor) WGPU_FUNCTION_ATTRIBUTE;
 // WGPU_EXPORT void wgpuDevicePopErrorScope(WGPUDevice device, WGPUErrorCallback callback, void * userdata) WGPU_FUNCTION_ATTRIBUTE;
 // WGPU_EXPORT void wgpuDevicePushErrorScope(WGPUDevice device, WGPUErrorFilter filter) WGPU_FUNCTION_ATTRIBUTE;

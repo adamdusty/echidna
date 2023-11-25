@@ -8,6 +8,15 @@
 
 namespace echidna {
 
+class ECHIDNA_EXPORT texture_view {
+    HANDLE_IMPL(texture_view, WGPUTextureView)
+    ~texture_view() {
+        if(_handle != nullptr) {
+            wgpuTextureViewRelease(_handle);
+        }
+    }
+};
+
 constexpr auto texture_view_descriptor(const char* label,
                                        texture_format format,
                                        textureview_dimension dimension,
@@ -28,14 +37,5 @@ constexpr auto texture_view_descriptor(const char* label,
         .aspect          = static_cast<WGPUTextureAspect>(aspect),
     };
 }
-
-class ECHIDNA_EXPORT texture_view {
-    HANDLE_IMPL(texture_view, WGPUTextureView)
-    ~texture_view() {
-        if(_handle != nullptr) {
-            wgpuTextureViewRelease(_handle);
-        }
-    }
-};
 
 } // namespace echidna

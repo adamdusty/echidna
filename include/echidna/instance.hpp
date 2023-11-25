@@ -10,14 +10,6 @@
 
 namespace echidna {
 
-constexpr auto instance_descriptor(const WGPUChainedStruct& next) {
-    return WGPUInstanceDescriptor{.nextInChain = &next};
-}
-
-constexpr auto instance_descriptor() {
-    return WGPUInstanceDescriptor{.nextInChain = nullptr};
-}
-
 class ECHIDNA_EXPORT instance {
     HANDLE_IMPL(instance, WGPUInstance)
     instance(const WGPUInstanceDescriptor& desc) : _handle(wgpuCreateInstance(&desc)) {}
@@ -31,5 +23,13 @@ class ECHIDNA_EXPORT instance {
     auto create_surface(const WGPUSurfaceDescriptor& descriptor) const -> surface;
     auto request_adapter(const WGPURequestAdapterOptions& options) const -> adapter;
 };
+
+constexpr auto instance_descriptor(const WGPUChainedStruct& next) {
+    return WGPUInstanceDescriptor{.nextInChain = &next};
+}
+
+constexpr auto instance_descriptor() {
+    return WGPUInstanceDescriptor{.nextInChain = nullptr};
+}
 
 } // namespace echidna
