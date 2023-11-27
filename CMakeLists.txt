@@ -84,3 +84,8 @@ if(ECHIDNA_BUILD_TESTS)
     include(CTest)
     add_subdirectory(tests)
 endif()
+
+# Samples
+if(ECHIDNA_BUILD_SAMPLES)
+    add_subdirectory(samples)
+endif()

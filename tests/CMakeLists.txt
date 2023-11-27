@@ -19,7 +19,6 @@ FetchContent_Declare(
     snitch
     GIT_REPOSITORY https://github.com/cschreib/snitch.git
     GIT_TAG        v1.2.2
-    GIT_SHALLOW    TRUE
     SYSTEM
     FIND_PACKAGE_ARGS # Use system package if installed
 )

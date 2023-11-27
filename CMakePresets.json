@@ -45,7 +45,8 @@
             ],
             "cacheVariables": {
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "ECHIDNA_BUILD_TESTS": "ON"
+                "ECHIDNA_BUILD_TESTS": "ON",
+                "ECHIDNA_BUILD_SAMPLES": "ON"
             }
         }
     ],

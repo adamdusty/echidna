@@ -20,6 +20,9 @@ install(
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
+install(IMPORTED_RUNTIME_ARTIFACTS wgpu)
+
+
 # Write package file for installations
 write_basic_package_version_file(
     "${package}ConfigVersion.cmake"
@@ -58,9 +61,9 @@ install(
     COMPONENT echidna_Development
 )
 
-install(
-    FILES $<TARGET_RUNTIME_DLLS:echidna_echidna> TYPE BIN
-)
+# install(
+#     FILES $<TARGET_RUNTIME_DLLS:echidna_echidna> TYPE BIN
+# )
 
 # Include CPack
 if(PROJECT_IS_TOP_LEVEL)
