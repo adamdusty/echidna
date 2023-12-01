@@ -48,6 +48,17 @@
                 "ECHIDNA_BUILD_TESTS": "ON",
                 "ECHIDNA_BUILD_SAMPLES": "ON"
             }
+        },
+        {
+            "name": "samples",
+            "binaryDir": "./build/samples",
+            "inherits": [
+                "debug"
+            ],
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "ECHIDNA_BUILD_SAMPLES": "ON"
+            }
         }
     ],
     "buildPresets": [
@@ -58,6 +69,10 @@
         {
             "name": "debug",
             "configurePreset": "debug"
+        },
+        {
+            "name": "samples",
+            "configurePreset": "samples"
         },
         {
             "name": "release",

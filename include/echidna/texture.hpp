@@ -14,13 +14,14 @@ class ECHIDNA_EXPORT texture {
     HANDLE_IMPL(texture, WGPUTexture)
     ~texture() {
         if(_handle != nullptr) {
-            wgpuTextureDestroy(_handle);
-            wgpuTextureRelease(_handle);
+            // wgpuTextureDestroy(_handle);
+            // wgpuTextureRelease(_handle);
         }
     }
 
     constexpr auto set_handle(WGPUTexture tex) -> void { _handle = tex; }
 
+    auto texture_view_descriptor(const char* label = nullptr) const -> WGPUTextureViewDescriptor;
     auto create_texture_view(const WGPUTextureViewDescriptor& desc) const -> texture_view;
     auto get_depth_or_array_layers() const -> std::uint32_t;
     auto dimension() const -> texture_dimension;

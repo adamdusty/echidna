@@ -53,6 +53,11 @@ auto device::create_buffer(const WGPUBufferDescriptor& desc) const -> buffer {
     return buffer{wgpuDeviceCreateBuffer(_handle, &desc)};
 }
 
+auto device::create_command_encoder(const char* label) const -> command_encoder {
+    auto desc = WGPUCommandEncoderDescriptor{.nextInChain = nullptr, .label = label};
+    return command_encoder{wgpuDeviceCreateCommandEncoder(_handle, &desc)};
+}
+
 auto device::create_command_encoder(const WGPUCommandEncoderDescriptor& desc) const -> command_encoder {
     return command_encoder{wgpuDeviceCreateCommandEncoder(_handle, &desc)};
 }

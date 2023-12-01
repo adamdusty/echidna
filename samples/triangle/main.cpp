@@ -2,9 +2,45 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
+#include <array>
+#include <cstdint>
 #include <echidna/echidna.hpp>
+#include <iostream>
 
 using namespace echidna;
+
+static constexpr auto shader_code = R"(
+    struct vertex_input{
+        @location(0) position: vec3f,
+        @location(1) color: vec3f,
+    };
+
+    struct vertex_output{
+        #builtin(position) position: vec4f,
+        @location(0) color: vec3f,
+    };
+
+    @vertex
+    fn vs_main(in: vertex_input) -> vertex_output {
+        var out: vertex_output;
+        out.position = vec4f(in.position, 1.0);
+        out.color = in.color;
+        return out;
+    }
+
+    @fragment
+    fn fs_main(in: vertex_output) -> @location(0) vec4f {
+        return vec4f(in.color, 1.0);
+    }
+)";
+
+// clang-format off
+static constexpr auto vertices = std::array<float, 18>{
+    -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+    +0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+    +0.0f, +0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+};
+// clang-format on
 
 auto main() -> int {
     auto* window =
@@ -30,10 +66,35 @@ auto main() -> int {
 
     auto queue = dev.get_queue();
 
-    auto surf_conf = surface_configuration(dev, 1920, 1080);
+    auto surf_conf = surface_configuration(dev, surf.preferred_format(adapt), 1920, 1080);
     surf.configure(surf_conf);
 
-    const auto& tex = surf.current_texture();
+    auto clear_color  = WGPUColor{0.05, 0.05, 0.05, 1.0};
+    auto color_attach = renderpass_color_attachment(load_op::clear, store_op::store, clear_color);
+
+    auto render_pass_desc = WGPURenderPassDescriptor{
+        .nextInChain            = nullptr,
+        .label                  = "render pass",
+        .colorAttachmentCount   = 1,
+        .colorAttachments       = &color_attach,
+        .depthStencilAttachment = nullptr,
+        .occlusionQuerySet      = nullptr,
+        .timestampWrites        = nullptr,
+    };
+
+    auto tex_view_desc = WGPUTextureViewDescriptor{
+        .nextInChain     = nullptr,
+        .label           = "surface",
+        .format          = static_cast<WGPUTextureFormat>(surf.preferred_format(adapt)),
+        .dimension       = WGPUTextureViewDimension_2D,
+        .baseMipLevel    = 0,
+        .mipLevelCount   = 1,
+        .baseArrayLayer  = 0,
+        .arrayLayerCount = 1,
+        .aspect          = WGPUTextureAspect_All,
+    };
+
+    auto cmds = std::vector<command_buffer>{};
 
     auto quit  = false;
     auto event = SDL_Event{};
@@ -50,6 +111,20 @@ auto main() -> int {
                 break;
             }
         }
+
+        const auto& tex     = surf.current_texture();
+        const auto tex_view = tex.create_texture_view(tex_view_desc);
+
+        color_attach.view = tex_view;
+
+        auto cmd_enc = dev.create_command_encoder("traingle encoder");
+        auto rp_enc  = cmd_enc.begin_render_pass(render_pass_desc);
+        rp_enc.end();
+        cmds.emplace_back(cmd_enc.finish({}));
+        queue.submit(cmds);
+        surf.present();
+
+        cmds.clear();
     }
 
     SDL_DestroyWindow(window);

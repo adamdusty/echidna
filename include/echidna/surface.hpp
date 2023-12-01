@@ -69,6 +69,19 @@ constexpr auto surface_configuration(const device& dev, std::uint32_t width, std
                                  present_mode::fifo);
 }
 
+constexpr auto surface_configuration(const device& dev,
+                                     texture_format format,
+                                     std::uint32_t width,
+                                     std::uint32_t height) {
+    return surface_configuration(dev,
+                                 format,
+                                 texture_usage::render_attachment,
+                                 composite_alpha_mode::automatic,
+                                 width,
+                                 height,
+                                 present_mode::fifo);
+}
+
 } // namespace echidna
 
 // wgpuSurfaceGetCurrentTexture(WGPUSurface surface, WGPUSurfaceTexture * surfaceTexture) WGPU_FUNCTION_ATTRIBUTE;

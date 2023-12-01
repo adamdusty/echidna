@@ -34,6 +34,7 @@ class ECHIDNA_EXPORT device {
     auto create_bind_group(const WGPUBindGroupDescriptor& desc) const -> bind_group;
     auto create_bind_group_layout(const WGPUBindGroupLayoutDescriptor& desc) const -> bind_group_layout;
     auto create_buffer(const WGPUBufferDescriptor& desc) const -> buffer;
+    auto create_command_encoder(const char* label = nullptr) const -> command_encoder;
     auto create_command_encoder(const WGPUCommandEncoderDescriptor& desc) const -> command_encoder;
     auto create_compute_pipeline(const WGPUComputePipelineDescriptor& desc) const -> compute_pipeline;
     auto create_pipeline_layout(const WGPUPipelineLayoutDescriptor& desc) const -> pipeline_layout;

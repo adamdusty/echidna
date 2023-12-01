@@ -1,10 +1,12 @@
 #pragma once
 
+#include "color_attachment.hpp"
 #include "echidna/adapter.hpp"
 #include "echidna/bind_group.hpp"
 #include "echidna/bind_group_layout.hpp"
 #include "echidna/buffer.hpp"
 #include "echidna/chained.hpp"
+#include "echidna/color_attachment.hpp"
 #include "echidna/command_buffer.hpp"
 #include "echidna/command_encoder.hpp"
 #include "echidna/compute_pass_encoder.hpp"
