@@ -16,7 +16,6 @@ Checks: "*,
   -readability-uppercase-literal-suffix,
   -cppcoreguidelines-non-private-member-variables-in-classes,
   -cppcoreguidelines-avoid-magic-numbers,
-  -cppcoreguidelines-pro-type-reinterpret-cast,
   -misc-non-private-member-variables-in-classes,
   -modernize-use-nodiscard,
 "

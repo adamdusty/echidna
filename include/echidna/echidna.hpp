@@ -24,6 +24,7 @@
 #include "echidna/render_pipeline.hpp"
 #include "echidna/shader.hpp"
 #include "echidna/surface.hpp"
+#include "echidna/surface_configuration.hpp"
 #include "echidna/surface_descriptor.hpp"
 #include "echidna/texture.hpp"
 #include "echidna/texture_view.hpp"

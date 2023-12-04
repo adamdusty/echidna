@@ -63,14 +63,14 @@ static constexpr auto device_error_stderr = [](WGPUErrorType type, const char* m
 };
 
 ECHIDNA_EXPORT auto device_descriptor(const char* label,
-                                      const std::vector<feature_name>& required_features,
+                                      std::vector<feature_name>& required_features,
                                       std::vector<WGPURequiredLimits>& required_limits,
                                       const WGPUQueueDescriptor& desc,
                                       WGPUDeviceLostCallback callback,
                                       void* user_data) -> WGPUDeviceDescriptor;
 
 ECHIDNA_EXPORT auto device_descriptor(const char* label,
-                                      const std::vector<feature_name>& required_features,
+                                      std::vector<feature_name>& required_features,
                                       std::vector<WGPURequiredLimits>& required_limits) -> WGPUDeviceDescriptor;
 
 ECHIDNA_EXPORT auto device_descriptor(const char* label = nullptr) -> WGPUDeviceDescriptor;

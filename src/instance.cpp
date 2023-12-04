@@ -24,7 +24,7 @@ auto instance::request_adapter(const WGPURequestAdapterOptions& options) const -
 
     auto callback = [](WGPURequestAdapterStatus status, WGPUAdapter adapter, char const* message, void* user_data_ptr) {
         // NOLINTNEXTLINE
-        user_data& user_data = *reinterpret_cast<struct user_data*>(user_data_ptr);
+        user_data& user_data = *static_cast<struct user_data*>(user_data_ptr);
         if(status == request_adapter_status::success) {
             user_data.adapter = adapter;
         } else {

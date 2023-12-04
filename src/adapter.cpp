@@ -45,7 +45,7 @@ auto adapter::request_device(const WGPUDeviceDescriptor& desc) const -> device {
     auto data = user_data{};
 
     auto callback = [](WGPURequestDeviceStatus status, WGPUDevice device, const char* message, void* user_data_ptr) {
-        auto& callback_request_data = *reinterpret_cast<user_data*>(user_data_ptr); // NOLINT
+        auto& callback_request_data = *static_cast<user_data*>(user_data_ptr); // NOLINT
 
         if(status == WGPURequestDeviceStatus_Success) {
             callback_request_data.device = device;

@@ -3,16 +3,17 @@
 namespace echidna {
 
 auto texture::texture_view_descriptor(const char* label) const -> WGPUTextureViewDescriptor {
-    WGPUTextureViewDimension dim;
+    WGPUTextureViewDimension dim = WGPUTextureViewDimension_Undefined;
 
     switch(this->dimension()) {
-    case echidna::texture_dimension::dim1:
+        using enum texture_dimension;
+    case dim1:
         dim = WGPUTextureViewDimension_1D;
         break;
-    case echidna::texture_dimension::dim2:
+    case dim2:
         dim = WGPUTextureViewDimension_2D;
         break;
-    case echidna::texture_dimension::dim3:
+    case dim3:
         dim = WGPUTextureViewDimension_3D;
         break;
     }
@@ -21,7 +22,7 @@ auto texture::texture_view_descriptor(const char* label) const -> WGPUTextureVie
         .nextInChain     = nullptr,
         .label           = label,
         .format          = static_cast<WGPUTextureFormat>(this->format()),
-        .dimension       = static_cast<WGPUTextureViewDimension>(this->dimension()),
+        .dimension       = static_cast<WGPUTextureViewDimension>(dim),
         .baseMipLevel    = 0,
         .mipLevelCount   = this->mip_level_count(),
         .baseArrayLayer  = 0,

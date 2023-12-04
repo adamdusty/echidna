@@ -66,7 +66,7 @@ auto main() -> int {
 
     auto queue = dev.get_queue();
 
-    auto surf_conf = surface_configuration(dev, surf.preferred_format(adapt), 1920, 1080);
+    auto surf_conf = surface_configuration(dev, 1920, 1080);
     surf.configure(surf_conf);
 
     auto clear_color  = WGPUColor{0.05, 0.05, 0.05, 1.0};
@@ -82,16 +82,42 @@ auto main() -> int {
         .timestampWrites        = nullptr,
     };
 
-    auto tex_view_desc = WGPUTextureViewDescriptor{
-        .nextInChain     = nullptr,
-        .label           = "surface",
-        .format          = static_cast<WGPUTextureFormat>(surf.preferred_format(adapt)),
-        .dimension       = WGPUTextureViewDimension_2D,
-        .baseMipLevel    = 0,
-        .mipLevelCount   = 1,
-        .baseArrayLayer  = 0,
-        .arrayLayerCount = 1,
-        .aspect          = WGPUTextureAspect_All,
+    auto vertex_state = WGPUVertexState{
+        .nextInChain   = nullptr,
+        .module        = nullptr,
+        .entryPoint    = nullptr,
+        .constantCount = 0,
+        .constants     = nullptr,
+        .bufferCount   = 0,
+        .buffers       = nullptr,
+    };
+
+    auto primitive_state = WGPUPrimitiveState{
+        .nextInChain      = nullptr,
+        .topology         = static_cast<WGPUPrimitiveTopology>(primitive_topology::triangle_list),
+        .stripIndexFormat = static_cast<WGPUIndexFormat>(index_format::undefined),
+        .frontFace        = static_cast<WGPUFrontFace>(front_face::ccw),
+        .cullMode         = static_cast<WGPUCullMode>(cull_mode::none),
+    };
+
+    auto pipeline_layout_descriptor = WGPUPipelineLayoutDescriptor{
+        .nextInChain          = nullptr,
+        .label                = nullptr,
+        .bindGroupLayoutCount = 0,
+        .bindGroupLayouts     = nullptr,
+    };
+
+    auto pipeline_layout = dev.create_pipeline_layout(pipeline_layout_descriptor);
+
+    auto pipeline_desc = WGPURenderPipelineDescriptor{
+        .nextInChain  = nullptr,
+        .label        = nullptr,
+        .layout       = pipeline_layout,
+        .vertex       = vertex_state,
+        .primitive    = nullptr,
+        .depthStencil = nullptr,
+        .multisample  = nullptr,
+        .fragment     = nullptr,
     };
 
     auto cmds = std::vector<command_buffer>{};
@@ -113,7 +139,7 @@ auto main() -> int {
         }
 
         const auto& tex     = surf.current_texture();
-        const auto tex_view = tex.create_texture_view(tex_view_desc);
+        const auto tex_view = tex.create_texture_view(tex.texture_view_descriptor());
 
         color_attach.view = tex_view;
 

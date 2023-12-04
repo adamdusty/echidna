@@ -38,8 +38,8 @@ auto render_pass_encoder::end_occlusion_query() const -> void {
 }
 
 auto render_pass_encoder::execute_bundles(std::vector<render_bundle> bundles) const -> void {
-    // NOLINTNEXTLINE Need reinterpret cast from wrapped type pointer
-    wgpuRenderPassEncoderExecuteBundles(_handle, bundles.size(), reinterpret_cast<WGPURenderBundle*>(bundles.data()));
+    auto wgpu_bundles = std::vector<WGPURenderBundle>(bundles.begin(), bundles.end());
+    wgpuRenderPassEncoderExecuteBundles(_handle, wgpu_bundles.size(), wgpu_bundles.data());
 }
 
 auto render_pass_encoder::insert_debug_marker(const char* label) const -> void {

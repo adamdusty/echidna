@@ -5,17 +5,29 @@
 namespace echidna {
 
 auto device_descriptor(const char* label,
-                       const std::vector<feature_name>& required_features,
+                       std::vector<feature_name>& required_features,
                        std::vector<WGPURequiredLimits>& required_limits,
                        const WGPUQueueDescriptor& desc,
                        WGPUDeviceLostCallback callback,
                        void* user_data) -> WGPUDeviceDescriptor {
+
+    auto wgpu_features = std::vector<WGPUFeatureName>();
+    auto wgpu_limits   = std::vector<WGPURequiredLimits>();
+
+    for(auto feat: required_features) {
+        wgpu_features.emplace_back(static_cast<WGPUFeatureName>(feat));
+    }
+
+    for(auto limit: required_limits) {
+        wgpu_limits.emplace_back(static_cast<WGPURequiredLimits>(limit));
+    }
+
     return WGPUDeviceDescriptor{
         .nextInChain          = nullptr,
         .label                = label,
         .requiredFeatureCount = required_features.size(),
-        .requiredFeatures     = reinterpret_cast<const WGPUFeatureName*>(required_features.data()),
-        .requiredLimits       = reinterpret_cast<const WGPURequiredLimits*>(required_limits.data()),
+        .requiredFeatures     = wgpu_features.data(),
+        .requiredLimits       = wgpu_limits.data(),
         .defaultQueue         = desc,
         .deviceLostCallback   = callback,
         .deviceLostUserdata   = user_data,
@@ -23,7 +35,7 @@ auto device_descriptor(const char* label,
 }
 
 auto device_descriptor(const char* label,
-                       const std::vector<feature_name>& required_features,
+                       std::vector<feature_name>& required_features,
                        std::vector<WGPURequiredLimits>& required_limits) -> WGPUDeviceDescriptor {
     return device_descriptor(label, required_features, required_limits, queue_descriptor(), nullptr, nullptr);
 }
