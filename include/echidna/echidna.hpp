@@ -11,6 +11,7 @@
 #include "echidna/command_encoder.hpp"
 #include "echidna/compute_pass_encoder.hpp"
 #include "echidna/compute_pipeline.hpp"
+#include "echidna/convenience.hpp"
 #include "echidna/defaults.hpp"
 #include "echidna/enums.hpp"
 #include "echidna/instance.hpp"

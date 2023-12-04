@@ -16,7 +16,7 @@ static constexpr auto shader_code = R"(
     };
 
     struct vertex_output{
-        #builtin(position) position: vec4f,
+        @builtin(position) position: vec4f,
         @location(0) color: vec3f,
     };
 
@@ -72,6 +72,8 @@ auto main() -> int {
     auto clear_color  = WGPUColor{0.05, 0.05, 0.05, 1.0};
     auto color_attach = renderpass_color_attachment(load_op::clear, store_op::store, clear_color);
 
+    auto shader_module = dev.shader_moudle_from_wgsl(shader_code);
+
     auto render_pass_desc = WGPURenderPassDescriptor{
         .nextInChain            = nullptr,
         .label                  = "render pass",
@@ -82,22 +84,45 @@ auto main() -> int {
         .timestampWrites        = nullptr,
     };
 
+    auto color_state = WGPUColorTargetState{
+        .nextInChain = nullptr,
+        .format      = static_cast<WGPUTextureFormat>(surf.preferred_format(adapt)),
+        .blend       = nullptr,
+        .writeMask   = static_cast<WGPUColorWriteMaskFlags>(color_write_mask::all),
+    };
+
     auto vertex_state = WGPUVertexState{
         .nextInChain   = nullptr,
-        .module        = nullptr,
-        .entryPoint    = nullptr,
+        .module        = shader_module,
+        .entryPoint    = "vs_main",
         .constantCount = 0,
         .constants     = nullptr,
         .bufferCount   = 0,
         .buffers       = nullptr,
     };
 
-    auto primitive_state = WGPUPrimitiveState{
-        .nextInChain      = nullptr,
-        .topology         = static_cast<WGPUPrimitiveTopology>(primitive_topology::triangle_list),
-        .stripIndexFormat = static_cast<WGPUIndexFormat>(index_format::undefined),
-        .frontFace        = static_cast<WGPUFrontFace>(front_face::ccw),
-        .cullMode         = static_cast<WGPUCullMode>(cull_mode::none),
+    auto fragment_state = WGPUFragmentState{
+        .nextInChain   = nullptr,
+        .module        = shader_module,
+        .entryPoint    = "fs_main",
+        .constantCount = 0,
+        .constants     = nullptr,
+        .targetCount   = 1,
+        .targets       = &color_state,
+    };
+
+    auto primitive_state = echidna::primitive_state(
+        primitive_topology::triangle_list,
+        index_format::undefined,
+        front_face::ccw,
+        cull_mode::none
+    );
+
+    auto multi_sample_state = WGPUMultisampleState{
+        .nextInChain            = nullptr,
+        .count                  = 1,
+        .mask                   = ~0U,
+        .alphaToCoverageEnabled = false,
     };
 
     auto pipeline_layout_descriptor = WGPUPipelineLayoutDescriptor{
@@ -114,10 +139,10 @@ auto main() -> int {
         .label        = nullptr,
         .layout       = pipeline_layout,
         .vertex       = vertex_state,
-        .primitive    = nullptr,
+        .primitive    = primitive_state,
         .depthStencil = nullptr,
-        .multisample  = nullptr,
-        .fragment     = nullptr,
+        .multisample  = multi_sample_state,
+        .fragment     = &fragment_state,
     };
 
     auto cmds = std::vector<command_buffer>{};
