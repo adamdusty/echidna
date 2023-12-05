@@ -4,12 +4,14 @@
 
 namespace echidna {
 
-auto device_descriptor(const char* label,
-                       std::vector<feature_name>& required_features,
-                       std::vector<WGPURequiredLimits>& required_limits,
-                       const WGPUQueueDescriptor& desc,
-                       WGPUDeviceLostCallback callback,
-                       void* user_data) -> WGPUDeviceDescriptor {
+auto device_descriptor(
+    const char* label,
+    std::vector<feature_name>& required_features,
+    std::vector<WGPURequiredLimits>& required_limits,
+    const WGPUQueueDescriptor& desc,
+    WGPUDeviceLostCallback callback,
+    void* user_data
+) -> WGPUDeviceDescriptor {
 
     auto wgpu_features = std::vector<WGPUFeatureName>();
     auto wgpu_limits   = std::vector<WGPURequiredLimits>();
@@ -34,9 +36,11 @@ auto device_descriptor(const char* label,
     };
 }
 
-auto device_descriptor(const char* label,
-                       std::vector<feature_name>& required_features,
-                       std::vector<WGPURequiredLimits>& required_limits) -> WGPUDeviceDescriptor {
+auto device_descriptor(
+    const char* label,
+    std::vector<feature_name>& required_features,
+    std::vector<WGPURequiredLimits>& required_limits
+) -> WGPUDeviceDescriptor {
     return device_descriptor(label, required_features, required_limits, queue_descriptor(), nullptr, nullptr);
 }
 
@@ -62,6 +66,17 @@ auto device::create_bind_group_layout(const WGPUBindGroupLayoutDescriptor& desc)
 }
 
 auto device::create_buffer(const WGPUBufferDescriptor& desc) const -> buffer {
+    return buffer{wgpuDeviceCreateBuffer(_handle, &desc)};
+}
+
+auto device::create_buffer(buffer_usage usage, std::uint64_t size) const -> buffer {
+    auto desc = WGPUBufferDescriptor{
+        .nextInChain      = nullptr,
+        .label            = nullptr,
+        .usage            = static_cast<WGPUBufferUsageFlags>(usage),
+        .size             = size,
+        .mappedAtCreation = static_cast<WGPUBool>(false),
+    };
     return buffer{wgpuDeviceCreateBuffer(_handle, &desc)};
 }
 

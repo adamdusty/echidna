@@ -16,6 +16,7 @@
 #include "echidna/shader.hpp"
 #include "echidna/texture.hpp"
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <vector>
 #include <webgpu.h>
@@ -34,6 +35,7 @@ class ECHIDNA_EXPORT device {
     auto create_bind_group(const WGPUBindGroupDescriptor& desc) const -> bind_group;
     auto create_bind_group_layout(const WGPUBindGroupLayoutDescriptor& desc) const -> bind_group_layout;
     auto create_buffer(const WGPUBufferDescriptor& desc) const -> buffer;
+    auto create_buffer(buffer_usage usage, std::uint64_t size) const -> buffer;
     auto create_command_encoder(const char* label = nullptr) const -> command_encoder;
     auto create_command_encoder(const WGPUCommandEncoderDescriptor& desc) const -> command_encoder;
     auto create_compute_pipeline(const WGPUComputePipelineDescriptor& desc) const -> compute_pipeline;
@@ -62,16 +64,20 @@ static constexpr auto device_error_stderr = [](WGPUErrorType type, const char* m
     }
 };
 
-ECHIDNA_EXPORT auto device_descriptor(const char* label,
-                                      std::vector<feature_name>& required_features,
-                                      std::vector<WGPURequiredLimits>& required_limits,
-                                      const WGPUQueueDescriptor& desc,
-                                      WGPUDeviceLostCallback callback,
-                                      void* user_data) -> WGPUDeviceDescriptor;
+ECHIDNA_EXPORT auto device_descriptor(
+    const char* label,
+    std::vector<feature_name>& required_features,
+    std::vector<WGPURequiredLimits>& required_limits,
+    const WGPUQueueDescriptor& desc,
+    WGPUDeviceLostCallback callback,
+    void* user_data
+) -> WGPUDeviceDescriptor;
 
-ECHIDNA_EXPORT auto device_descriptor(const char* label,
-                                      std::vector<feature_name>& required_features,
-                                      std::vector<WGPURequiredLimits>& required_limits) -> WGPUDeviceDescriptor;
+ECHIDNA_EXPORT auto device_descriptor(
+    const char* label,
+    std::vector<feature_name>& required_features,
+    std::vector<WGPURequiredLimits>& required_limits
+) -> WGPUDeviceDescriptor;
 
 ECHIDNA_EXPORT auto device_descriptor(const char* label = nullptr) -> WGPUDeviceDescriptor;
 

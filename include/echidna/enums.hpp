@@ -475,6 +475,18 @@ enum class buffer_usage : std::uint32_t {
     query_resolve = WGPUBufferUsage_QueryResolve,
 };
 
+constexpr auto operator|(buffer_usage lhs, buffer_usage rhs) -> buffer_usage {
+    return static_cast<buffer_usage>(
+        static_cast<std::underlying_type_t<buffer_usage>>(lhs) | static_cast<std::underlying_type_t<buffer_usage>>(rhs)
+    );
+}
+
+constexpr auto operator&(buffer_usage lhs, buffer_usage rhs) -> buffer_usage {
+    return static_cast<buffer_usage>(
+        static_cast<std::underlying_type_t<buffer_usage>>(lhs) & static_cast<std::underlying_type_t<buffer_usage>>(rhs)
+    );
+}
+
 enum class color_write_mask : std::uint32_t {
     none  = WGPUColorWriteMask_None,
     red   = WGPUColorWriteMask_Red,

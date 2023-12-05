@@ -40,6 +40,10 @@ static constexpr auto vertices = std::array<float, 18>{
     +0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
     +0.0f, +0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
 };
+
+static constexpr auto indices = std::array<std::uint32_t,3>{
+    0, 1, 2,
+};
 // clang-format on
 
 auto main() -> int {
@@ -66,23 +70,19 @@ auto main() -> int {
 
     auto queue = dev.get_queue();
 
-    auto surf_conf = surface_configuration(dev, 1920, 1080);
+    auto surf_conf = surface_configuration(dev, surf.preferred_format(adapt), 1920, 1080);
     surf.configure(surf_conf);
 
-    auto clear_color  = WGPUColor{0.05, 0.05, 0.05, 1.0};
-    auto color_attach = renderpass_color_attachment(load_op::clear, store_op::store, clear_color);
+    auto vertex_buffer =
+        dev.create_buffer(buffer_usage::vertex | buffer_usage::copy_dst, sizeof(float) * vertices.size());
+    auto index_buffer =
+        dev.create_buffer(buffer_usage::index | buffer_usage::copy_dst, sizeof(std::uint32_t) * indices.size());
+    queue.write_buffer(vertex_buffer, 0, vertices.data(), sizeof(float) * vertices.size());
+    queue.write_buffer(index_buffer, 0, indices.data(), sizeof(float) * indices.size());
+
+    auto clear_color = WGPUColor{0.05, 0.05, 0.05, 1.0};
 
     auto shader_module = dev.shader_moudle_from_wgsl(shader_code);
-
-    auto render_pass_desc = WGPURenderPassDescriptor{
-        .nextInChain            = nullptr,
-        .label                  = "render pass",
-        .colorAttachmentCount   = 1,
-        .colorAttachments       = &color_attach,
-        .depthStencilAttachment = nullptr,
-        .occlusionQuerySet      = nullptr,
-        .timestampWrites        = nullptr,
-    };
 
     auto color_state = WGPUColorTargetState{
         .nextInChain = nullptr,
@@ -91,14 +91,17 @@ auto main() -> int {
         .writeMask   = static_cast<WGPUColorWriteMaskFlags>(color_write_mask::all),
     };
 
+    auto vertex_info =
+        echidna::vertex_buffer_layout(echidna::vertex_format::float32x3, echidna::vertex_format::float32x3);
+
     auto vertex_state = WGPUVertexState{
         .nextInChain   = nullptr,
         .module        = shader_module,
         .entryPoint    = "vs_main",
         .constantCount = 0,
         .constants     = nullptr,
-        .bufferCount   = 0,
-        .buffers       = nullptr,
+        .bufferCount   = 1,
+        .buffers       = &vertex_info.layout,
     };
 
     auto fragment_state = WGPUFragmentState{
@@ -125,6 +128,17 @@ auto main() -> int {
         .alphaToCoverageEnabled = false,
     };
 
+    auto color_attach     = renderpass_color_attachment(load_op::clear, store_op::store, clear_color);
+    auto render_pass_desc = WGPURenderPassDescriptor{
+        .nextInChain            = nullptr,
+        .label                  = "render pass",
+        .colorAttachmentCount   = 1,
+        .colorAttachments       = &color_attach,
+        .depthStencilAttachment = nullptr,
+        .occlusionQuerySet      = nullptr,
+        .timestampWrites        = nullptr,
+    };
+
     auto pipeline_layout_descriptor = WGPUPipelineLayoutDescriptor{
         .nextInChain          = nullptr,
         .label                = nullptr,
@@ -144,6 +158,7 @@ auto main() -> int {
         .multisample  = multi_sample_state,
         .fragment     = &fragment_state,
     };
+    auto pipeline = dev.create_render_pipeline(pipeline_desc);
 
     auto cmds = std::vector<command_buffer>{};
 
@@ -170,6 +185,13 @@ auto main() -> int {
 
         auto cmd_enc = dev.create_command_encoder("traingle encoder");
         auto rp_enc  = cmd_enc.begin_render_pass(render_pass_desc);
+
+        rp_enc.set_pipeline(pipeline);
+        rp_enc.set_vertex_buffer(0, vertex_buffer, 0, vertex_buffer.size());
+        rp_enc.set_index_buffer(index_buffer, index_format::uint32, 0, index_buffer.size());
+
+        rp_enc.draw_indexed(indices.size(), 1, 0, 0, 0);
+
         rp_enc.end();
         cmds.emplace_back(cmd_enc.finish({}));
         queue.submit(cmds);
