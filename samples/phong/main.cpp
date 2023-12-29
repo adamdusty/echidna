@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
+#include <admat/mat.hpp>
 #include <array>
 #include <cstdint>
 #include <echidna/echidna.hpp>
@@ -35,7 +36,7 @@ static constexpr auto shader_code = R"(
     }
 
     @group(0) @binding(0) var<uniform> u_mvp: mvp;
-    @group(0) @binding(0) var<uniform> u_light: light; 
+    @group(0) @binding(0) var<uniform> u_light: light;
 
     @vertex
     fn vs_main(in: vertex_input) -> vertex_output {
@@ -80,6 +81,7 @@ static constexpr auto indices = std::array<std::uint32_t,3>{
 // clang-format on
 
 auto main() -> int {
+    // auto m = admat::mat4{};
     auto* window =
         SDL_CreateWindow("test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_SHOWN);
     SDL_SysWMinfo info;

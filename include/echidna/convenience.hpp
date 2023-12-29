@@ -1,7 +1,6 @@
 #pragma once
 
 #include "echidna/enums.hpp"
-#include <concepts>
 #include <webgpu.h>
 
 namespace echidna {
@@ -64,6 +63,8 @@ constexpr auto vertex_format_size(vertex_format fmt) -> std::uint64_t {
     case sint32x4:
     case float32x4:
         return sizeof(std::uint32_t) * 4;
+    default:
+        return 0;
     }
 }
 

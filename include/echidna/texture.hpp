@@ -33,15 +33,17 @@ class ECHIDNA_EXPORT texture {
     auto usage() const -> texture_usage;
 };
 
-constexpr auto texture_descriptor(const char* label,
-                                  texture_usage usage,
-                                  texture_dimension dimension,
-                                  WGPUExtent3D size,
-                                  texture_format fmt,
-                                  std::uint32_t mip_count,
-                                  std::uint32_t sample_count,
-                                  size_t view_fmt_count,
-                                  std::vector<texture_format>& view_formats) -> WGPUTextureDescriptor {
+constexpr auto texture_descriptor(
+    const char* label,
+    texture_usage usage,
+    texture_dimension dimension,
+    WGPUExtent3D size,
+    texture_format fmt,
+    std::uint32_t mip_count,
+    std::uint32_t sample_count,
+    size_t view_fmt_count,
+    std::vector<texture_format>& view_formats
+) -> WGPUTextureDescriptor {
 
     auto wgpu_formats = std::vector<WGPUTextureFormat>{};
     for(auto format: view_formats) {
@@ -49,6 +51,7 @@ constexpr auto texture_descriptor(const char* label,
     }
 
     return WGPUTextureDescriptor{
+        .nextInChain     = nullptr,
         .label           = label,
         .usage           = static_cast<WGPUTextureUsageFlags>(usage),
         .dimension       = static_cast<WGPUTextureDimension>(dimension),
@@ -61,13 +64,16 @@ constexpr auto texture_descriptor(const char* label,
     };
 }
 
-constexpr auto texture_descriptor_2d(texture_usage usage,
-                                     WGPUExtent3D size,
-                                     texture_format fmt,
-                                     std::uint32_t mip_count    = 1,
-                                     std::uint32_t sample_count = 1) -> WGPUTextureDescriptor {
+constexpr auto texture_descriptor_2d(
+    texture_usage usage,
+    WGPUExtent3D size,
+    texture_format fmt,
+    std::uint32_t mip_count    = 1,
+    std::uint32_t sample_count = 1
+) -> WGPUTextureDescriptor {
 
     return WGPUTextureDescriptor{
+        .nextInChain     = nullptr,
         .label           = nullptr,
         .usage           = static_cast<WGPUTextureUsageFlags>(usage),
         .dimension       = static_cast<WGPUTextureDimension>(texture_dimension::dim2),
