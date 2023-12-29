@@ -62,7 +62,7 @@ static constexpr auto shader_code = R"(
         var spec = pow(max(dot(view_direction, reflect_direction), 0.0), 32.0);
         var specular = specular_strength * spec * u_light.color;
 
-        var combined = (ambient + diffuse + specular) * vec3f(1.0, 1.0, 1.0); // hard code 'object' color
+        var combined = (ambient + diffuse + specular) * vec3f(1.0, 1.0, 1.0);
         return vec4f(combined, 1.0);
     }
 )";
