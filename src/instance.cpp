@@ -28,7 +28,7 @@ auto instance::request_adapter(const WGPURequestAdapterOptions& options) const -
         if(status == request_adapter_status::success) {
             user_data.adapter = adapter;
         } else {
-            std::cout << "Could not get WebGPU adapter: " << message << '\n';
+            std::cerr << "Could not get WebGPU adapter: " << message << '\n';
         }
 
         user_data.request_ended = true;
