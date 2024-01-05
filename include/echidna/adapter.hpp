@@ -29,10 +29,12 @@ class ECHIDNA_EXPORT adapter {
     auto request_device(const WGPUDeviceDescriptor& desc) const -> device;
 };
 
-constexpr auto adapter_options(const surface& surf,
-                               power_preference pref = power_preference::undefined,
-                               backend_type backend  = backend_type::undefined,
-                               bool force_fallback   = false) {
+constexpr auto adapter_options(
+    const surface& surf,
+    backend_type backend  = backend_type::undefined,
+    power_preference pref = power_preference::undefined,
+    bool force_fallback   = false
+) {
     return WGPURequestAdapterOptions{
         .nextInChain          = nullptr,
         .compatibleSurface    = surf,

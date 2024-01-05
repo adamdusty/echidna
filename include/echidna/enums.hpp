@@ -509,6 +509,18 @@ enum class shader_stage : std::uint32_t {
     compute  = WGPUShaderStage_Compute,
 };
 
+constexpr auto operator|(shader_stage lhs, shader_stage rhs) -> shader_stage {
+    return static_cast<shader_stage>(
+        static_cast<std::underlying_type_t<shader_stage>>(lhs) | static_cast<std::underlying_type_t<shader_stage>>(rhs)
+    );
+}
+
+constexpr auto operator&(shader_stage lhs, shader_stage rhs) -> shader_stage {
+    return static_cast<shader_stage>(
+        static_cast<std::underlying_type_t<shader_stage>>(lhs) & static_cast<std::underlying_type_t<shader_stage>>(rhs)
+    );
+}
+
 enum class texture_usage {
     none              = WGPUTextureUsage_None,
     copy_src          = WGPUTextureUsage_CopySrc,

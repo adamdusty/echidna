@@ -20,6 +20,9 @@ public:                                                                         
     auto operator=(name&& other) noexcept -> name& {                                                                   \
         _handle = std::exchange(other._handle, nullptr);                                                               \
         return *this;                                                                                                  \
+    }                                                                                                                  \
+    constexpr auto addr() -> wgpu_type* {                                                                              \
+        return &_handle;                                                                                               \
     }
 
 // For some reason the compiler is warning about backslash newline at the end of this file,
