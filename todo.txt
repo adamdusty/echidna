@@ -1,0 +1,3 @@
+Add ability to choose wgpu-native/dawn
+Wasm target
+Add ci workflow at least for testing
