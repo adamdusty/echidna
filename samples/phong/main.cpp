@@ -45,8 +45,8 @@ static constexpr auto shader_code = R"(
     fn vs_main(in: vertex_input) -> vertex_output {
         var out: vertex_output;
         out.frag_pos = (u_mvp.model * vec4f(in.position, 1.0)).xyz;
-        // out.position = u_mvp.proj * u_mvp.view * u_mvp.model *  vec4f(in.position, 1.0);
-        out.position = vec4f(in.position, 1.0) * u_mvp.model * u_mvp.view * u_mvp.proj;
+        out.position = u_mvp.proj * u_mvp.view * u_mvp.model *  vec4f(in.position, 1.0);
+        // out.position = vec4f(in.position, 1.0) * u_mvp.model * transpose(u_mvp.view) * transpose(u_mvp.proj);
         out.normal = (u_mvp.model_it * vec4f(in.normal, 0.0)).xyz;
         return out;
     }
@@ -138,7 +138,7 @@ auto main() -> int {
     auto surf_desc = surface_descriptor(*reinterpret_cast<WGPUChainedStruct*>(&windows_surface_descriptor), "test");
     auto surf      = inst.create_surface(surf_desc);
 
-    auto opt   = adapter_options(surf, backend_type::d3d12);
+    auto opt   = adapter_options(surf);
     auto adapt = inst.request_adapter(opt);
 
     auto dev_desc = device_descriptor();
@@ -374,14 +374,14 @@ auto main() -> int {
     auto pipeline = dev.create_render_pipeline(pipeline_desc);
 
     auto model_it = admat::mat4::identity();
-    auto model    = admat::transpose(admat::translate(admat::mat4::identity(), {1.0f, 0, 0}));
-    auto view     = admat::look_at({0, 0, -10}, {0, 0, 0}, {0, 1, 0});
-    auto proj     = admat::perspective(0.785398f, 1920.0f / 1080.0f, 0.001f, 100.0f);
+    auto model    = admat::translation(-1.0f, 0, 0);
+    auto view     = admat::look_at({0, 0, 10}, {0, 0, 0}, {0, 1, 0});
+    auto proj     = admat::perspective(0.785398f, 1920.0f / 1080.0f, 0.001f, 1000.0f);
 
-    queue.write_buffer(mvp_buffer, 0 * sizeof(admat::mat4), proj.get().data(), sizeof(admat::mat4));
-    queue.write_buffer(mvp_buffer, 1 * sizeof(admat::mat4), view.get().data(), sizeof(admat::mat4));
-    queue.write_buffer(mvp_buffer, 2 * sizeof(admat::mat4), model.get().data(), sizeof(admat::mat4));
-    queue.write_buffer(mvp_buffer, 3 * sizeof(admat::mat4), model_it.get().data(), sizeof(admat::mat4));
+    queue.write_buffer(mvp_buffer, 0 * sizeof(admat::mat4), &proj, sizeof(admat::mat4));
+    queue.write_buffer(mvp_buffer, 1 * sizeof(admat::mat4), &view, sizeof(admat::mat4));
+    queue.write_buffer(mvp_buffer, 2 * sizeof(admat::mat4), &model, sizeof(admat::mat4));
+    queue.write_buffer(mvp_buffer, 3 * sizeof(admat::mat4), &model_it, sizeof(admat::mat4));
 
     auto cmds = std::vector<command_buffer>{};
 
@@ -410,8 +410,8 @@ auto main() -> int {
             }
         }
 
-        model = admat::transpose(admat::translate(admat::mat4::identity(), {std::sin(SDL_GetTicks() / 1000.0f), 0, 0}));
-        queue.write_buffer(mvp_buffer, 2 * sizeof(admat::mat4), model.get().data(), sizeof(admat::mat4));
+        model = model * admat::translation(-1.0f * delta, 0, 0);
+        queue.write_buffer(mvp_buffer, 2 * sizeof(admat::mat4), &model, sizeof(admat::mat4));
 
         const auto& tex       = surf.current_texture();
         const auto tex_view   = tex.create_texture_view(tex.texture_view_descriptor());
