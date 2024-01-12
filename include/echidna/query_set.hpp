@@ -2,20 +2,19 @@
 
 #include "echidna/enums.hpp"
 #include "echidna/export.hpp"
-#include "echidna/macros.hpp"
+#include "echidna/handle.hpp"
 #include <cstdint>
 #include <webgpu.h>
 
 namespace echidna {
 
-class ECHIDNA_EXPORT query_set {
-    HANDLE_IMPL(query_set, WGPUQuerySet)
-    ~query_set() {
-        if(_handle != nullptr) {
-            wgpuQuerySetDestroy(_handle);
-            wgpuQuerySetRelease(_handle);
-        }
-    }
+class ECHIDNA_EXPORT query_set : public handle_base<query_set, WGPUQuerySet> {
+    friend handle_base<query_set, WGPUQuerySet>;
+    static auto release(WGPUQuerySet handle) { wgpuQuerySetRelease(handle); }
+
+public:
+    using handle_base::handle_base;
+    using handle_base::operator=;
 
     auto count() const -> std::uint32_t;
     auto type() const -> query_type;

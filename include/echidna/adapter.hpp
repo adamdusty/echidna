@@ -4,8 +4,8 @@
 #include "echidna/device.hpp"
 #include "echidna/enums.hpp"
 #include "echidna/export.hpp"
+#include "echidna/handle.hpp"
 #include "echidna/limits.hpp"
-#include "echidna/macros.hpp"
 #include "echidna/surface.hpp"
 #include <cstdint>
 #include <iostream>
@@ -14,13 +14,13 @@
 
 namespace echidna {
 
-class ECHIDNA_EXPORT adapter {
-    HANDLE_IMPL(adapter, WGPUAdapter)
-    ~adapter() {
-        if(_handle != nullptr) {
-            wgpuAdapterRelease(_handle);
-        }
-    }
+class ECHIDNA_EXPORT adapter : public handle_base<adapter, WGPUAdapter> {
+    friend handle_base<adapter, WGPUAdapter>;
+    static auto release(WGPUAdapter handle) { wgpuAdapterRelease(handle); }
+
+public:
+    using handle_base::handle_base;
+    using handle_base::operator=;
 
     auto limits() const -> WGPUSupportedLimits;
     auto properties() const -> WGPUAdapterProperties;

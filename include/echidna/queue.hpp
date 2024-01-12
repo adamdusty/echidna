@@ -3,7 +3,7 @@
 #include "echidna/buffer.hpp"
 #include "echidna/command_buffer.hpp"
 #include "echidna/export.hpp"
-#include "echidna/macros.hpp"
+#include "echidna/handle.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -11,13 +11,13 @@
 
 namespace echidna {
 
-class ECHIDNA_EXPORT queue {
-    HANDLE_IMPL(queue, WGPUQueue)
-    ~queue() {
-        if(_handle != nullptr) {
-            wgpuQueueRelease(_handle);
-        }
-    }
+class ECHIDNA_EXPORT queue : public handle_base<queue, WGPUQueue> {
+    friend handle_base<queue, WGPUQueue>;
+    static auto release(WGPUQueue handle) { wgpuQueueRelease(handle); }
+
+public:
+    using handle_base::handle_base;
+    using handle_base::operator=;
 
     // auto set_label(const char* label) const -> void; Unimplemented by wgpu-native
     auto submit(std::vector<command_buffer>& commands) const -> void;

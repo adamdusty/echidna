@@ -3,19 +3,19 @@
 #include "echidna/chained.hpp"
 #include "echidna/enums.hpp"
 #include "echidna/export.hpp"
-#include "echidna/macros.hpp"
+#include "echidna/handle.hpp"
 #include <cstdint>
 #include <webgpu.h>
 
 namespace echidna {
 
-class ECHIDNA_EXPORT shader_module {
-    HANDLE_IMPL(shader_module, WGPUShaderModule)
-    ~shader_module() {
-        if(_handle != nullptr) {
-            wgpuShaderModuleRelease(_handle);
-        }
-    }
+class ECHIDNA_EXPORT shader_module : public handle_base<shader_module, WGPUShaderModule> {
+    friend handle_base<shader_module, WGPUShaderModule>;
+    static auto release(WGPUShaderModule handle) { wgpuShaderModuleRelease(handle); }
+
+public:
+    using handle_base::handle_base;
+    using handle_base::operator=;
 
     auto compilation_info(WGPUCompilationInfoCallback callback, void* user_data) const -> void;
 };

@@ -4,7 +4,7 @@
 #include "echidna/command_buffer.hpp"
 #include "echidna/compute_pass_encoder.hpp"
 #include "echidna/export.hpp"
-#include "echidna/macros.hpp"
+#include "echidna/handle.hpp"
 #include "echidna/query_set.hpp"
 #include "echidna/render_pass_encoder.hpp"
 #include <cstdint>
@@ -12,13 +12,13 @@
 
 namespace echidna {
 
-class ECHIDNA_EXPORT command_encoder {
-    HANDLE_IMPL(command_encoder, WGPUCommandEncoder)
-    ~command_encoder() {
-        if(_handle != nullptr) {
-            wgpuCommandEncoderRelease(_handle);
-        }
-    }
+class ECHIDNA_EXPORT command_encoder : public handle_base<command_encoder, WGPUCommandEncoder> {
+    friend handle_base<command_encoder, WGPUCommandEncoder>;
+    static auto release(WGPUCommandEncoder handle) { wgpuCommandEncoderRelease(handle); }
+
+public:
+    using handle_base::handle_base;
+    using handle_base::operator=;
 
     auto begin_compute_pass(const WGPUComputePassDescriptor& desc) const -> compute_pass_encoder;
     auto begin_render_pass(const WGPURenderPassDescriptor& desc) const -> render_pass_encoder;
@@ -28,13 +28,20 @@ class ECHIDNA_EXPORT command_encoder {
     auto pop_debug_group() const -> void;
     auto push_debug_group(const char* label) const -> void;
     auto write_timestamp(const query_set& set, std::uint32_t index) const -> void;
-    auto resolve_query_set(const query_set& set,
-                           std::uint32_t first,
-                           std::uint32_t count,
-                           const buffer& destination,
-                           std::uint64_t offset) const -> void;
+    auto resolve_query_set(
+        const query_set& set,
+        std::uint32_t first,
+        std::uint32_t count,
+        const buffer& destination,
+        std::uint64_t offset
+    ) const -> void;
     auto copy_buffer(
-        buffer& source, std::uint64_t src_offset, buffer& dest, std::uint64_t dst_offset, std::uint64_t size) -> void;
+        buffer& source,
+        std::uint64_t src_offset,
+        buffer& dest,
+        std::uint64_t dst_offset,
+        std::uint64_t size
+    ) -> void;
 };
 
 } // namespace echidna

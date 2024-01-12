@@ -1,18 +1,18 @@
 #pragma once
 
 #include "echidna/export.hpp"
-#include "echidna/macros.hpp"
+#include "echidna/handle.hpp"
 #include <webgpu.h>
 
 namespace echidna {
 
-class ECHIDNA_EXPORT command_buffer {
-    HANDLE_IMPL(command_buffer, WGPUCommandBuffer)
-    ~command_buffer() {
-        if(_handle != nullptr) {
-            wgpuCommandBufferRelease(_handle);
-        }
-    }
+class ECHIDNA_EXPORT command_buffer : public handle_base<command_buffer, WGPUCommandBuffer> {
+    friend handle_base<command_buffer, WGPUCommandBuffer>;
+    static auto release(WGPUCommandBuffer handle) { wgpuCommandBufferRelease(handle); }
+
+public:
+    using handle_base::handle_base;
+    using handle_base::operator=;
 };
 
 } // namespace echidna

@@ -1,18 +1,18 @@
 #pragma once
 
 #include "echidna/export.hpp"
-#include "echidna/macros.hpp"
+#include "echidna/handle.hpp"
 #include <webgpu.h>
 
 namespace echidna {
 
-class ECHIDNA_EXPORT pipeline_layout {
-    HANDLE_IMPL(pipeline_layout, WGPUPipelineLayout)
-    ~pipeline_layout() {
-        if(_handle != nullptr) {
-            wgpuPipelineLayoutRelease(_handle);
-        }
-    }
+class ECHIDNA_EXPORT pipeline_layout : public handle_base<pipeline_layout, WGPUPipelineLayout> {
+    friend handle_base<pipeline_layout, WGPUPipelineLayout>;
+    static auto release(WGPUPipelineLayout handle) { wgpuPipelineLayoutRelease(handle); }
+
+public:
+    using handle_base::handle_base;
+    using handle_base::operator=;
 };
 
 } // namespace echidna

@@ -7,8 +7,8 @@
 #include "echidna/compute_pipeline.hpp"
 #include "echidna/enums.hpp"
 #include "echidna/export.hpp"
+#include "echidna/handle.hpp"
 #include "echidna/limits.hpp"
-#include "echidna/macros.hpp"
 #include "echidna/pipeline_layout.hpp"
 #include "echidna/query_set.hpp"
 #include "echidna/queue.hpp"
@@ -23,14 +23,13 @@
 
 namespace echidna {
 
-class ECHIDNA_EXPORT device {
-    HANDLE_IMPL(device, WGPUDevice)
-    ~device() {
-        if(_handle != nullptr) {
-            wgpuDeviceDestroy(_handle);
-            wgpuDeviceRelease(_handle);
-        }
-    }
+class ECHIDNA_EXPORT device : public handle_base<device, WGPUDevice> {
+    friend handle_base<device, WGPUDevice>;
+    static auto release(WGPUDevice handle) { wgpuDeviceRelease(handle); }
+
+public:
+    using handle_base::handle_base;
+    using handle_base::operator=;
 
     auto create_bind_group(const WGPUBindGroupDescriptor& desc) const -> bind_group;
     auto create_bind_group_layout(const WGPUBindGroupLayoutDescriptor& desc) const -> bind_group_layout;

@@ -3,7 +3,7 @@
 #include "echidna/device.hpp"
 #include "echidna/enums.hpp"
 #include "echidna/export.hpp"
-#include "echidna/macros.hpp"
+#include "echidna/handle.hpp"
 #include "echidna/texture.hpp"
 #include <cstdint>
 #include <utility>
@@ -18,16 +18,15 @@ struct surface_capabilities {
     std::vector<composite_alpha_mode> alpha_modes;
 };
 
-class ECHIDNA_EXPORT surface {
+class ECHIDNA_EXPORT surface : public handle_base<surface, WGPUSurface> {
     texture current;
 
-    HANDLE_IMPL(surface, WGPUSurface)
-    ~surface() {
-        if(_handle != nullptr) {
-            current.set_handle(nullptr);
-            wgpuSurfaceRelease(_handle);
-        }
-    }
+    friend handle_base<surface, WGPUSurface>;
+    static auto release(WGPUSurface handle) { wgpuSurfaceRelease(handle); }
+
+public:
+    using handle_base::handle_base;
+    using handle_base::operator=;
 
     auto configure(const WGPUSurfaceConfiguration& config) const -> void;
     auto unconfigure() const -> void;

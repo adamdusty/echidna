@@ -2,7 +2,7 @@
 
 #include "echidna/enums.hpp"
 #include "echidna/export.hpp"
-#include "echidna/macros.hpp"
+#include "echidna/handle.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <webgpu.h>
@@ -11,22 +11,21 @@ namespace echidna {
 
 // TODO: Functions for buffer descriptor creation
 
-class ECHIDNA_EXPORT buffer {
-    HANDLE_IMPL(buffer, WGPUBuffer)
-    ~buffer() {
-        if(_handle != nullptr) {
-            wgpuBufferDestroy(_handle);
-            wgpuBufferRelease(_handle);
-        }
-    }
+class ECHIDNA_EXPORT buffer : public handle_base<buffer, WGPUBuffer> {
+    friend handle_base<buffer, WGPUBuffer>;
+    static auto release(WGPUBuffer handle) { wgpuBufferRelease(handle); }
+
+public:
+    using handle_base::handle_base;
+    using handle_base::operator=;
 
     auto get_mapped_range(size_t offset, size_t size) const -> void*;
     auto get_const_mapped_range(size_t offset, size_t size) const -> const void*;
     auto get_map_state() const -> buffer_map_state;
     auto size() const -> std::uint64_t;
     auto unmap() const -> void;
-    auto map_async(
-        map_mode_flags mode, size_t offset, size_t size, WGPUBufferMapCallback callback, void* user_data) const -> void;
+    auto map_async(map_mode_flags mode, size_t offset, size_t size, WGPUBufferMapCallback callback, void* user_data)
+        const -> void;
 };
 
 } // namespace echidna

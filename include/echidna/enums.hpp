@@ -1,6 +1,6 @@
 #pragma once
 
-#include "echidna/macros.hpp"
+#include "echidna/handle.hpp"
 #include <cstdint>
 #include <vector>
 #include <webgpu.h>

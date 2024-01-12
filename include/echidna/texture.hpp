@@ -2,7 +2,7 @@
 
 #include "echidna/enums.hpp"
 #include "echidna/export.hpp"
-#include "echidna/macros.hpp"
+#include "echidna/handle.hpp"
 #include "echidna/texture_view.hpp"
 #include <cstdint>
 #include <vector>
@@ -10,14 +10,13 @@
 
 namespace echidna {
 
-class ECHIDNA_EXPORT texture {
-    HANDLE_IMPL(texture, WGPUTexture)
-    ~texture() {
-        if(_handle != nullptr) {
-            // wgpuTextureDestroy(_handle);
-            // wgpuTextureRelease(_handle);
-        }
-    }
+class ECHIDNA_EXPORT texture : public handle_base<texture, WGPUTexture> {
+    friend handle_base<texture, WGPUTexture>;
+    static auto release(WGPUTexture handle) { wgpuTextureRelease(handle); }
+
+public:
+    using handle_base::handle_base;
+    using handle_base::operator=;
 
     constexpr auto set_handle(WGPUTexture tex) -> void { _handle = tex; }
 

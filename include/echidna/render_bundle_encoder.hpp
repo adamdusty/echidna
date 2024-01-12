@@ -4,7 +4,7 @@
 #include "echidna/buffer.hpp"
 #include "echidna/enums.hpp"
 #include "echidna/export.hpp"
-#include "echidna/macros.hpp"
+#include "echidna/handle.hpp"
 #include "echidna/render_bundle.hpp"
 #include "echidna/render_pipeline.hpp"
 #include <cstdint>
@@ -13,24 +13,28 @@
 
 namespace echidna {
 
-class ECHIDNA_EXPORT render_bundle_encoder {
-    HANDLE_IMPL(render_bundle_encoder, WGPURenderBundleEncoder)
-    ~render_bundle_encoder() {
-        if(_handle != nullptr) {
-            wgpuRenderBundleEncoderRelease(_handle);
-        }
-    }
+class ECHIDNA_EXPORT render_bundle_encoder : public handle_base<render_bundle_encoder, WGPURenderBundleEncoder> {
+    friend handle_base<render_bundle_encoder, WGPURenderBundleEncoder>;
+    static auto release(WGPURenderBundleEncoder handle) { wgpuRenderBundleEncoderRelease(handle); }
 
-    auto draw(std::uint32_t vertex_count,
-              std::uint32_t instance_count,
-              std::uint32_t first_vert,
-              std::uint32_t first_inst) const -> void;
+public:
+    using handle_base::handle_base;
+    using handle_base::operator=;
 
-    auto draw_indexed(std::uint32_t index_count,
-                      std::uint32_t instance_count,
-                      std::uint32_t first_ind,
-                      std::int32_t base_vert,
-                      std::uint32_t first_inst) const -> void;
+    auto draw(
+        std::uint32_t vertex_count,
+        std::uint32_t instance_count,
+        std::uint32_t first_vert,
+        std::uint32_t first_inst
+    ) const -> void;
+
+    auto draw_indexed(
+        std::uint32_t index_count,
+        std::uint32_t instance_count,
+        std::uint32_t first_ind,
+        std::int32_t base_vert,
+        std::uint32_t first_inst
+    ) const -> void;
 
     auto draw_indexed_indirect(const buffer& buffer, std::uint64_t offset) const -> void;
     auto draw_indirect(const buffer& buffer, std::uint64_t offset) const -> void;
