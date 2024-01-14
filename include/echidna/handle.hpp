@@ -10,8 +10,8 @@ protected:
     W _handle;
 
 public:
-    handle_base()                      = default;
-    handle_base(const handle_base&)    = delete;
+    handle_base() = default;
+    handle_base(const handle_base& other) : handle_base(other.get()) {}
     auto operator=(const handle_base&) = delete;
     handle_base(W handle) : _handle(handle) {}
     handle_base(handle_base&& other) noexcept : _handle(std::exchange(other._handle, nullptr)) {}
