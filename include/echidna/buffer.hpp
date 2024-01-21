@@ -24,8 +24,8 @@ public:
     auto get_map_state() const -> buffer_map_state;
     auto size() const -> std::uint64_t;
     auto unmap() const -> void;
-    auto map_async(map_mode_flags mode, size_t offset, size_t size, WGPUBufferMapCallback callback, void* user_data)
-        const -> void;
+    auto map_async(map_mode mode, size_t offset, size_t size, WGPUBufferMapCallback callback, void* user_data) const
+        -> void;
 };
 
 } // namespace echidna

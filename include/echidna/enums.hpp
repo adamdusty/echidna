@@ -475,18 +475,6 @@ enum class buffer_usage : std::uint32_t {
     query_resolve = WGPUBufferUsage_QueryResolve,
 };
 
-constexpr auto operator|(buffer_usage lhs, buffer_usage rhs) -> buffer_usage {
-    return static_cast<buffer_usage>(
-        static_cast<std::underlying_type_t<buffer_usage>>(lhs) | static_cast<std::underlying_type_t<buffer_usage>>(rhs)
-    );
-}
-
-constexpr auto operator&(buffer_usage lhs, buffer_usage rhs) -> buffer_usage {
-    return static_cast<buffer_usage>(
-        static_cast<std::underlying_type_t<buffer_usage>>(lhs) & static_cast<std::underlying_type_t<buffer_usage>>(rhs)
-    );
-}
-
 enum class color_write_mask : std::uint32_t {
     none  = WGPUColorWriteMask_None,
     red   = WGPUColorWriteMask_Red,
@@ -496,7 +484,7 @@ enum class color_write_mask : std::uint32_t {
     all   = WGPUColorWriteMask_All,
 };
 
-enum class map_mode_flags : std::uint32_t {
+enum class map_mode : std::uint32_t {
     none  = WGPUMapMode_None,
     read  = WGPUMapMode_Read,
     write = WGPUMapMode_Write,
@@ -508,6 +496,31 @@ enum class shader_stage : std::uint32_t {
     fragment = WGPUShaderStage_Fragment,
     compute  = WGPUShaderStage_Compute,
 };
+
+enum class texture_usage : std::uint32_t {
+    none              = WGPUTextureUsage_None,
+    copy_src          = WGPUTextureUsage_CopySrc,
+    copy_dst          = WGPUTextureUsage_CopyDst,
+    texture_binding   = WGPUTextureUsage_TextureBinding,
+    storage_binding   = WGPUTextureUsage_StorageBinding,
+    render_attachment = WGPUTextureUsage_RenderAttachment,
+};
+
+constexpr auto operator==(WGPURequestAdapterStatus lhs, request_adapter_status rhs) {
+    return lhs == static_cast<WGPURequestAdapterStatus>(rhs);
+}
+
+constexpr auto operator|(buffer_usage lhs, buffer_usage rhs) -> buffer_usage {
+    return static_cast<buffer_usage>(
+        static_cast<std::underlying_type_t<buffer_usage>>(lhs) | static_cast<std::underlying_type_t<buffer_usage>>(rhs)
+    );
+}
+
+constexpr auto operator&(buffer_usage lhs, buffer_usage rhs) -> buffer_usage {
+    return static_cast<buffer_usage>(
+        static_cast<std::underlying_type_t<buffer_usage>>(lhs) & static_cast<std::underlying_type_t<buffer_usage>>(rhs)
+    );
+}
 
 constexpr auto operator|(shader_stage lhs, shader_stage rhs) -> shader_stage {
     return static_cast<shader_stage>(
@@ -521,17 +534,30 @@ constexpr auto operator&(shader_stage lhs, shader_stage rhs) -> shader_stage {
     );
 }
 
-enum class texture_usage {
-    none              = WGPUTextureUsage_None,
-    copy_src          = WGPUTextureUsage_CopySrc,
-    copy_dst          = WGPUTextureUsage_CopyDst,
-    texture_binding   = WGPUTextureUsage_TextureBinding,
-    storage_binding   = WGPUTextureUsage_StorageBinding,
-    render_attachment = WGPUTextureUsage_RenderAttachment,
-};
+constexpr auto operator|(map_mode lhs, map_mode rhs) -> map_mode {
+    return static_cast<map_mode>(
+        static_cast<std::underlying_type_t<map_mode>>(lhs) | static_cast<std::underlying_type_t<map_mode>>(rhs)
+    );
+}
 
-constexpr auto operator==(WGPURequestAdapterStatus lhs, request_adapter_status rhs) {
-    return lhs == static_cast<WGPURequestAdapterStatus>(rhs);
+constexpr auto operator&(map_mode lhs, map_mode rhs) -> map_mode {
+    return static_cast<map_mode>(
+        static_cast<std::underlying_type_t<map_mode>>(lhs) & static_cast<std::underlying_type_t<map_mode>>(rhs)
+    );
+}
+
+constexpr auto operator|(texture_usage lhs, texture_usage rhs) -> texture_usage {
+    return static_cast<texture_usage>(
+        static_cast<std::underlying_type_t<texture_usage>>(lhs) |
+        static_cast<std::underlying_type_t<texture_usage>>(rhs)
+    );
+}
+
+constexpr auto operator&(texture_usage lhs, texture_usage rhs) -> texture_usage {
+    return static_cast<texture_usage>(
+        static_cast<std::underlying_type_t<texture_usage>>(lhs) &
+        static_cast<std::underlying_type_t<texture_usage>>(rhs)
+    );
 }
 
 } // namespace echidna

@@ -15,7 +15,14 @@ FetchContent_Declare(
     GIT_SHALLOW    TRUE
     SYSTEM
 )
-FetchContent_MakeAvailable(admat)
+
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG        586a402
+    SYSTEM
+)
+FetchContent_MakeAvailable(admat glm)
 
 # If test project is built independently, find the project package
 if(PROJECT_IS_TOP_LEVEL)
@@ -34,6 +41,7 @@ target_link_libraries(echidna_phong
         echidna::echidna
         adizzle::adizzle
         admat::admat
+        glm::glm
         SDL2
         wgpu
 )

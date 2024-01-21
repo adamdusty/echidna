@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
+
 #include <admat/mat.hpp>
 #include <array>
 #include <chrono>
@@ -10,6 +11,9 @@
 #include <format>
 #include <iostream>
 #include <vector>
+
+#include <glm/ext.hpp>
+#include <glm/glm.hpp>
 
 using namespace echidna;
 
@@ -44,72 +48,74 @@ static constexpr auto shader_code = R"(
     @vertex
     fn vs_main(in: vertex_input) -> vertex_output {
         var out: vertex_output;
-        out.frag_pos = (u_mvp.model * vec4f(in.position, 1.0)).xyz;
         out.position = u_mvp.proj * u_mvp.view * u_mvp.model *  vec4f(in.position, 1.0);
-        // out.position = vec4f(in.position, 1.0) * u_mvp.model * transpose(u_mvp.view) * transpose(u_mvp.proj);
-        out.normal = (u_mvp.model_it * vec4f(in.normal, 0.0)).xyz;
+        out.frag_pos = (u_mvp.model * vec4f(in.position, 1.0)).xyz;
+        out.normal = (u_mvp.model * vec4f(in.normal, 0.0)).xyz;
         return out;
     }
 
     @fragment
     fn fs_main(in: vertex_output) -> @location(0) vec4f {
+        var hcl: light;
+        hcl.pos = vec3f(0.0, 0.0, -10.0);
+        hcl.view = vec3f(0.0, 0.0, 10.0);
+        hcl.color = vec3f(1.0, 1.0, 1.0);
+
         var ambient_strength = 0.1;
-        var ambient = ambient_strength * u_light.color;
+        var ambient = ambient_strength * hcl.color;
 
         var norm = normalize(in.normal);
-        var light_direction = normalize(u_light.pos - in.frag_pos);
+        var light_direction = normalize(hcl.pos - in.frag_pos);
         var diff = max(dot(norm, light_direction), 0.0);
-        var diffuse = diff * u_light.color;
+        var diffuse = diff * hcl.color;
 
-        var specular_strength = 0.5;
-        var view_direction = normalize(u_light.view - in.frag_pos);
+        var specular_strength = 0.3;
+        var view_direction = normalize(hcl.view - in.frag_pos);
         var reflect_direction = reflect(-light_direction, norm);
-        var spec = pow(max(dot(view_direction, reflect_direction), 0.0), 32.0);
-        var specular = specular_strength * spec * u_light.color;
+        var spec = pow(max(dot(view_direction, reflect_direction), 0.0), 256.0);
+        var specular = specular_strength * spec * hcl.color;
 
-        var combined = (ambient + diffuse + specular) * vec3f(1.0, 1.0, 1.0);
-        // return vec4f(combined, 1.0);
-        return vec4f(1.0, 1.0, 1.0, 1.0);
+        return vec4f((ambient + diffuse + specular) * vec3f(0.0, 1.0, 0.0), 1.0);
     }
 )";
 
 // clang-format off
 static constexpr auto vertices = std::array<float, 144>{
     // Front
-    -0.5f, +0.5f, +0.5f, 0.0f, 0.0f, 0.0f,
-    +0.5f, +0.5f, +0.5f, 0.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, +0.5f, 0.0f, 0.0f, 0.0f,
-    +0.5f, -0.5f, +0.5f, 0.0f, 0.0f, 0.0f,
+    -0.5f, +0.5f, +0.5f, 0.0f, 0.0f, 1.0f,
+    +0.5f, +0.5f, +0.5f, 0.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f, +0.5f, 0.0f, 0.0f, 1.0f,
+    +0.5f, -0.5f, +0.5f, 0.0f, 0.0f, 1.0f,
 
     // Back
-    +0.5f, +0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-    -0.5f, +0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-    +0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+    +0.5f, +0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    -0.5f, +0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    +0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
 
     // Top
-    -0.5f, +0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-    +0.5f, +0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-    -0.5f, +0.5f, +0.5f, 0.0f, 0.0f, 0.0f,
-    +0.5f, +0.5f, +0.5f, 0.0f, 0.0f, 0.0f,
+    -0.5f, +0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+    +0.5f, +0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+    -0.5f, +0.5f, +0.5f, 0.0f, 1.0f, 0.0f,
+    +0.5f, +0.5f, +0.5f, 0.0f, 1.0f, 0.0f,
 
     // Bottom
-    -0.5f, -0.5f, +0.5f, 0.0f, 0.0f, 0.0f,
-    +0.5f, -0.5f, +0.5f, 0.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-    +0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, +0.5f, 0.0f, -1.0f, 0.0f,
+    +0.5f, -0.5f, +0.5f, 0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+    +0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
 
     // Left
-    -0.5f, +0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-    -0.5f, +0.5f, +0.5f, 0.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, +0.5f, 0.0f, 0.0f, 0.0f,
+    -0.5f, +0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, +0.5f, +0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, +0.5f, -1.0f, 0.0f, 0.0f,
 
     // Right
-    +0.5f, +0.5f, +0.5f, 0.0f, 0.0f, 0.0f,
-    +0.5f, +0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-    +0.5f, -0.5f, +0.5f, 0.0f, 0.0f, 0.0f,
-    +0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+    +0.5f, +0.5f, +0.5f, 1.0f, 0.0f, 0.0f,
+    +0.5f, +0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+    +0.5f, -0.5f, +0.5f, 1.0f, 0.0f, 0.0f,
+    +0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
 };
 
 static constexpr auto indices = std::array<std::uint32_t,36>{
@@ -138,7 +144,7 @@ auto main() -> int {
     auto surf_desc = surface_descriptor(*reinterpret_cast<WGPUChainedStruct*>(&windows_surface_descriptor), "test");
     auto surf      = inst.create_surface(surf_desc);
 
-    auto opt   = adapter_options(surf);
+    auto opt   = adapter_options(surf, backend_type::vulkan);
     auto adapt = inst.request_adapter(opt);
 
     auto dev_desc = device_descriptor();
@@ -291,9 +297,9 @@ auto main() -> int {
 
     auto depth_state = WGPUDepthStencilState{
         .nextInChain       = nullptr,
-        .format            = WGPUTextureFormat_Depth24Plus,
+        .format            = WGPUTextureFormat_Depth32Float,
         .depthWriteEnabled = true,
-        .depthCompare      = WGPUCompareFunction_Less,
+        .depthCompare      = WGPUCompareFunction_LessEqual,
         .stencilFront =
             {
                 .compare     = WGPUCompareFunction_Always,
@@ -321,7 +327,7 @@ auto main() -> int {
         texture_usage::render_attachment,
         texture_dimension::dim2,
         {1920, 1080, 1},
-        static_cast<texture_format>(depth_state.format),
+        texture_format::depth32_float,
         1,
         1,
         1,
@@ -329,8 +335,20 @@ auto main() -> int {
     );
     auto depth_texture = dev.create_texture(depth_texture_desc);
 
+    auto depth_texture_view_desc = texture_view_descriptor(
+        "depth",
+        texture_format::depth32_float,
+        textureview_dimension::dim2,
+        0,
+        1,
+        0,
+        1,
+        texture_aspect::all
+    );
+    auto depth_texture_view = depth_texture.create_texture_view(depth_texture_view_desc);
+
     auto depth_attachment = WGPURenderPassDepthStencilAttachment{
-        .view              = depth_texture.create_texture_view(depth_texture.texture_view_descriptor()),
+        .view              = depth_texture_view,
         .depthLoadOp       = WGPULoadOp_Clear,
         .depthStoreOp      = WGPUStoreOp_Store,
         .depthClearValue   = 1.0f,
@@ -374,9 +392,10 @@ auto main() -> int {
     auto pipeline = dev.create_render_pipeline(pipeline_desc);
 
     auto model_it = admat::mat4::identity();
-    auto model    = admat::translation(-1.0f, 0, 0);
-    auto view     = admat::look_at({0, 0, 10}, {0, 0, 0}, {0, 1, 0});
+    auto model    = admat::translation(0, 1, 0);
+    auto view     = admat::look_at({0.0f, 0, 10}, {0, 0, 0}, {0, 1, 0});
     auto proj     = admat::perspective(0.785398f, 1920.0f / 1080.0f, 0.001f, 1000.0f);
+    // auto proj = glm::perspective(0.785398f, 1920.0f / 1080.0f, 0.001f, 1000.0f);
 
     queue.write_buffer(mvp_buffer, 0 * sizeof(admat::mat4), &proj, sizeof(admat::mat4));
     queue.write_buffer(mvp_buffer, 1 * sizeof(admat::mat4), &view, sizeof(admat::mat4));
@@ -410,15 +429,22 @@ auto main() -> int {
             }
         }
 
-        model = model * admat::translation(-1.0f * delta, 0, 0);
+        float x = std::sin(SDL_GetTicks64() / 1000.0f);
+        float y = std::cos(SDL_GetTicks64() / 1000.0f);
+        // float z        = std::cos(SDL_GetTicks64() / 1000.0f);
+        float rotation = SDL_GetTicks64() / 2000.0f;
+        model          = admat::translation(x * 3, y * 3, 0);
+        // model          = model * admat::rotation({0, 1, 0}, rotation);
+        // model_it       = admat::transpose(admat::inverse(model));
         queue.write_buffer(mvp_buffer, 2 * sizeof(admat::mat4), &model, sizeof(admat::mat4));
+        queue.write_buffer(mvp_buffer, 3 * sizeof(admat::mat4), &model_it, sizeof(admat::mat4));
 
-        const auto& tex       = surf.current_texture();
-        const auto tex_view   = tex.create_texture_view(tex.texture_view_descriptor());
-        const auto depth_view = depth_texture.create_texture_view(depth_texture.texture_view_descriptor());
+        const auto& tex     = surf.current_texture();
+        const auto tex_view = tex.create_texture_view(tex.texture_view_descriptor());
+        // const auto depth_view = depth_texture.create_texture_view(depth_texture_view_desc);
 
-        color_attach.view     = tex_view;
-        depth_attachment.view = depth_view;
+        color_attach.view = tex_view;
+        // depth_attachment.view = depth_view;
 
         auto cmd_enc = dev.create_command_encoder("traingle encoder");
         auto rp_enc  = cmd_enc.begin_render_pass(render_pass_desc);

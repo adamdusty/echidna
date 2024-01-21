@@ -22,8 +22,8 @@ auto buffer::unmap() const -> void {
     wgpuBufferUnmap(_handle);
 }
 
-auto buffer::map_async(
-    map_mode_flags mode, size_t offset, size_t size, WGPUBufferMapCallback callback, void* user_data) const -> void {
+auto buffer::map_async(map_mode mode, size_t offset, size_t size, WGPUBufferMapCallback callback, void* user_data) const
+    -> void {
     wgpuBufferMapAsync(_handle, static_cast<WGPUMapModeFlags>(mode), offset, size, callback, user_data);
 }
 
