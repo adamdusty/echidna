@@ -13,50 +13,20 @@
             "cacheVariables": {
                 "CMAKE_CXX_EXTENSIONS": "OFF",
                 "CMAKE_CXX_STANDARD": "20",
-                "CMAKE_CXX_COMPILER": "g++",
-                "CMAKE_COLOR_DIAGNOSTICS": "ON",
                 "BUILD_SHARED_LIBS": "ON"
             }
         },
         {
-            "name": "debug",
-            "binaryDir": "./build/debug",
-            "inherits": [
-                "base"
-            ],
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "debug"
-            }
-        },
-        {
-            "name": "release",
-            "binaryDir": "./build/release",
-            "inherits": [
-                "base"
-            ],
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "release"
-            }
-        },
-        {
             "name": "dev",
+            "binaryDir": "build/dev",
             "inherits": [
-                "debug"
+                "base"
             ],
             "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "debug",
+                "CMAKE_COLOR_DIAGNOSTICS": "ON",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
                 "ECHIDNA_BUILD_TESTS": "ON",
-                "ECHIDNA_BUILD_SAMPLES": "ON"
-            }
-        },
-        {
-            "name": "samples",
-            "binaryDir": "./build/samples",
-            "inherits": [
-                "debug"
-            ],
-            "cacheVariables": {
-                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
                 "ECHIDNA_BUILD_SAMPLES": "ON"
             }
         }
@@ -65,18 +35,6 @@
         {
             "name": "dev",
             "configurePreset": "dev"
-        },
-        {
-            "name": "debug",
-            "configurePreset": "debug"
-        },
-        {
-            "name": "samples",
-            "configurePreset": "samples"
-        },
-        {
-            "name": "release",
-            "configurePreset": "release"
         }
     ],
     "testPresets": [

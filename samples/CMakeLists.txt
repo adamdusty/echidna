@@ -30,13 +30,13 @@ if(PROJECT_IS_TOP_LEVEL)
 endif()
 
 # Add test exe
-add_executable(echidna_triangle triangle/main.cpp)
-add_executable(echidna_phong phong/main.cpp)
+add_executable(triangle triangle/main.cpp)
+add_executable(phong phong/main.cpp)
 
 # Link libs
-target_link_libraries(echidna_triangle PRIVATE echidna::echidna SDL2 wgpu)
+target_link_libraries(triangle PRIVATE echidna::echidna SDL2 wgpu)
 
-target_link_libraries(echidna_phong
+target_link_libraries(phong
     PRIVATE
         echidna::echidna
         adizzle::adizzle

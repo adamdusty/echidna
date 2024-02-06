@@ -169,95 +169,33 @@ auto main() -> int {
     queue.write_buffer(index_buffer, 0, indices.data(), sizeof(float) * indices.size());
 
     // Bind group layout
-    auto mvp_bge_lay = WGPUBindGroupLayoutEntry{
-        .nextInChain = nullptr,
-        .binding     = 0,
-        .visibility  = static_cast<WGPUShaderStageFlags>(shader_stage::vertex | shader_stage::fragment),
-        .buffer =
-            {
-                .nextInChain      = nullptr,
-                .type             = static_cast<WGPUBufferBindingType>(buffer_binding_type::uniform),
-                .hasDynamicOffset = false,
-                .minBindingSize   = mvp_buffer.size(),
-            },
-        .sampler =
-            {
-                .nextInChain = nullptr,
-                .type        = static_cast<WGPUSamplerBindingType>(sampler_binding_type::undefined),
-            },
-        .texture =
-            {
-                .nextInChain   = nullptr,
-                .sampleType    = static_cast<WGPUTextureSampleType>(texture_sample_type::undefined),
-                .viewDimension = static_cast<WGPUTextureViewDimension>(textureview_dimension::undefined),
-                .multisampled  = false,
-            },
-        .storageTexture =
-            {
-                .nextInChain   = nullptr,
-                .access        = static_cast<WGPUStorageTextureAccess>(storage_texture_access::undefined),
-                .format        = static_cast<WGPUTextureFormat>(texture_format::undefined),
-                .viewDimension = static_cast<WGPUTextureViewDimension>(textureview_dimension::undefined),
-            }
-    };
+    auto bind_group_layout_entries = std::vector<WGPUBindGroupLayoutEntry>();
+    bind_group_layout_entries.emplace_back(
+        buffer_bind_group_layout_entry(0, buffer_binding_type::uniform, false, mvp_buffer.size())
+    );
 
-    auto bind_group_layout_desc = WGPUBindGroupLayoutDescriptor{
-        .nextInChain = nullptr,
-        .label       = nullptr,
-        .entryCount  = 1,
-        .entries     = &mvp_bge_lay,
-    };
-
-    auto bind_group_layout = dev.create_bind_group_layout(bind_group_layout_desc);
+    auto bgld = bind_group_layout_desc(bind_group_layout_entries);
+    auto bgl  = dev.create_bind_group_layout(bgld);
 
     // Bind group entries
-    auto mvp_bge = WGPUBindGroupEntry{
-        .nextInChain = nullptr,
-        .binding     = 0,
-        .buffer      = mvp_buffer,
-        .offset      = 0,
-        .size        = mvp_buffer.size(),
-        .sampler     = nullptr,
-        .textureView = nullptr,
-    };
+    auto mvp_bge = buffer_bind_group_entry(0, mvp_buffer, 0, mvp_buffer.size());
 
     auto bind_group_entries = std::vector<WGPUBindGroupEntry>();
     bind_group_entries.emplace_back(mvp_bge);
 
     // Bind group
-    auto bind_group = dev.create_bind_group(WGPUBindGroupDescriptor{
-        .nextInChain = nullptr,
-        .label       = nullptr,
-        .layout      = bind_group_layout,
-        .entryCount  = 1,
-        .entries     = bind_group_entries.data(),
-    });
+    auto bind_group = dev.create_bind_group(bind_group_desc(bgl, bind_group_entries));
 
     auto clear_color = WGPUColor{0.05, 0.05, 0.05, 1.0};
 
     auto shader_module = dev.shader_moudle_from_wgsl(shader_code);
 
     auto blend_state = WGPUBlendState{
-        .color =
-            {
-                .operation = WGPUBlendOperation_Add,
-                .srcFactor = WGPUBlendFactor_SrcAlpha,
-                .dstFactor = WGPUBlendFactor_OneMinusSrcAlpha,
-            },
-        .alpha =
-            {
-                .operation = WGPUBlendOperation_Add,
-                .srcFactor = WGPUBlendFactor_Zero,
-                .dstFactor = WGPUBlendFactor_One,
-            },
+        .color = blend_component(blend_op::add, blend_factor::src_alpha, blend_factor::one_minus_src_alpha),
+        .alpha = blend_component(blend_op::add, blend_factor::zero, blend_factor::one),
     };
 
-    auto color_state = WGPUColorTargetState{
-        .nextInChain = nullptr,
-        .format      = static_cast<WGPUTextureFormat>(format),
-        .blend       = &blend_state,
-        .writeMask   = static_cast<WGPUColorWriteMaskFlags>(color_write_mask::all),
-    };
+    auto color_state = color_target_state(format, blend_state, color_write_mask::all);
 
     auto vertex_info = echidna::vertex_buffer_layout(vertex_format::float32x3, vertex_format::float32x3);
 
@@ -320,6 +258,7 @@ auto main() -> int {
         .depthBiasSlopeScale = 0,
         .depthBiasClamp      = 0,
     };
+
     auto depth_formats = std::vector<texture_format>();
     depth_formats.emplace_back(static_cast<texture_format>(depth_state.format));
     auto depth_texture_desc = echidna::texture_descriptor(
@@ -374,7 +313,7 @@ auto main() -> int {
         .nextInChain          = nullptr,
         .label                = nullptr,
         .bindGroupLayoutCount = 1,
-        .bindGroupLayouts     = bind_group_layout.addr(),
+        .bindGroupLayouts     = bgl.addr(),
     };
 
     auto pipeline_layout = dev.create_pipeline_layout(pipeline_layout_descriptor);
@@ -389,6 +328,7 @@ auto main() -> int {
         .multisample  = multi_sample_state,
         .fragment     = &fragment_state,
     };
+
     auto pipeline = dev.create_render_pipeline(pipeline_desc);
 
     auto model_it = admat::mat4::identity();

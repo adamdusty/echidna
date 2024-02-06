@@ -13,17 +13,10 @@ Checks: "*,
   -readability-static-accessed-through-instance,
   -readability-avoid-const-params-in-decls,
   -readability-magic-numbers,
+  -readability-identifier-length,
   -readability-uppercase-literal-suffix,
   -cppcoreguidelines-non-private-member-variables-in-classes,
   -cppcoreguidelines-avoid-magic-numbers,
   -misc-non-private-member-variables-in-classes,
   -modernize-use-nodiscard,
 "
-
-CheckOptions:
-  - key: readability-identifier-length.IgnoredVariableNames
-    value: 'a|b|x|y|z'
-  - key: readability-identifier-length.IgnoredParameterNames
-    value: 'a|b|x|y|z'
-  - key: readability-identifier-length.MinimumVariableNameLength
-    value: 2

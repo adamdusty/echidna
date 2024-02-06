@@ -5,6 +5,24 @@
 
 namespace echidna {
 
+constexpr auto blend_component(blend_op op, blend_factor src, blend_factor dst) -> WGPUBlendComponent {
+    return WGPUBlendComponent{
+        .operation = static_cast<WGPUBlendOperation>(op),
+        .srcFactor = static_cast<WGPUBlendFactor>(src),
+        .dstFactor = static_cast<WGPUBlendFactor>(dst),
+    };
+}
+
+constexpr auto color_target_state(texture_format fmt, const WGPUBlendState& state, color_write_mask mask)
+    -> WGPUColorTargetState {
+    return WGPUColorTargetState{
+        .nextInChain = nullptr,
+        .format      = static_cast<WGPUTextureFormat>(fmt),
+        .blend       = &state,
+        .writeMask   = static_cast<WGPUColorWriteMaskFlags>(mask),
+    };
+}
+
 constexpr auto primitive_state(
     primitive_topology topology,
     index_format index_format,
