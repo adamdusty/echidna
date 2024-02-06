@@ -84,12 +84,7 @@ auto main() -> int {
 
     auto shader_module = dev.shader_moudle_from_wgsl(shader_code);
 
-    auto color_state = WGPUColorTargetState{
-        .nextInChain = nullptr,
-        .format      = static_cast<WGPUTextureFormat>(surf.preferred_format(adapt)),
-        .blend       = nullptr,
-        .writeMask   = static_cast<WGPUColorWriteMaskFlags>(color_write_mask::all),
-    };
+    auto color_state = color_target_state(surf.preferred_format(adapt), color_write_mask::all);
 
     auto vertex_info =
         echidna::vertex_buffer_layout(echidna::vertex_format::float32x3, echidna::vertex_format::float32x3);

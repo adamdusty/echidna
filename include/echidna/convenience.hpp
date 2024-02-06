@@ -23,6 +23,15 @@ constexpr auto color_target_state(texture_format fmt, const WGPUBlendState& stat
     };
 }
 
+constexpr auto color_target_state(texture_format fmt, color_write_mask mask) -> WGPUColorTargetState {
+    return WGPUColorTargetState{
+        .nextInChain = nullptr,
+        .format      = static_cast<WGPUTextureFormat>(fmt),
+        .blend       = nullptr,
+        .writeMask   = static_cast<WGPUColorWriteMaskFlags>(mask),
+    };
+}
+
 constexpr auto primitive_state(
     primitive_topology topology,
     index_format index_format,
