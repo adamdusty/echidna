@@ -48,6 +48,6 @@ set_tests_properties(echidna_tests PROPERTIES
 if(BUILD_SHARED_LIBS)
     set_tests_properties(echidna_tests PROPERTIES
         ENVIRONMENT_MODIFICATION
-            "PATH=path_list_append:$<TARGET_FILE_DIR:passionfruit::echidna>;PATH=path_list_append:$<TARGET_FILE_DIR:snitch::snitch>"
+            "PATH=path_list_append:$<TARGET_FILE_DIR:passionfruit::echidna>;PATH=path_list_append:$<TARGET_FILE_DIR:snitch::snitch>;PATH=path_list_append:$<TARGET_FILE_DIR:wgpu>"
     )
 endif()
