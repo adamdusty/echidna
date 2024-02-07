@@ -11,7 +11,7 @@ include(CMakePackageConfigHelpers)
 
 # Set up export components
 install(
-    TARGETS echidna_echidna
+    TARGETS passionfruit_echidna
     EXPORT echidnaTargets
     RUNTIME COMPONENT echidna_Runtime
     LIBRARY COMPONENT echidna_Runtime
@@ -56,13 +56,13 @@ install(
 # Install the dev component from targets defined above (I think)
 install(
     EXPORT echidnaTargets
-    NAMESPACE echidna::
+    NAMESPACE passionfruit::
     DESTINATION "${echidna_INSTALL_CMAKEDIR}"
     COMPONENT echidna_Development
 )
 
 # install(
-#     FILES $<TARGET_RUNTIME_DLLS:echidna_echidna> TYPE BIN
+#     FILES $<TARGET_RUNTIME_DLLS:passionfruit_echidna> TYPE BIN
 # )
 
 # Include CPack

@@ -15,11 +15,11 @@ include(cmake/dependencies.cmake)
 
 
 # Declare library
-add_library(echidna_echidna SHARED)
-add_library(echidna::echidna ALIAS echidna_echidna)
+add_library(passionfruit_echidna)
+add_library(passionfruit::echidna ALIAS passionfruit_echidna)
 
 # Add sources
-target_sources(echidna_echidna PRIVATE
+target_sources(passionfruit_echidna PRIVATE
     src/instance.cpp
     src/surface.cpp
     src/adapter.cpp
@@ -35,15 +35,15 @@ target_sources(echidna_echidna PRIVATE
 )
 
 # Include and link dependencies
-target_link_libraries(echidna_echidna PUBLIC wgpu)
+target_link_libraries(passionfruit_echidna PUBLIC wgpu)
 
 # Add compile options
-add_dev_compile_opts(echidna_echidna)
+add_dev_compile_opts(passionfruit_echidna)
 
 # Generate header for export
 include(GenerateExportHeader)
 generate_export_header(
-    echidna_echidna
+    passionfruit_echidna
     BASE_NAME echidna
     EXPORT_FILE_NAME include/echidna/export.hpp
     CUSTOM_CONTENT_FROM_VARIABLE pragma_suppress_c4251
@@ -51,7 +51,7 @@ generate_export_header(
 
 # Set properties
 set_target_properties(
-    echidna_echidna PROPERTIES
+    passionfruit_echidna PROPERTIES
     CXX_VISIBILITY_PRESET "hidden"
     VISIBILITY_INLINES_HIDDEN YES
     VERSION "${PROJECT_VERSION}"
@@ -63,13 +63,13 @@ set_target_properties(
 # Add include directory
 # warning_guard adds SYSTEM modifier if the project isn't top level
 target_include_directories(
-    echidna_echidna ${warning_guard}
+    passionfruit_echidna ${warning_guard}
     PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
 )
 
 target_include_directories(
-    echidna_echidna SYSTEM
+    passionfruit_echidna SYSTEM
     PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>"
 )
@@ -81,12 +81,13 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
 endif()
 
 # Enable testing
-if(ECHIDNA_BUILD_TESTS)
+if(BUILD_TESTING)
     include(CTest)
+    enable_testing()
     add_subdirectory(tests)
 endif()
 
 # Samples
-if(ECHIDNA_BUILD_SAMPLES)
+if(BUILD_SAMPLES)
     add_subdirectory(samples)
 endif()

@@ -33,15 +33,21 @@ target_sources(echidna_tests PRIVATE
 )
 
 # Link libs
-target_link_libraries(echidna_tests PRIVATE echidna::echidna snitch::snitch SDL2 wgpu)
+target_link_libraries(echidna_tests PRIVATE passionfruit::echidna snitch::snitch SDL2 wgpu)
 
 # Add test
 add_test(NAME echidna_tests COMMAND echidna_tests)
+
+# Link wgpu
+set_tests_properties(echidna_tests PROPERTIES
+    ENVIRONMENT_MODIFICATION
+        "PATH=path_list_append:$<TARGET_FILE_DIR:wgpu>"
+)
 
 # Enable test binary to find the DLL if building a shared lib
 if(BUILD_SHARED_LIBS)
     set_tests_properties(echidna_tests PROPERTIES
         ENVIRONMENT_MODIFICATION
-            "PATH=path_list_append:$<TARGET_FILE_DIR:echidna::echidna>;PATH=path_list_append:$<TARGET_FILE_DIR:snitch::snitch>;PATH=path_list_append:$<TARGET_FILE_DIR:wgpu>"
+            "PATH=path_list_append:$<TARGET_FILE_DIR:passionfruit::echidna>;PATH=path_list_append:$<TARGET_FILE_DIR:snitch::snitch>"
     )
 endif()

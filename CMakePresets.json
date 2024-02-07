@@ -12,8 +12,7 @@
             "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_CXX_EXTENSIONS": "OFF",
-                "CMAKE_CXX_STANDARD": "20",
-                "BUILD_SHARED_LIBS": "ON"
+                "CMAKE_CXX_STANDARD": "20"
             }
         },
         {
@@ -26,8 +25,8 @@
                 "CMAKE_BUILD_TYPE": "debug",
                 "CMAKE_COLOR_DIAGNOSTICS": "ON",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "ECHIDNA_BUILD_TESTS": "ON",
-                "ECHIDNA_BUILD_SAMPLES": "ON"
+                "BUILD_TESTING": "ON",
+                "BUILD_SAMPLES": "ON"
             }
         }
     ],

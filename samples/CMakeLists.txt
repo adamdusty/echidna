@@ -34,11 +34,11 @@ add_executable(triangle triangle/main.cpp)
 add_executable(phong phong/main.cpp)
 
 # Link libs
-target_link_libraries(triangle PRIVATE echidna::echidna SDL2 wgpu)
+target_link_libraries(triangle PRIVATE passionfruit::echidna SDL2 wgpu)
 
 target_link_libraries(phong
     PRIVATE
-        echidna::echidna
+        passionfruit::echidna
         adizzle::adizzle
         admat::admat
         glm::glm
