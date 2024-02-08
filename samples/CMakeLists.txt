@@ -8,6 +8,8 @@ project(
 )
 
 include(FetchContent)
+
+if(NOT TARGET admat::admat)
 FetchContent_Declare(
     admat
     GIT_REPOSITORY https://github.com/adamdusty/admat.git
@@ -15,14 +17,18 @@ FetchContent_Declare(
     GIT_SHALLOW    TRUE
     SYSTEM
 )
+FetchContent_MakeAvailable(admat)
+endif()
 
+if(NOT TARGET glm::glm)
 FetchContent_Declare(
     glm
     GIT_REPOSITORY https://github.com/g-truc/glm.git
     GIT_TAG        586a402
     SYSTEM
 )
-FetchContent_MakeAvailable(admat glm)
+FetchContent_MakeAvailable(glm)
+endif()
 
 # If test project is built independently, find the project package
 if(PROJECT_IS_TOP_LEVEL)
