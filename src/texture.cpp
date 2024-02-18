@@ -35,6 +35,11 @@ auto texture::create_texture_view(const WGPUTextureViewDescriptor& desc) const -
     return texture_view{wgpuTextureCreateView(_handle, &desc)};
 }
 
+auto texture::create_texture_view() const -> texture_view {
+    auto desc = texture_view_descriptor();
+    return texture_view{wgpuTextureCreateView(_handle, &desc)};
+}
+
 auto texture::get_depth_or_array_layers() const -> std::uint32_t {
     return wgpuTextureGetDepthOrArrayLayers(_handle);
 }

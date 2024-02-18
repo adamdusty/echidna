@@ -22,6 +22,7 @@ public:
 
     auto texture_view_descriptor(const char* label = nullptr) const -> WGPUTextureViewDescriptor;
     auto create_texture_view(const WGPUTextureViewDescriptor& desc) const -> texture_view;
+    auto create_texture_view() const -> texture_view;
     auto get_depth_or_array_layers() const -> std::uint32_t;
     auto dimension() const -> texture_dimension;
     auto format() const -> texture_format;

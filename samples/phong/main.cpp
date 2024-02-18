@@ -12,9 +12,6 @@
 #include <iostream>
 #include <vector>
 
-#include <glm/ext.hpp>
-#include <glm/glm.hpp>
-
 using namespace echidna;
 
 static constexpr auto shader_code = R"(
@@ -380,7 +377,7 @@ auto main() -> int {
         queue.write_buffer(mvp_buffer, 3 * sizeof(admat::mat4), &model_it, sizeof(admat::mat4));
 
         const auto& tex     = surf.current_texture();
-        const auto tex_view = tex->create_texture_view(tex->texture_view_descriptor());
+        const auto tex_view = tex->create_texture_view();
         // const auto depth_view = depth_texture.create_texture_view(depth_texture_view_desc);
 
         color_attach.view = tex_view;
