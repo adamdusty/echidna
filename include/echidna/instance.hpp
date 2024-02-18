@@ -20,6 +20,11 @@ public:
     using handle_base::handle_base;
     using handle_base::operator=;
 
+    static auto create() -> instance {
+        auto desc = WGPUInstanceDescriptor{};
+        return instance(desc);
+    }
+
     instance(const WGPUInstanceDescriptor& desc) : handle_base(wgpuCreateInstance(&desc)) {}
 
     auto process_events() const -> void;

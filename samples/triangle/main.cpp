@@ -174,7 +174,7 @@ auto main() -> int {
         }
 
         const auto& tex     = surf.current_texture();
-        const auto tex_view = tex.create_texture_view(tex.texture_view_descriptor());
+        const auto tex_view = tex->create_texture_view(tex->texture_view_descriptor());
 
         color_attach.view = tex_view;
 

@@ -38,11 +38,11 @@ auto surface::capabilities(const WGPUAdapter& adapter) const -> surface_capabili
     return capabilities;
 }
 
-auto surface::current_texture() -> const texture& {
+auto surface::current_texture() -> const texture* {
     auto tex = WGPUSurfaceTexture{};
     wgpuSurfaceGetCurrentTexture(_handle, &tex);
     current.set_handle(tex.texture);
-    return current;
+    return &current;
 }
 
 } // namespace echidna

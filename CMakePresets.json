@@ -9,7 +9,6 @@
         {
             "name": "base",
             "hidden": true,
-            "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_CXX_EXTENSIONS": "OFF",
                 "CMAKE_CXX_STANDARD": "20"

@@ -33,7 +33,7 @@ public:
     auto present() const -> void;
     auto preferred_format(const WGPUAdapter& adapter) const -> texture_format;
     auto capabilities(const WGPUAdapter& adapter) const -> surface_capabilities;
-    auto current_texture() -> const texture&;
+    auto current_texture() -> const texture*;
 };
 
 } // namespace echidna

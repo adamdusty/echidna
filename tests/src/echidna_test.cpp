@@ -47,7 +47,7 @@ TEST_CASE("Instance methods", "[instance]") {
     auto surf_conf = surface_configuration(dev, 1920, 1080);
     surf.configure(surf_conf);
 
-    const auto& tex = surf.current_texture();
+    // const auto& tex = surf.current_texture();
 
     SDL_DestroyWindow(window);
 }
