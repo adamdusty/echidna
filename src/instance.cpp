@@ -11,7 +11,7 @@ auto instance::process_events() const -> void {
 
 auto instance::create_surface(const WGPUSurfaceDescriptor& descriptor) const -> surface {
     auto* surf = wgpuInstanceCreateSurface(_handle, &descriptor);
-    return surface(surf);
+    return {surf};
 }
 
 auto instance::request_adapter(const WGPURequestAdapterOptions& options) const -> adapter {

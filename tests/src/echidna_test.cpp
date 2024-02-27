@@ -10,7 +10,32 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 
+#include <bit>
+
 using namespace echidna;
+
+auto surface_descriptor_from_window(SDL_Window* win) -> WGPUSurfaceDescriptor {
+    SDL_SysWMinfo info;
+    SDL_VERSION(&info.version);
+    SDL_GetWindowWMInfo(win, &info);
+    WGPUSurfaceDescriptor desc;
+
+#if defined(_WIN32) && _WIN32
+    auto windows_surface_descriptor =
+        surface_descriptor_from_windows_hwnd(info.info.win.hinstance, info.info.win.window);
+    auto surf_desc = surface_descriptor(*reinterpret_cast<WGPUChainedStruct*>(&windows_surface_descriptor), "test");
+#elif defined(__linux__) && __linux__
+    if(info.subsystem == SDL_SYSWM_X11) {
+        auto x11_desc = surface_descriptor_from_xlib_window(info.info.x11.display, info.info.x11.window);
+        desc          = surface_descriptor(*std::bit_cast<WGPUChainedStruct*>(&x11_desc), "X11");
+    } else if(info.subsystem == SDL_SYSWM_WAYLAND) {
+        auto way_desc = surface_descriptor_from_wayland_surface(info.info.wl.display, info.info.wl.surface);
+        desc          = surface_descriptor(*std::bit_cast<WGPUChainedStruct*>(&way_desc), "Wayland");
+    }
+#endif
+
+    return desc;
+}
 
 TEST_CASE("Instance methods", "[instance]") {
     auto* window =
@@ -23,10 +48,8 @@ TEST_CASE("Instance methods", "[instance]") {
     auto inst      = instance{inst_desc};
     REQUIRE(inst);
 
-    auto windows_surface_descriptor =
-        surface_descriptor_from_windows_hwnd(info.info.win.hinstance, info.info.win.window);
-    auto surf_desc = surface_descriptor(*reinterpret_cast<WGPUChainedStruct*>(&windows_surface_descriptor), "test");
-    auto surf      = inst.create_surface(surf_desc);
+    auto desc = surface_descriptor_from_window(window);
+    auto surf = inst.create_surface(desc);
     REQUIRE(surf);
 
     auto opt   = adapter_options(surf);
@@ -44,7 +67,7 @@ TEST_CASE("Instance methods", "[instance]") {
     auto queue = dev.get_queue();
     REQUIRE(queue);
 
-    auto surf_conf = surface_configuration(dev, 1920, 1080);
+    auto surf_conf = surface_configuration(dev, format, 1920, 1080);
     surf.configure(surf_conf);
 
     // const auto& tex = surf.current_texture();

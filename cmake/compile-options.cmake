@@ -1,8 +1,8 @@
 function(add_dev_compile_opts target)
     target_compile_options(${target} PRIVATE
         $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
-            -U_FORTIFY_SOURCE
-            -D_FORTIFY_SOURCE=3
+            $<$<NOT:$<CONFIG:debug>>:-U_FORTIFY_SOURCE>
+            $<$<NOT:$<CONFIG:debug>>:-D_FORTIFY_SOURCE=3>
             -fstack-protector-strong
             -fcf-protection=full
             -Wall
