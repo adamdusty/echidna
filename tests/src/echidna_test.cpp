@@ -23,7 +23,7 @@ auto surface_descriptor_from_window(SDL_Window* win) -> WGPUSurfaceDescriptor {
 #if defined(_WIN32) && _WIN32
     auto windows_surface_descriptor =
         surface_descriptor_from_windows_hwnd(info.info.win.hinstance, info.info.win.window);
-    auto surf_desc = surface_descriptor(*reinterpret_cast<WGPUChainedStruct*>(&windows_surface_descriptor), "test");
+    desc = surface_descriptor(*std::bit_cast<WGPUChainedStruct*>(&windows_surface_descriptor), "test");
 #elif defined(__linux__) && __linux__
     if(info.subsystem == SDL_SYSWM_X11) {
         auto x11_desc = surface_descriptor_from_xlib_window(info.info.x11.display, info.info.x11.window);
