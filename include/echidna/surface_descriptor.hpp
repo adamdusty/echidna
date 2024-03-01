@@ -51,7 +51,7 @@ constexpr auto surface_descriptor_from_xcb_window(void* connection, std::uint32_
     };
 }
 
-constexpr auto surface_descriptor_from_xlib_window(void* display, std::uint32_t window) {
+constexpr auto surface_descriptor_from_xlib_window(void* display, std::uint64_t window) {
     return WGPUSurfaceDescriptorFromXlibWindow{
         .chain   = chained_struct(stype::surface_descriptor_from_xlib_window),
         .display = display,
