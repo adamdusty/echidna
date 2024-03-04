@@ -44,12 +44,6 @@ constexpr auto texture_descriptor(
     size_t view_fmt_count,
     std::vector<texture_format>& view_formats
 ) -> WGPUTextureDescriptor {
-
-    auto wgpu_formats = std::vector<WGPUTextureFormat>{};
-    for(auto format: view_formats) {
-        wgpu_formats.emplace_back(static_cast<WGPUTextureFormat>(format));
-    }
-
     return WGPUTextureDescriptor{
         .nextInChain     = nullptr,
         .label           = label,
@@ -60,7 +54,7 @@ constexpr auto texture_descriptor(
         .mipLevelCount   = mip_count,
         .sampleCount     = sample_count,
         .viewFormatCount = view_fmt_count,
-        .viewFormats     = wgpu_formats.data(),
+        .viewFormats     = reinterpret_cast<WGPUTextureFormat*>(view_formats.data()), // NOLINT
     };
 }
 

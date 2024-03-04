@@ -39,9 +39,22 @@ auto surface::capabilities(const WGPUAdapter& adapter) const -> surface_capabili
 }
 
 auto surface::current_texture() -> const texture* {
-    auto tex = WGPUSurfaceTexture{};
-    wgpuSurfaceGetCurrentTexture(_handle, &tex);
-    current.set_handle(tex.texture);
+    auto tex = WGPUSurfaceTexture{
+        .texture    = nullptr,
+        .suboptimal = static_cast<WGPUBool>(true),
+        .status     = WGPUSurfaceGetCurrentTextureStatus_Outdated,
+    };
+
+    // TODO:
+    // HACK:
+    // This is an ugly hack to get around amdvlk driver issue on linux
+    // https://github.com/gfx-rs/wgpu/issues/2941
+    // All texture errors should probably be handled regardless
+    while(tex.texture == nullptr) {
+        wgpuSurfaceGetCurrentTexture(_handle, &tex);
+        current.set_handle(tex.texture);
+    }
+
     return &current;
 }
 

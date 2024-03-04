@@ -47,13 +47,16 @@ if(PROJECT_IS_TOP_LEVEL)
     find_package(echidna REQUIRED)
 endif()
 
-# Add test exe
 add_executable(triangle triangle/main.cpp)
-add_executable(phong phong/main.cpp)
-
-# Link libs
 target_link_libraries(triangle PRIVATE passionfruit::echidna SDL2 wgpu)
 
+
+
+add_executable(phong)
+target_sources(phong PRIVATE
+    $<$<PLATFORM_ID:Linux>:phong/linux/main.cpp>
+    $<$<PLATFORM_ID:Windows>:phong/windows/main.cpp>
+)
 target_link_libraries(phong
     PRIVATE
         passionfruit::echidna
