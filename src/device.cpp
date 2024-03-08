@@ -94,16 +94,16 @@ auto device::create_shader_module(const WGPUShaderModuleDescriptor& desc) const 
     return shader_module{wgpuDeviceCreateShaderModule(_handle, &desc)};
 }
 
-auto device::shader_moudle_from_wgsl(const char* code) const -> shader_module {
-    auto code_desc = wgsl_descriptor(code);
-    auto mod_desc  = WGPUShaderModuleDescriptor{
-         .nextInChain = &code_desc.chain,
-         .label       = nullptr,
-         .hintCount   = 0,
-         .hints       = nullptr,
-    };
+// auto device::shader_moudle_from_wgsl(const char* code) const -> shader_module {
+//     auto code_desc = wgsl_descriptor(code);
+//     auto mod_desc  = WGPUShaderModuleDescriptor{
+//          .nextInChain = &code_desc.chain,
+//          .label       = nullptr,
+//          .hintCount   = 0,
+//          .hints       = nullptr,
+//     };
 
-    return create_shader_module(mod_desc);
-}
+//     return create_shader_module(mod_desc);
+// }
 
 } // namespace echidna

@@ -8,6 +8,7 @@
 #include "echidna/defaults.hpp"
 #include "echidna/device_descriptor.hpp"
 #include "echidna/limits.hpp"
+#include "echidna/shader_descriptor.hpp"
 #include "echidna/surface_configuration.hpp"
 #include "echidna/surface_descriptor.hpp"
 #include "echidna/webgpu/adapter.hpp"

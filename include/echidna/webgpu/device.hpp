@@ -48,7 +48,7 @@ public:
     auto create_texture(const WGPUTextureDescriptor& desc) const -> texture;
 
     auto create_shader_module(const WGPUShaderModuleDescriptor& desc) const -> shader_module;
-    auto shader_moudle_from_wgsl(const char* code) const -> shader_module;
+    // auto shader_moudle_from_wgsl(const char* code) const -> shader_module;
 
     // auto set_label(const char* label) const -> void; Unimplemented by wgpu-native
 };

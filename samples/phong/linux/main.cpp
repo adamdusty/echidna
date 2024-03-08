@@ -198,7 +198,8 @@ auto main() -> int {
 
     auto clear_color = WGPUColor{0.05, 0.05, 0.05, 1.0};
 
-    auto shader_module = dev.shader_moudle_from_wgsl(shader_code);
+    auto shader_descriptor = echidna::shader_descriptor::create(shader_code);
+    auto shader_module     = dev.create_shader_module(shader_descriptor);
 
     auto blend_state = WGPUBlendState{
         .color = blend_component(blend_op::add, blend_factor::src_alpha, blend_factor::one_minus_src_alpha),

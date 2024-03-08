@@ -19,7 +19,7 @@ public:
 
     static auto create() -> instance {
         auto desc = WGPUInstanceDescriptor{};
-        return instance(desc);
+        return instance{desc};
     }
 
     instance(const WGPUInstanceDescriptor& desc) : handle_base(wgpuCreateInstance(&desc)) {}
