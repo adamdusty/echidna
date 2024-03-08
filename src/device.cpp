@@ -1,61 +1,6 @@
-#include "echidna/device.hpp"
-
-#include "echidna/chained.hpp"
+#include "echidna/webgpu/device.hpp"
 
 namespace echidna {
-
-auto device_descriptor(
-    const char* label,
-    std::vector<feature_name>& required_features,
-    std::vector<WGPURequiredLimits>& required_limits,
-    const WGPUQueueDescriptor& desc,
-    WGPUDeviceLostCallback callback,
-    void* user_data
-) -> WGPUDeviceDescriptor {
-
-    auto wgpu_features = std::vector<WGPUFeatureName>();
-    auto wgpu_limits   = std::vector<WGPURequiredLimits>();
-
-    for(auto feat: required_features) {
-        wgpu_features.emplace_back(static_cast<WGPUFeatureName>(feat));
-    }
-
-    for(auto limit: required_limits) {
-        wgpu_limits.emplace_back(static_cast<WGPURequiredLimits>(limit));
-    }
-
-    return WGPUDeviceDescriptor{
-        .nextInChain          = nullptr,
-        .label                = label,
-        .requiredFeatureCount = required_features.size(),
-        .requiredFeatures     = wgpu_features.data(),
-        .requiredLimits       = wgpu_limits.data(),
-        .defaultQueue         = desc,
-        .deviceLostCallback   = callback,
-        .deviceLostUserdata   = user_data,
-    };
-}
-
-auto device_descriptor(
-    const char* label,
-    std::vector<feature_name>& required_features,
-    std::vector<WGPURequiredLimits>& required_limits
-) -> WGPUDeviceDescriptor {
-    return device_descriptor(label, required_features, required_limits, queue_descriptor(), nullptr, nullptr);
-}
-
-auto device_descriptor(const char* label) -> WGPUDeviceDescriptor {
-    return WGPUDeviceDescriptor{
-        .nextInChain          = nullptr,
-        .label                = label,
-        .requiredFeatureCount = 0,
-        .requiredFeatures     = nullptr,
-        .requiredLimits       = nullptr,
-        .defaultQueue         = queue_descriptor(),
-        .deviceLostCallback   = nullptr,
-        .deviceLostUserdata   = nullptr,
-    };
-}
 
 auto device::create_bind_group(const WGPUBindGroupDescriptor& desc) const -> bind_group {
     return bind_group{wgpuDeviceCreateBindGroup(_handle, &desc)};

@@ -1,4 +1,4 @@
-#include "echidna/texture.hpp"
+#include "echidna/webgpu/texture.hpp"
 
 namespace echidna {
 

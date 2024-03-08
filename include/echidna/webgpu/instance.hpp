@@ -1,14 +1,11 @@
 #pragma once
 
-#include <utility>
-
 #include <webgpu.h>
 
-#include "echidna/adapter.hpp"
-#include "echidna/chained.hpp"
 #include "echidna/export.hpp"
-#include "echidna/handle.hpp"
-#include "echidna/surface.hpp"
+#include "echidna/webgpu/adapter.hpp"
+#include "echidna/webgpu/handle.hpp"
+#include "echidna/webgpu/surface.hpp"
 
 namespace echidna {
 

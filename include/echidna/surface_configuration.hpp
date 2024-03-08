@@ -1,8 +1,8 @@
 #pragma once
 
-#include "echidna/device.hpp"
-#include "echidna/enums.hpp"
-#include "echidna/texture.hpp"
+#include "echidna/webgpu/device.hpp"
+#include "echidna/webgpu/enums.hpp"
+#include "echidna/webgpu/texture.hpp"
 #include <cstdint>
 #include <webgpu.h>
 

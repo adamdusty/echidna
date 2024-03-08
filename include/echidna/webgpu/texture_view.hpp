@@ -1,8 +1,8 @@
 #pragma once
 
-#include "echidna/enums.hpp"
 #include "echidna/export.hpp"
-#include "echidna/handle.hpp"
+#include "echidna/webgpu/enums.hpp"
+#include "echidna/webgpu/handle.hpp"
 #include <cstdint>
 #include <webgpu.h>
 

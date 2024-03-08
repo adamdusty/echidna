@@ -1,16 +1,18 @@
 #pragma once
 
-#include "echidna/texture_view.hpp"
+#include "echidna/webgpu/texture_view.hpp"
 #include <webgpu.h>
 
 namespace echidna {
 
-constexpr auto renderpass_color_attachment(const WGPUChainedStruct& next,
-                                           const texture_view& view,
-                                           const texture_view& target,
-                                           load_op load,
-                                           store_op store,
-                                           WGPUColor clear) -> WGPURenderPassColorAttachment {
+constexpr auto renderpass_color_attachment(
+    const WGPUChainedStruct& next,
+    const texture_view& view,
+    const texture_view& target,
+    load_op load,
+    store_op store,
+    WGPUColor clear
+) -> WGPURenderPassColorAttachment {
     return WGPURenderPassColorAttachment{
         .nextInChain   = &next,
         .view          = view,
@@ -21,11 +23,13 @@ constexpr auto renderpass_color_attachment(const WGPUChainedStruct& next,
     };
 }
 
-constexpr auto renderpass_color_attachment(const texture_view& view,
-                                           const texture_view& target,
-                                           load_op load,
-                                           store_op store,
-                                           WGPUColor clear) -> WGPURenderPassColorAttachment {
+constexpr auto renderpass_color_attachment(
+    const texture_view& view,
+    const texture_view& target,
+    load_op load,
+    store_op store,
+    WGPUColor clear
+) -> WGPURenderPassColorAttachment {
     return WGPURenderPassColorAttachment{
         .nextInChain   = nullptr,
         .view          = view,

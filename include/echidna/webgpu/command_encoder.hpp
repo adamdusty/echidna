@@ -1,12 +1,12 @@
 #pragma once
 
-#include "echidna/buffer.hpp"
-#include "echidna/command_buffer.hpp"
-#include "echidna/compute_pass_encoder.hpp"
 #include "echidna/export.hpp"
-#include "echidna/handle.hpp"
-#include "echidna/query_set.hpp"
-#include "echidna/render_pass_encoder.hpp"
+#include "echidna/webgpu/buffer.hpp"
+#include "echidna/webgpu/command_buffer.hpp"
+#include "echidna/webgpu/compute_pass_encoder.hpp"
+#include "echidna/webgpu/handle.hpp"
+#include "echidna/webgpu/query_set.hpp"
+#include "echidna/webgpu/render_pass_encoder.hpp"
 #include <cstdint>
 #include <webgpu.h>
 

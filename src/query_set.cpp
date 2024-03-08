@@ -1,4 +1,4 @@
-#include "echidna/query_set.hpp"
+#include "echidna/webgpu/query_set.hpp"
 
 namespace echidna {
 

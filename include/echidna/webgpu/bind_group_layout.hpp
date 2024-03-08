@@ -1,8 +1,9 @@
 #pragma once
 
-#include "echidna/enums.hpp"
 #include "echidna/export.hpp"
-#include "echidna/handle.hpp"
+#include "echidna/webgpu/enums.hpp"
+#include "echidna/webgpu/handle.hpp"
+#include <vector>
 #include <webgpu.h>
 
 namespace echidna {
@@ -33,6 +34,7 @@ constexpr auto bind_group_layout_desc(const std::vector<WGPUBindGroupLayoutEntry
 
 constexpr auto buffer_bind_group_layout_entry(
     std::uint32_t binding,
+    shader_stage visibility,
     buffer_binding_type type,
     bool dynamic_offset,
     std::uint64_t min_binding_size
@@ -40,7 +42,7 @@ constexpr auto buffer_bind_group_layout_entry(
     return WGPUBindGroupLayoutEntry{
         .nextInChain = nullptr,
         .binding     = binding,
-        .visibility  = static_cast<WGPUShaderStageFlags>(shader_stage::vertex | shader_stage::fragment),
+        .visibility  = static_cast<WGPUShaderStageFlags>(visibility),
         .buffer =
             {
                 .nextInChain      = nullptr,
@@ -68,6 +70,21 @@ constexpr auto buffer_bind_group_layout_entry(
                 .viewDimension = static_cast<WGPUTextureViewDimension>(textureview_dimension::undefined),
             }
     };
+}
+
+constexpr auto buffer_bind_group_layout_entry(
+    std::uint32_t binding,
+    buffer_binding_type type,
+    bool dynamic_offset,
+    std::uint64_t min_binding_size
+) -> WGPUBindGroupLayoutEntry {
+    return buffer_bind_group_layout_entry(
+        binding,
+        shader_stage::vertex | shader_stage::fragment,
+        type,
+        dynamic_offset,
+        min_binding_size
+    );
 }
 
 } // namespace echidna

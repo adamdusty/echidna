@@ -1,10 +1,9 @@
 #pragma once
 
-#include "echidna/device.hpp"
-#include "echidna/enums.hpp"
 #include "echidna/export.hpp"
-#include "echidna/handle.hpp"
-#include "echidna/texture.hpp"
+#include "echidna/webgpu/enums.hpp"
+#include "echidna/webgpu/handle.hpp"
+#include "echidna/webgpu/texture.hpp"
 #include <cstdint>
 #include <utility>
 #include <vector>
@@ -19,6 +18,7 @@ struct surface_capabilities {
 };
 
 class ECHIDNA_EXPORT surface : public handle_base<surface, WGPUSurface> {
+    // Should this be a shared pointer since any number of objects can get a reference to it?
     texture current;
 
     friend handle_base<surface, WGPUSurface>;

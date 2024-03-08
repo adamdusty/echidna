@@ -1,4 +1,4 @@
-#include "echidna/render_pipeline.hpp"
+#include "echidna/webgpu/render_pipeline.hpp"
 
 namespace echidna {
 

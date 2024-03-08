@@ -1,4 +1,4 @@
-#include "echidna/buffer.hpp"
+#include "echidna/webgpu/buffer.hpp"
 
 namespace echidna {
 

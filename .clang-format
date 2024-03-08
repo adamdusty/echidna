@@ -22,6 +22,7 @@ BreakConstructorInitializers: AfterColon
 ColumnLimit: 120
 CompactNamespaces: false
 IndentWidth: 4
+PackConstructorInitializers: NextLine
 PointerAlignment: Left
 SortIncludes: true
 SortUsingDeclarations: true

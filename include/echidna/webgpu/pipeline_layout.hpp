@@ -1,7 +1,7 @@
 #pragma once
 
 #include "echidna/export.hpp"
-#include "echidna/handle.hpp"
+#include "echidna/webgpu/handle.hpp"
 #include <webgpu.h>
 
 namespace echidna {

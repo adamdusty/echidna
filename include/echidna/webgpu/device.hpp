@@ -1,21 +1,19 @@
 #pragma once
 
-#include "echidna/bind_group.hpp"
-#include "echidna/bind_group_layout.hpp"
-#include "echidna/buffer.hpp"
-#include "echidna/command_encoder.hpp"
-#include "echidna/compute_pipeline.hpp"
-#include "echidna/enums.hpp"
 #include "echidna/export.hpp"
-#include "echidna/handle.hpp"
-#include "echidna/limits.hpp"
-#include "echidna/pipeline_layout.hpp"
-#include "echidna/query_set.hpp"
-#include "echidna/queue.hpp"
-#include "echidna/render_pipeline.hpp"
-#include "echidna/shader.hpp"
-#include "echidna/texture.hpp"
-#include <algorithm>
+#include "echidna/webgpu/bind_group.hpp"
+#include "echidna/webgpu/bind_group_layout.hpp"
+#include "echidna/webgpu/buffer.hpp"
+#include "echidna/webgpu/command_encoder.hpp"
+#include "echidna/webgpu/compute_pipeline.hpp"
+#include "echidna/webgpu/enums.hpp"
+#include "echidna/webgpu/handle.hpp"
+#include "echidna/webgpu/pipeline_layout.hpp"
+#include "echidna/webgpu/query_set.hpp"
+#include "echidna/webgpu/queue.hpp"
+#include "echidna/webgpu/render_pipeline.hpp"
+#include "echidna/webgpu/shader.hpp"
+#include "echidna/webgpu/texture.hpp"
 #include <cstdint>
 #include <iostream>
 #include <vector>
@@ -62,23 +60,6 @@ static constexpr auto device_error_stderr = [](WGPUErrorType type, const char* m
         std::cerr << "(message: " << msg << ")";
     }
 };
-
-ECHIDNA_EXPORT auto device_descriptor(
-    const char* label,
-    std::vector<feature_name>& required_features,
-    std::vector<WGPURequiredLimits>& required_limits,
-    const WGPUQueueDescriptor& desc,
-    WGPUDeviceLostCallback callback,
-    void* user_data
-) -> WGPUDeviceDescriptor;
-
-ECHIDNA_EXPORT auto device_descriptor(
-    const char* label,
-    std::vector<feature_name>& required_features,
-    std::vector<WGPURequiredLimits>& required_limits
-) -> WGPUDeviceDescriptor;
-
-ECHIDNA_EXPORT auto device_descriptor(const char* label = nullptr) -> WGPUDeviceDescriptor;
 
 } // namespace echidna
 

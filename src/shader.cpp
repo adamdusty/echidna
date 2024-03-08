@@ -1,4 +1,4 @@
-#include "echidna/shader.hpp"
+#include "echidna/webgpu/shader.hpp"
 
 namespace echidna {
 

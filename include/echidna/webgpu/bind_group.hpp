@@ -1,9 +1,9 @@
 #pragma once
 
-#include "echidna/bind_group_layout.hpp"
-#include "echidna/buffer.hpp"
 #include "echidna/export.hpp"
-#include "echidna/handle.hpp"
+#include "echidna/webgpu/bind_group_layout.hpp"
+#include "echidna/webgpu/buffer.hpp"
+#include "echidna/webgpu/handle.hpp"
 #include <cstdint>
 #include <webgpu.h>
 

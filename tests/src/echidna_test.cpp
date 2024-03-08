@@ -1,9 +1,4 @@
-#include <echidna/adapter.hpp>
-#include <echidna/device.hpp>
 #include <echidna/echidna.hpp>
-#include <echidna/instance.hpp>
-#include <echidna/queue.hpp>
-#include <echidna/surface.hpp>
 #include <echidna/surface_descriptor.hpp>
 #include <snitch/snitch.hpp>
 

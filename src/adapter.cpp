@@ -1,6 +1,5 @@
-#include "echidna/adapter.hpp"
+#include "echidna/webgpu/adapter.hpp"
 
-#include <algorithm>
 #include <cassert>
 #include <iostream>
 

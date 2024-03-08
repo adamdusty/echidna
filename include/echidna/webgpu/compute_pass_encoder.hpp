@@ -1,10 +1,10 @@
 #pragma once
 
-#include "echidna/bind_group.hpp"
-#include "echidna/buffer.hpp"
-#include "echidna/compute_pipeline.hpp"
 #include "echidna/export.hpp"
-#include "echidna/handle.hpp"
+#include "echidna/webgpu/bind_group.hpp"
+#include "echidna/webgpu/buffer.hpp"
+#include "echidna/webgpu/compute_pipeline.hpp"
+#include "echidna/webgpu/handle.hpp"
 #include <cstdint>
 #include <vector>
 #include <webgpu.h>

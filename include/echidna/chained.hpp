@@ -2,7 +2,7 @@
 
 #include <webgpu.h>
 
-#include "echidna/enums.hpp"
+#include "echidna/webgpu/enums.hpp"
 
 namespace echidna {
 

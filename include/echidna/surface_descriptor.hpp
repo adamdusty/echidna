@@ -1,7 +1,7 @@
 #pragma once
 
 #include "echidna/chained.hpp"
-#include "echidna/enums.hpp"
+#include "echidna/webgpu/enums.hpp"
 #include <webgpu.h>
 
 namespace echidna {

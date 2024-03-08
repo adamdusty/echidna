@@ -1,4 +1,4 @@
-#include "echidna/queue.hpp"
+#include "echidna/webgpu/queue.hpp"
 
 namespace echidna {
 

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "echidna/handle.hpp"
 #include <cstdint>
-#include <vector>
+#include <type_traits>
 #include <webgpu.h>
 
 namespace echidna {

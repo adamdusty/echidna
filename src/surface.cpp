@@ -1,4 +1,4 @@
-#include "echidna/surface.hpp"
+#include "echidna/webgpu/surface.hpp"
 
 namespace echidna {
 

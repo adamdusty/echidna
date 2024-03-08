@@ -1,12 +1,12 @@
 #pragma once
 
-#include "echidna/bind_group.hpp"
-#include "echidna/buffer.hpp"
-#include "echidna/enums.hpp"
 #include "echidna/export.hpp"
-#include "echidna/handle.hpp"
-#include "echidna/render_bundle.hpp"
-#include "echidna/render_pipeline.hpp"
+#include "echidna/webgpu/bind_group.hpp"
+#include "echidna/webgpu/buffer.hpp"
+#include "echidna/webgpu/enums.hpp"
+#include "echidna/webgpu/handle.hpp"
+#include "echidna/webgpu/render_bundle.hpp"
+#include "echidna/webgpu/render_pipeline.hpp"
 #include <cstdint>
 #include <vector>
 #include <webgpu.h>

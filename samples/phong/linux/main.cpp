@@ -9,9 +9,7 @@
 #include <chrono>
 #include <cstdint>
 #include <echidna/echidna.hpp>
-#include <format>
 #include <iostream>
-#include <thread>
 #include <vector>
 
 using namespace echidna;
@@ -166,15 +164,6 @@ auto main() -> int {
 
     auto format    = surf.preferred_format(adapt);
     auto surf_conf = surface_configuration(dev, surf.preferred_format(adapt), 1920, 1080);
-    // auto surf_conf = surface_configuration(
-    //     dev,
-    //     format,
-    //     texture_usage::render_attachment,
-    //     composite_alpha_mode::automatic,
-    //     1920,
-    //     1080,
-    //     present_mode::fifo
-    // );
     surf.configure(surf_conf);
 
     // Initialize rendering buffers
@@ -288,7 +277,6 @@ auto main() -> int {
         texture_dimension::dim2,
         {1920, 1080, 1},
         texture_format::depth32_float,
-        1,
         1,
         1,
         depth_formats

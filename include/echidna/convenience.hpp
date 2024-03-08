@@ -1,6 +1,7 @@
 #pragma once
 
-#include "echidna/enums.hpp"
+#include "echidna/webgpu/enums.hpp"
+#include <vector>
 #include <webgpu.h>
 
 namespace echidna {

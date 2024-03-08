@@ -1,3 +1,1 @@
-#include "echidna/enums.hpp"
-
-namespace echidna {} // namespace echidna
+#include "echidna/webgpu/enums.hpp"

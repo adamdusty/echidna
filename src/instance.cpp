@@ -1,7 +1,6 @@
-#include "echidna/instance.hpp"
+#include "echidna/webgpu/instance.hpp"
 
 #include <cassert>
-#include <utility>
 
 namespace echidna {
 

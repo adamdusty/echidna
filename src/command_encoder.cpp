@@ -1,4 +1,4 @@
-#include "echidna/command_encoder.hpp"
+#include "echidna/webgpu/command_encoder.hpp"
 
 namespace echidna {
 
@@ -34,16 +34,23 @@ auto command_encoder::write_timestamp(const query_set& set, std::uint32_t index)
     wgpuCommandEncoderWriteTimestamp(_handle, set, index);
 }
 
-auto command_encoder::resolve_query_set(const query_set& set,
-                                        std::uint32_t first,
-                                        std::uint32_t count,
-                                        const buffer& destination,
-                                        std::uint64_t offset) const -> void {
+auto command_encoder::resolve_query_set(
+    const query_set& set,
+    std::uint32_t first,
+    std::uint32_t count,
+    const buffer& destination,
+    std::uint64_t offset
+) const -> void {
     wgpuCommandEncoderResolveQuerySet(_handle, set, first, count, destination, offset);
 }
 
 auto command_encoder::copy_buffer(
-    buffer& source, std::uint64_t src_offset, buffer& dest, std::uint64_t dst_offset, std::uint64_t size) -> void {
+    buffer& source,
+    std::uint64_t src_offset,
+    buffer& dest,
+    std::uint64_t dst_offset,
+    std::uint64_t size
+) -> void {
     wgpuCommandEncoderCopyBufferToBuffer(_handle, source, src_offset, dest, dst_offset, size);
 }
 
