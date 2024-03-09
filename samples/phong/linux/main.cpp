@@ -420,6 +420,5 @@ auto main() -> int {
     // SDL_DestroyWindow(window);
     // SDL_Quit();
 
-    std::cerr << "Done.\n";
     return 0;
 }

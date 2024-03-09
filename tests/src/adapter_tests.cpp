@@ -25,7 +25,7 @@ TEST_CASE("Apapter properties", "[adpater]") {
     auto inst      = instance{inst_desc};
     REQUIRE(inst);
 
-    auto opt   = adapter_options(nullptr, backend_type::vulkan);
+    auto opt   = adapter_options();
     auto adapt = inst.request_adapter(opt);
     REQUIRE(adapt);
 
@@ -33,7 +33,6 @@ TEST_CASE("Apapter properties", "[adpater]") {
 
     // TODO: Not going to work if theres no discrete card obviously
     CHECK(props.adapterType == adapter_type::discrete);
-    CHECK(props.backendType == backend_type::vulkan);
 }
 
 TEST_CASE("Adapter features", "[adapter]") {
@@ -41,7 +40,7 @@ TEST_CASE("Adapter features", "[adapter]") {
     auto inst      = instance{inst_desc};
     REQUIRE(inst);
 
-    auto opt   = adapter_options(nullptr, backend_type::vulkan);
+    auto opt   = adapter_options();
     auto adapt = inst.request_adapter(opt);
     REQUIRE(adapt);
 
@@ -56,7 +55,7 @@ TEST_CASE("Adapter has feature", "[adapter]") {
     auto inst      = instance{inst_desc};
     REQUIRE(inst);
 
-    auto opt   = adapter_options(nullptr, backend_type::vulkan);
+    auto opt   = adapter_options();
     auto adapt = inst.request_adapter(opt);
     REQUIRE(adapt);
 
@@ -71,7 +70,7 @@ TEST_CASE("Adapter request device", "[adapter]") {
     auto inst      = instance{inst_desc};
     REQUIRE(inst);
 
-    auto opt   = adapter_options(nullptr, backend_type::vulkan);
+    auto opt   = adapter_options();
     auto adapt = inst.request_adapter(opt);
     REQUIRE(adapt);
 

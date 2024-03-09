@@ -7,13 +7,11 @@ namespace echidna {
 
 /**
  * @param surf Surface that adapter is guaranteed to be compatible with
- * @param backend
  * @param pref
  * @param force_fallback Force fallback adapter, typically a software implementation.
  */
 constexpr auto adapter_options(
     WGPUSurface surf      = nullptr,
-    backend_type backend  = backend_type::undefined,
     power_preference pref = power_preference::undefined,
     bool force_fallback   = false
 ) {
@@ -21,7 +19,7 @@ constexpr auto adapter_options(
         .nextInChain          = nullptr,
         .compatibleSurface    = surf,
         .powerPreference      = static_cast<WGPUPowerPreference>(pref),
-        .backendType          = static_cast<WGPUBackendType>(backend),
+        .backendType          = static_cast<WGPUBackendType>(backend_type::undefined),
         .forceFallbackAdapter = static_cast<WGPUBool>(force_fallback),
     };
 }
