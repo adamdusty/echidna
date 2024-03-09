@@ -28,7 +28,6 @@ struct ECHIDNA_EXPORT device_descriptor {
         };
     }
 
-    // TODO: Implement constructors for easy device creation
     constexpr device_descriptor() = default;
 
     constexpr device_descriptor(

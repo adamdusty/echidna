@@ -4,6 +4,8 @@
 #include <type_traits>
 #include <webgpu.h>
 
+// TODO: Implement equality operators between echidna enums and wgpu-native enums
+
 namespace echidna {
 
 enum class adapter_type : std::uint32_t {
@@ -13,11 +15,19 @@ enum class adapter_type : std::uint32_t {
     unknown    = WGPUAdapterType_Unknown,
 };
 
+constexpr auto operator==(WGPUAdapterType w, adapter_type e) -> bool {
+    return w == static_cast<WGPUAdapterType>(e);
+}
+
 enum class address_mode : std::uint32_t {
     repeat        = WGPUAddressMode_Repeat,
     mirror_repeat = WGPUAddressMode_MirrorRepeat,
     clamp_to_edge = WGPUAddressMode_ClampToEdge,
 };
+
+constexpr auto operator==(WGPUAddressMode w, address_mode e) -> bool {
+    return w == static_cast<WGPUAddressMode>(e);
+}
 
 enum class backend_type : std::uint32_t {
     undefined = WGPUBackendType_Undefined,
@@ -30,6 +40,10 @@ enum class backend_type : std::uint32_t {
     opengl    = WGPUBackendType_OpenGL,
     opengles  = WGPUBackendType_OpenGLES,
 };
+
+constexpr auto operator==(WGPUBackendType w, backend_type e) -> bool {
+    return w == static_cast<WGPUBackendType>(e);
+}
 
 enum class blend_factor : std::uint32_t {
     zero                = WGPUBlendFactor_Zero,
@@ -132,6 +146,10 @@ enum class device_lost_reason : std::uint32_t {
     undefined = WGPUDeviceLostReason_Undefined,
     destroyed = WGPUDeviceLostReason_Destroyed,
 };
+
+constexpr auto operator==(WGPUDeviceLostReason w, device_lost_reason e) -> bool {
+    return w == static_cast<WGPUDeviceLostReason>(e);
+}
 
 enum class error_filter : std::uint32_t {
     validation    = WGPUErrorFilter_Validation,

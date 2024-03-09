@@ -40,7 +40,9 @@ add_executable(echidna_tests)
 
 # Add test sources
 target_sources(echidna_tests PRIVATE
-    src/echidna_test.cpp
+    src/echidna_tests.cpp
+    src/instance_tests.cpp
+    src/adapter_tests.cpp
 )
 
 # Link libs

@@ -2,6 +2,7 @@
 
 #include "echidna/adapter_options.hpp"
 #include "echidna/buffer_descriptor.hpp"
+#include "echidna/callbacks.hpp"
 #include "echidna/chained.hpp"
 #include "echidna/color_attachment.hpp"
 #include "echidna/convenience.hpp"

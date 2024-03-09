@@ -1,9 +1,16 @@
 #include "echidna/webgpu/instance.hpp"
 
 #include <cassert>
+#include <iostream>
 
 namespace echidna {
 
+/**
+ * https://github.com/webgpu-native/webgpu-headers/issues/117
+ * check in-flight GPU work and free resources no longer used by GPU
+ * issue mapping callbacks
+ * not block on any GPU work
+ */
 auto instance::process_events() const -> void {
     wgpuInstanceProcessEvents(_handle);
 }

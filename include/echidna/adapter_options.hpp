@@ -1,13 +1,18 @@
 #pragma once
 
 #include "echidna/webgpu/enums.hpp"
-#include "echidna/webgpu/surface.hpp"
+#include <webgpu.h>
 
 namespace echidna {
 
-// Create WGPUAdapterRequestOptions using surface
+/**
+ * @param surf Surface that adapter is guaranteed to be compatible with
+ * @param backend
+ * @param pref
+ * @param force_fallback Force fallback adapter, typically a software implementation.
+ */
 constexpr auto adapter_options(
-    const surface& surf,
+    WGPUSurface surf      = nullptr,
     backend_type backend  = backend_type::undefined,
     power_preference pref = power_preference::undefined,
     bool force_fallback   = false
