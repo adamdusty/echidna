@@ -32,7 +32,7 @@ auto surface_descriptor_from_window(SDL_Window* win) -> WGPUSurfaceDescriptor {
     return desc;
 }
 
-TEST_CASE("Instance methods", "[instance]") {
+TEST_CASE("WGPU Initialization", "[instance]") {
     auto* window =
         SDL_CreateWindow("test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_HIDDEN);
     SDL_SysWMinfo info;
@@ -64,8 +64,6 @@ TEST_CASE("Instance methods", "[instance]") {
 
     auto surf_conf = surface_configuration(dev, format, 1920, 1080);
     surf.configure(surf_conf);
-
-    // const auto& tex = surf.current_texture();
 
     SDL_DestroyWindow(window);
 }
