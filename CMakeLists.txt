@@ -15,11 +15,11 @@ include(cmake/dependencies.cmake)
 
 
 # Declare library
-add_library(passionfruit_echidna)
-add_library(passionfruit::echidna ALIAS passionfruit_echidna)
+add_library(echidna_echidna)
+add_library(echidna::echidna ALIAS echidna_echidna)
 
 # Add sources
-target_sources(passionfruit_echidna PRIVATE
+target_sources(echidna_echidna PRIVATE
     src/instance.cpp
     src/surface.cpp
     src/adapter.cpp
@@ -35,15 +35,15 @@ target_sources(passionfruit_echidna PRIVATE
 )
 
 # Include and link dependencies
-target_link_libraries(passionfruit_echidna PUBLIC wgpu)
+target_link_libraries(echidna_echidna PUBLIC wgpu)
 
 # Add compile options
-add_dev_compile_opts(passionfruit_echidna)
+add_dev_compile_opts(echidna_echidna)
 
 # Generate header for export
 include(GenerateExportHeader)
 generate_export_header(
-    passionfruit_echidna
+    echidna_echidna
     BASE_NAME echidna
     EXPORT_FILE_NAME include/echidna/export.hpp
     CUSTOM_CONTENT_FROM_VARIABLE pragma_suppress_c4251
@@ -51,7 +51,7 @@ generate_export_header(
 
 # Set properties
 set_target_properties(
-    passionfruit_echidna PROPERTIES
+    echidna_echidna PROPERTIES
     CXX_VISIBILITY_PRESET "hidden"
     VISIBILITY_INLINES_HIDDEN YES
     VERSION "${PROJECT_VERSION}"
@@ -63,13 +63,13 @@ set_target_properties(
 # Add include directory
 # warning_guard adds SYSTEM modifier if the project isn't top level
 target_include_directories(
-    passionfruit_echidna ${warning_guard}
+    echidna_echidna ${warning_guard}
     PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
 )
 
 target_include_directories(
-    passionfruit_echidna SYSTEM
+    echidna_echidna SYSTEM
     PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>"
 )

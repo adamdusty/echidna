@@ -48,7 +48,7 @@ if(PROJECT_IS_TOP_LEVEL)
 endif()
 
 add_executable(triangle triangle/main.cpp)
-target_link_libraries(triangle PRIVATE passionfruit::echidna SDL2 wgpu)
+target_link_libraries(triangle PRIVATE echidna::echidna SDL2 wgpu)
 
 
 
@@ -59,7 +59,7 @@ target_sources(phong PRIVATE
 )
 target_link_libraries(phong
     PRIVATE
-        passionfruit::echidna
+        echidna::echidna
         adizzle::adizzle
         admat::admat
         glm::glm

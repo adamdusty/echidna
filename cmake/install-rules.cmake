@@ -11,7 +11,7 @@ include(CMakePackageConfigHelpers)
 
 # Install targets
 install(
-    TARGETS passionfruit_echidna
+    TARGETS echidna_echidna
     EXPORT echidnaTargets
     RUNTIME COMPONENT echidna_Runtime
     LIBRARY COMPONENT echidna_Runtime
@@ -55,7 +55,7 @@ install(
 # Install export 'echidnaTargets.cmake'
 install(
     EXPORT echidnaTargets
-    NAMESPACE passionfruit::
+    NAMESPACE echidna::
     DESTINATION "${echidna_INSTALL_CMAKEDIR}"
     COMPONENT echidna_Development
 )
