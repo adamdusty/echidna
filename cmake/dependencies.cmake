@@ -5,7 +5,7 @@ set(WGPU_URL "wgpu-${PLATFORM}-${ARCH}-${CMAKE_BUILD_TYPE}")
 
 FetchContent_Declare(
     wgpu
-    URL "https://github.com/gfx-rs/wgpu-native/releases/download/v0.19.3.1/${WGPU_URL}.zip"
+    URL "https://github.com/gfx-rs/wgpu-native/releases/download/v0.19.4.1/${WGPU_URL}.zip"
     SYSTEM
 )
 
