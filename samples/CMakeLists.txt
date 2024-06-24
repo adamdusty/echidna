@@ -34,7 +34,7 @@ set(SDL_SHARED TRUE CACHE BOOL "Build a SDL shared library (if available)")
 FetchContent_Declare(
     SDL2
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG        7de4f16710ba9a83a6f3d5d932a11623df6676df # release-2.30.x XINPUT_CAPABILITIES fix
+    GIT_TAG        release-2.30.3 # 7de4f16710ba9a83a6f3d5d932a11623df6676df # release-2.30.x XINPUT_CAPABILITIES fix
     SYSTEM            # Don't include in warnings
 )
 set(MESSAGE_QUIET ON)

@@ -11,6 +11,7 @@
 #include <echidna/echidna.hpp>
 #include <iostream>
 #include <vector>
+#include <wgpu.h>
 
 using namespace echidna;
 
@@ -133,21 +134,30 @@ auto main() -> int {
         SDL_WINDOWPOS_CENTERED,
         1920,
         1080,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_VULKAN
+        SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
     );
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
     SDL_GetWindowWMInfo(window, &info);
 
-    auto inst_desc = instance_descriptor();
-    auto inst      = instance{inst_desc};
+    WGPUInstanceExtras instanceExtras = {};
+    instanceExtras.chain.sType        = (WGPUSType)WGPUSType_InstanceExtras;
+    instanceExtras.backends           = WGPUInstanceBackend_GL;
+
+    WGPUInstanceDescriptor instanceDescriptor = {};
+    instanceDescriptor.nextInChain            = &instanceExtras.chain;
+
+    auto inst = instance{instanceDescriptor};
+    // auto inst = instance(WGPUInstanceDescriptor{});
 
     WGPUSurfaceDescriptor surf_desc = {.nextInChain = nullptr, .label = nullptr};
 
     if(info.subsystem == SDL_SYSWM_X11) {
+        std::cerr << "x11" << '\n';
         auto plat = surface_descriptor_from_xlib_window(info.info.x11.display, info.info.x11.window);
         surf_desc = surface_descriptor(*std::bit_cast<WGPUChainedStruct*>(&plat), nullptr);
     } else {
+        std::cerr << "wayland" << '\n';
         auto plat = surface_descriptor_from_wayland_surface(info.info.wl.display, info.info.wl.surface);
         surf_desc = surface_descriptor(*std::bit_cast<WGPUChainedStruct*>(&plat), nullptr);
     }

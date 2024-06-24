@@ -1,4 +1,4 @@
-set shell := ["powershell.exe", "-c"]
+set windows-shell := ["pwsh.exe", "-c"]
 
 alias c := configure
 alias b := build
