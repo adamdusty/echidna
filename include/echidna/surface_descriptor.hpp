@@ -15,7 +15,7 @@ constexpr auto surface_descriptor(const WGPUChainedStruct& next, const char* lab
 }
 
 struct ECHIDNA_EXPORT surface_descriptor_t {
-    std::unique_ptr<void> platform_desc = nullptr;
+    std::shared_ptr<void> platform_desc = nullptr;
 
     constexpr operator WGPUSurfaceDescriptor() const {
         return surface_descriptor(*std::bit_cast<WGPUChainedStruct*>(platform_desc.get()), nullptr);
