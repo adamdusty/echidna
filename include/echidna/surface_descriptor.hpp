@@ -6,13 +6,15 @@
 #include <memory>
 #include <webgpu.h>
 
+#include "echidna/export.hpp"
+
 namespace echidna {
 
 constexpr auto surface_descriptor(const WGPUChainedStruct& next, const char* label) {
     return WGPUSurfaceDescriptor{.nextInChain = &next, .label = label};
 }
 
-struct surface_descriptor_t {
+struct ECHIDNA_EXPORT surface_descriptor_t {
     std::unique_ptr<void> platform_desc = nullptr;
 
     constexpr operator WGPUSurfaceDescriptor() const {
