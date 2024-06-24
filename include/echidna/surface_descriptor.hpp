@@ -2,9 +2,23 @@
 
 #include "echidna/chained.hpp"
 #include "echidna/webgpu/enums.hpp"
+#include <bit>
+#include <memory>
 #include <webgpu.h>
 
 namespace echidna {
+
+constexpr auto surface_descriptor(const WGPUChainedStruct& next, const char* label) {
+    return WGPUSurfaceDescriptor{.nextInChain = &next, .label = label};
+}
+
+struct surface_descriptor_t {
+    std::unique_ptr<void> platform_desc = nullptr;
+
+    constexpr operator WGPUSurfaceDescriptor() const {
+        return surface_descriptor(*std::bit_cast<WGPUChainedStruct*>(platform_desc.get()), nullptr);
+    }
+};
 
 constexpr auto surface_descriptor_from_android_native_window(void* window) {
     return WGPUSurfaceDescriptorFromAndroidNativeWindow{
@@ -57,10 +71,6 @@ constexpr auto surface_descriptor_from_xlib_window(void* display, std::uint64_t 
         .display = display,
         .window  = window,
     };
-}
-
-constexpr auto surface_descriptor(const WGPUChainedStruct& next, const char* label) {
-    return WGPUSurfaceDescriptor{.nextInChain = &next, .label = label};
 }
 
 // TODO: Implement surface descriptor functions for each window type so `surface_descriptor` can be called with any

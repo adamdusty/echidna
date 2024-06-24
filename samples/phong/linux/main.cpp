@@ -128,14 +128,8 @@ static constexpr auto indices = std::array<std::uint32_t,36>{
 
 auto main() -> int {
     // GPU Initialization
-    auto* window = SDL_CreateWindow(
-        "test",
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        1920,
-        1080,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
-    );
+    auto* window =
+        SDL_CreateWindow("test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_SHOWN);
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
     SDL_GetWindowWMInfo(window, &info);
@@ -369,6 +363,8 @@ auto main() -> int {
     auto now      = std::chrono::steady_clock::now();
     auto previous = now;
     float delta   = (previous - now).count();
+
+    std::cout << "Before loop\n";
 
     while(!quit) {
         now   = std::chrono::steady_clock::now();
