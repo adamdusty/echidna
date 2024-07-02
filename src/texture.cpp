@@ -1,6 +1,6 @@
 #include "echidna/webgpu/texture.hpp"
 
-namespace echidna {
+namespace echidna::webgpu {
 
 auto texture::texture_view_descriptor(const char* label) const -> WGPUTextureViewDescriptor {
     WGPUTextureViewDimension dim = WGPUTextureViewDimension_Undefined;
@@ -72,4 +72,4 @@ auto texture::usage() const -> texture_usage {
     return static_cast<texture_usage>(wgpuTextureGetUsage(_handle));
 }
 
-} // namespace echidna
+} // namespace echidna::webgpu

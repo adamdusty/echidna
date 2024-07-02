@@ -1,6 +1,6 @@
 #include "echidna/webgpu/command_encoder.hpp"
 
-namespace echidna {
+namespace echidna::webgpu {
 
 auto command_encoder::begin_compute_pass(const WGPUComputePassDescriptor& desc) const -> compute_pass_encoder {
     return compute_pass_encoder{wgpuCommandEncoderBeginComputePass(_handle, &desc)};
@@ -54,4 +54,4 @@ auto command_encoder::copy_buffer(
     wgpuCommandEncoderCopyBufferToBuffer(_handle, source, src_offset, dest, dst_offset, size);
 }
 
-} // namespace echidna
+} // namespace echidna::webgpu

@@ -1,6 +1,6 @@
 #include "echidna/webgpu/device.hpp"
 
-namespace echidna {
+namespace echidna::webgpu {
 
 auto device::create_bind_group(const WGPUBindGroupDescriptor& desc) const -> bind_group {
     return bind_group{wgpuDeviceCreateBindGroup(_handle, &desc)};
@@ -106,4 +106,4 @@ auto device::create_shader_module(const WGPUShaderModuleDescriptor& desc) const 
 //     return create_shader_module(mod_desc);
 // }
 
-} // namespace echidna
+} // namespace echidna::webgpu

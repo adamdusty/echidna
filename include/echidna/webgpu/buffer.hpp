@@ -7,13 +7,14 @@
 #include <cstdint>
 #include <webgpu.h>
 
-namespace echidna {
+namespace echidna::webgpu {
 
 // TODO: Functions for buffer descriptor creation
 
 class ECHIDNA_EXPORT buffer : public handle_base<buffer, WGPUBuffer> {
     friend handle_base<buffer, WGPUBuffer>;
     static auto release(WGPUBuffer handle) { wgpuBufferRelease(handle); }
+    static auto reference(WGPUBuffer handle) { wgpuBufferReference(handle); }
 
 public:
     using handle_base::handle_base;
@@ -28,4 +29,4 @@ public:
         -> void;
 };
 
-} // namespace echidna
+} // namespace echidna::webgpu

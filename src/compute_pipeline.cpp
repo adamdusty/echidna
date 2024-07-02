@@ -1,9 +1,9 @@
 #include "echidna/webgpu/compute_pipeline.hpp"
 
-namespace echidna {
+namespace echidna::webgpu {
 
-auto compute_pipeline::bind_group_layout(std::uint32_t index) const -> echidna::bind_group_layout {
-    return echidna::bind_group_layout{wgpuComputePipelineGetBindGroupLayout(_handle, index)};
+auto compute_pipeline::bind_group_layout(std::uint32_t index) const -> echidna::webgpu::bind_group_layout {
+    return echidna::webgpu::bind_group_layout{wgpuComputePipelineGetBindGroupLayout(_handle, index)};
 }
 
-} // namespace echidna
+} // namespace echidna::webgpu

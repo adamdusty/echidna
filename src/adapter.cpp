@@ -3,7 +3,7 @@
 #include <cassert>
 #include <iostream>
 
-namespace echidna {
+namespace echidna::webgpu {
 
 auto adapter::limits() const -> WGPUSupportedLimits {
     auto limits = WGPUSupportedLimits{};
@@ -61,4 +61,4 @@ auto adapter::request_device(const WGPUDeviceDescriptor& desc) const -> device {
     return device{data.device};
 }
 
-} // namespace echidna
+} // namespace echidna::webgpu

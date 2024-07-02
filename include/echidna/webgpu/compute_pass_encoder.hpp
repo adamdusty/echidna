@@ -9,11 +9,12 @@
 #include <vector>
 #include <webgpu.h>
 
-namespace echidna {
+namespace echidna::webgpu {
 
 class ECHIDNA_EXPORT compute_pass_encoder : public handle_base<compute_pass_encoder, WGPUComputePassEncoder> {
     friend handle_base<compute_pass_encoder, WGPUComputePassEncoder>;
     static auto release(WGPUComputePassEncoder handle) { wgpuComputePassEncoderRelease(handle); }
+    static auto reference(WGPUComputePassEncoder handle) { wgpuComputePassEncoderReference(handle); }
 
 public:
     using handle_base::handle_base;
@@ -30,7 +31,7 @@ public:
         const -> void;
 };
 
-} // namespace echidna
+} // namespace echidna::webgpu
 
 // clang-format off
 // WGPU_EXPORT void wgpuComputePassEncoderSetLabel(WGPUComputePassEncoder computePassEncoder, char const * label) WGPU_FUNCTION_ATTRIBUTE;

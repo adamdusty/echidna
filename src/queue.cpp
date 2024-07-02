@@ -1,6 +1,6 @@
 #include "echidna/webgpu/queue.hpp"
 
-namespace echidna {
+namespace echidna::webgpu {
 
 // auto queue::set_label(const char* label) const -> void {
 //     wgpuQueueSetLabel(_handle, label);
@@ -15,4 +15,4 @@ auto queue::write_buffer(const buffer& buffer, std::uint64_t offset, const void*
     wgpuQueueWriteBuffer(_handle, buffer, offset, data, size);
 }
 
-} // namespace echidna
+} // namespace echidna::webgpu

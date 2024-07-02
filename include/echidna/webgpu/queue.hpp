@@ -9,11 +9,12 @@
 #include <vector>
 #include <webgpu.h>
 
-namespace echidna {
+namespace echidna::webgpu {
 
 class ECHIDNA_EXPORT queue : public handle_base<queue, WGPUQueue> {
     friend handle_base<queue, WGPUQueue>;
     static auto release(WGPUQueue handle) { wgpuQueueRelease(handle); }
+    static auto reference(WGPUQueue handle) { wgpuQueueReference(handle); }
 
 public:
     using handle_base::handle_base;
@@ -24,14 +25,14 @@ public:
     auto write_buffer(const buffer& buffer, std::uint64_t offset, const void* data, size_t size) const -> void;
 };
 
-constexpr auto queue_descriptor(const char* label = nullptr) {
-    return WGPUQueueDescriptor{
-        .nextInChain = nullptr,
-        .label       = label,
-    };
-}
+// constexpr auto queue_descriptor(const char* label = nullptr) {
+//     return WGPUQueueDescriptor{
+//         .nextInChain = nullptr,
+//         .label       = label,
+//     };
+// }
 
-} // namespace echidna
+} // namespace echidna::webgpu
 
 // clang-format off
 // WGPU_EXPORT void wgpuQueueWriteTexture(WGPUQueue queue, WGPUImageCopyTexture const * destination, void const * data, size_t dataSize, WGPUTextureDataLayout const * dataLayout, WGPUExtent3D const * writeSize) WGPU_FUNCTION_ATTRIBUTE;

@@ -6,11 +6,12 @@
 #include "echidna/webgpu/handle.hpp"
 #include <webgpu.h>
 
-namespace echidna {
+namespace echidna::webgpu {
 
 class ECHIDNA_EXPORT adapter : public handle_base<adapter, WGPUAdapter> {
     friend handle_base<adapter, WGPUAdapter>;
     static auto release(WGPUAdapter handle) { wgpuAdapterRelease(handle); }
+    static auto reference(WGPUAdapter handle) { wgpuAdapterReference(handle); }
 
 public:
     using handle_base::handle_base;
@@ -23,4 +24,4 @@ public:
     auto request_device(const WGPUDeviceDescriptor& desc) const -> device;
 };
 
-} // namespace echidna
+} // namespace echidna::webgpu

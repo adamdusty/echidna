@@ -7,11 +7,12 @@
 #include <cstdint>
 #include <webgpu.h>
 
-namespace echidna {
+namespace echidna::webgpu {
 
 class ECHIDNA_EXPORT bind_group : public handle_base<bind_group, WGPUBindGroup> {
     friend handle_base<bind_group, WGPUBindGroup>;
     static auto release(WGPUBindGroup handle) { wgpuBindGroupRelease(handle); }
+    static auto reference(WGPUBindGroup handle) { wgpuBindGroupReference(handle); }
 
 public:
     using handle_base::handle_base;
@@ -32,26 +33,26 @@ constexpr auto bind_group_desc(
     };
 }
 
-constexpr auto bind_group_desc(const bind_group_layout& layout, const std::vector<WGPUBindGroupEntry>& entries)
-    -> WGPUBindGroupDescriptor {
-    return bind_group_desc(nullptr, layout, entries);
-}
+// constexpr auto bind_group_desc(const bind_group_layout& layout, const std::vector<WGPUBindGroupEntry>& entries)
+//     -> WGPUBindGroupDescriptor {
+//     return bind_group_desc(nullptr, layout, entries);
+// }
 
-constexpr auto buffer_bind_group_entry(
-    std::uint32_t binding,
-    const buffer& buffer,
-    std::uint64_t offset,
-    std::uint64_t size
-) -> WGPUBindGroupEntry {
-    return WGPUBindGroupEntry{
-        .nextInChain = nullptr,
-        .binding     = binding,
-        .buffer      = buffer,
-        .offset      = offset,
-        .size        = size,
-        .sampler     = nullptr,
-        .textureView = nullptr,
-    };
-}
+// constexpr auto buffer_bind_group_entry(
+//     std::uint32_t binding,
+//     const buffer& buffer,
+//     std::uint64_t offset,
+//     std::uint64_t size
+// ) -> WGPUBindGroupEntry {
+//     return WGPUBindGroupEntry{
+//         .nextInChain = nullptr,
+//         .binding     = binding,
+//         .buffer      = buffer,
+//         .offset      = offset,
+//         .size        = size,
+//         .sampler     = nullptr,
+//         .textureView = nullptr,
+//     };
+// }
 
-} // namespace echidna
+} // namespace echidna::webgpu

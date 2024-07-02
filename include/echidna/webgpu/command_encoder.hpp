@@ -10,11 +10,12 @@
 #include <cstdint>
 #include <webgpu.h>
 
-namespace echidna {
+namespace echidna::webgpu {
 
 class ECHIDNA_EXPORT command_encoder : public handle_base<command_encoder, WGPUCommandEncoder> {
     friend handle_base<command_encoder, WGPUCommandEncoder>;
     static auto release(WGPUCommandEncoder handle) { wgpuCommandEncoderRelease(handle); }
+    static auto reference(WGPUCommandEncoder handle) { wgpuCommandEncoderReference(handle); }
 
 public:
     using handle_base::handle_base;
@@ -44,7 +45,7 @@ public:
     ) -> void;
 };
 
-} // namespace echidna
+} // namespace echidna::webgpu
 
 // clang-format off
 // WGPU_EXPORT void wgpuCommandEncoderCopyBufferToTexture(WGPUCommandEncoder commandEncoder, WGPUImageCopyBuffer const * source, WGPUImageCopyTexture const * destination, WGPUExtent3D const * copySize) WGPU_FUNCTION_ATTRIBUTE;

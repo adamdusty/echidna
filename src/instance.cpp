@@ -3,7 +3,7 @@
 #include <cassert>
 #include <iostream>
 
-namespace echidna {
+namespace echidna::webgpu {
 
 /**
  * https://github.com/webgpu-native/webgpu-headers/issues/117
@@ -46,4 +46,4 @@ auto instance::request_adapter(const WGPURequestAdapterOptions& options) const -
     return adapter{data.adapter};
 }
 
-} // namespace echidna
+} // namespace echidna::webgpu

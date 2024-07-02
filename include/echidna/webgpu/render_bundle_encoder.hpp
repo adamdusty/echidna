@@ -11,11 +11,12 @@
 #include <vector>
 #include <webgpu.h>
 
-namespace echidna {
+namespace echidna::webgpu {
 
 class ECHIDNA_EXPORT render_bundle_encoder : public handle_base<render_bundle_encoder, WGPURenderBundleEncoder> {
     friend handle_base<render_bundle_encoder, WGPURenderBundleEncoder>;
     static auto release(WGPURenderBundleEncoder handle) { wgpuRenderBundleEncoderRelease(handle); }
+    static auto reference(WGPURenderBundleEncoder handle) { wgpuRenderBundleEncoderReference(handle); }
 
 public:
     using handle_base::handle_base;
@@ -51,7 +52,7 @@ public:
     auto set_pipeline(const render_pipeline& pipeline) const -> void;
 };
 
-} // namespace echidna
+} // namespace echidna::webgpu
 
 // clang-format off
 // WGPU_EXPORT void wgpuRenderBundleEncoderSetLabel(WGPURenderBundleEncoder renderBundleEncoder, char const * label) WGPU_FUNCTION_ATTRIBUTE;

@@ -1,6 +1,6 @@
 #include "echidna/webgpu/compute_pass_encoder.hpp"
 
-namespace echidna {
+namespace echidna::webgpu {
 
 auto compute_pass_encoder::dispatch_work_groups(std::uint32_t count_x, std::uint32_t count_y, std::uint32_t count_z)
     const -> void {
@@ -39,4 +39,4 @@ auto compute_pass_encoder::set_bind_group(
 ) const -> void {
     wgpuComputePassEncoderSetBindGroup(_handle, group_index, group, dyn_offsets.size(), dyn_offsets.data());
 }
-} // namespace echidna
+} // namespace echidna::webgpu

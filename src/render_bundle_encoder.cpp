@@ -1,6 +1,6 @@
 #include "echidna/webgpu/render_bundle_encoder.hpp"
 
-namespace echidna {
+namespace echidna::webgpu {
 
 auto render_bundle_encoder::draw(
     std::uint32_t vertex_count,
@@ -75,4 +75,4 @@ auto render_bundle_encoder::set_pipeline(const render_pipeline& pipeline) const 
     wgpuRenderBundleEncoderSetPipeline(_handle, pipeline);
 }
 
-} // namespace echidna
+} // namespace echidna::webgpu

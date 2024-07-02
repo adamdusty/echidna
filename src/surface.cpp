@@ -1,6 +1,7 @@
 #include "echidna/webgpu/surface.hpp"
+#include "echidna/webgpu/structs.hpp"
 
-namespace echidna {
+namespace echidna::webgpu {
 
 auto surface::configure(const WGPUSurfaceConfiguration& config) const -> void {
     wgpuSurfaceConfigure(_handle, &config);
@@ -21,24 +22,10 @@ auto surface::capabilities(const WGPUAdapter& adapter) const -> surface_capabili
     WGPUSurfaceCapabilities cap;
     wgpuSurfaceGetCapabilities(_handle, adapter, &cap);
 
-    auto capabilities = surface_capabilities{};
-
-    for(size_t i = 0; i < cap.formatCount; ++i) {
-        capabilities.formats.emplace_back(static_cast<texture_format>(cap.formats[i]));
-    }
-
-    for(size_t i = 0; i < cap.presentModeCount; ++i) {
-        capabilities.present_modes.emplace_back(static_cast<present_mode>(cap.presentModes[i]));
-    }
-
-    for(size_t i = 0; i < cap.alphaModeCount; ++i) {
-        capabilities.alpha_modes.emplace_back(static_cast<composite_alpha_mode>(cap.alphaModes[i]));
-    }
-
-    return capabilities;
+    return cap;
 }
 
-auto surface::current_texture() -> const texture* {
+auto surface::current_texture() -> std::shared_ptr<texture> {
     auto tex = WGPUSurfaceTexture{
         .texture    = nullptr,
         .suboptimal = static_cast<WGPUBool>(true),
@@ -52,10 +39,10 @@ auto surface::current_texture() -> const texture* {
     // All texture errors should probably be handled regardless
     while(tex.texture == nullptr) {
         wgpuSurfaceGetCurrentTexture(_handle, &tex);
-        current.set_handle(tex.texture);
+        current->set_handle(tex.texture);
     }
 
-    return &current;
+    return current;
 }
 
-} // namespace echidna
+} // namespace echidna::webgpu

@@ -19,11 +19,12 @@
 #include <vector>
 #include <webgpu.h>
 
-namespace echidna {
+namespace echidna::webgpu {
 
 class ECHIDNA_EXPORT device : public handle_base<device, WGPUDevice> {
     friend handle_base<device, WGPUDevice>;
     static auto release(WGPUDevice handle) { wgpuDeviceRelease(handle); }
+    static auto reference(WGPUDevice handle) { wgpuDeviceReference(handle); }
 
 public:
     using handle_base::handle_base;
@@ -61,7 +62,7 @@ static constexpr auto device_error_stderr = [](WGPUErrorType type, const char* m
     }
 };
 
-} // namespace echidna
+} // namespace echidna::webgpu
 
 // clang-format off
 // WGPU_EXPORT void wgpuDeviceCreateComputePipelineAsync(WGPUDevice device, WGPUComputePipelineDescriptor const * descriptor, WGPUCreateComputePipelineAsyncCallback callback, void * userdata) WGPU_FUNCTION_ATTRIBUTE;

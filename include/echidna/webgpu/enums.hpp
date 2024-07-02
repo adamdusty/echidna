@@ -5,8 +5,11 @@
 #include <webgpu.h>
 
 // TODO: Implement equality operators between echidna enums and wgpu-native enums
+// TODO: Add static asserts for underlying types
+template<typename T, typename U>
+constexpr bool same_underlying = std::is_same_v<std::underlying_type_t<T>, std::underlying_type_t<U>>;
 
-namespace echidna {
+namespace echidna::webgpu {
 
 enum class adapter_type : std::uint32_t {
     discrete   = WGPUAdapterType_DiscreteGPU,
@@ -14,6 +17,7 @@ enum class adapter_type : std::uint32_t {
     cpu        = WGPUAdapterType_CPU,
     unknown    = WGPUAdapterType_Unknown,
 };
+static_assert(same_underlying<adapter_type, WGPUAdapterType>);
 
 constexpr auto operator==(WGPUAdapterType w, adapter_type e) -> bool {
     return w == static_cast<WGPUAdapterType>(e);
@@ -427,7 +431,7 @@ enum class texture_sample_type : std::uint32_t {
     uint               = WGPUTextureSampleType_Uint,
 };
 
-enum class textureview_dimension : std::uint32_t {
+enum class texture_view_dimension : std::uint32_t {
     undefined  = WGPUTextureViewDimension_Undefined,
     dim1       = WGPUTextureViewDimension_1D,
     dim2       = WGPUTextureViewDimension_2D,
@@ -577,4 +581,4 @@ constexpr auto operator&(texture_usage lhs, texture_usage rhs) -> texture_usage 
     );
 }
 
-} // namespace echidna
+} // namespace echidna::webgpu

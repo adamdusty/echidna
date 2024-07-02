@@ -1,6 +1,6 @@
 #include "echidna/webgpu/buffer.hpp"
 
-namespace echidna {
+namespace echidna::webgpu {
 
 auto buffer::get_mapped_range(size_t offset, size_t size) const -> void* {
     return wgpuBufferGetMappedRange(_handle, offset, size);
@@ -27,4 +27,4 @@ auto buffer::map_async(map_mode mode, size_t offset, size_t size, WGPUBufferMapC
     wgpuBufferMapAsync(_handle, static_cast<WGPUMapModeFlags>(mode), offset, size, callback, user_data);
 }
 
-} // namespace echidna
+} // namespace echidna::webgpu

@@ -7,11 +7,12 @@
 #include "echidna/webgpu/handle.hpp"
 #include "echidna/webgpu/surface.hpp"
 
-namespace echidna {
+namespace echidna::webgpu {
 
 class ECHIDNA_EXPORT instance : public handle_base<instance, WGPUInstance> {
     friend handle_base<instance, WGPUInstance>;
     static auto release(WGPUInstance handle) { wgpuInstanceRelease(handle); }
+    static auto reference(WGPUInstance handle) { wgpuInstanceReference(handle); }
 
 public:
     using handle_base::handle_base;
@@ -29,12 +30,12 @@ public:
     auto request_adapter(const WGPURequestAdapterOptions& options) const -> adapter;
 };
 
-constexpr auto instance_descriptor(const WGPUChainedStruct& next) {
-    return WGPUInstanceDescriptor{.nextInChain = &next};
-}
+// constexpr auto instance_descriptor(const WGPUChainedStruct& next) {
+//     return WGPUInstanceDescriptor{.nextInChain = &next};
+// }
 
-constexpr auto instance_descriptor() {
-    return WGPUInstanceDescriptor{.nextInChain = nullptr};
-}
+// constexpr auto instance_descriptor() {
+//     return WGPUInstanceDescriptor{.nextInChain = nullptr};
+// }
 
-} // namespace echidna
+} // namespace echidna::webgpu

@@ -6,11 +6,12 @@
 #include <cstdint>
 #include <webgpu.h>
 
-namespace echidna {
+namespace echidna::webgpu {
 
 class ECHIDNA_EXPORT compute_pipeline : public handle_base<compute_pipeline, WGPUComputePipeline> {
     friend handle_base<compute_pipeline, WGPUComputePipeline>;
     static auto release(WGPUComputePipeline handle) { wgpuComputePipelineRelease(handle); }
+    static auto reference(WGPUComputePipeline handle) { wgpuComputePipelineReference(handle); }
 
 public:
     using handle_base::handle_base;
@@ -19,4 +20,4 @@ public:
     auto bind_group_layout(std::uint32_t index) const -> bind_group_layout;
 };
 
-} // namespace echidna
+} // namespace echidna::webgpu

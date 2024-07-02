@@ -291,7 +291,7 @@ auto main() -> int {
     auto depth_texture_view_desc = texture_view_descriptor(
         "depth",
         texture_format::depth32_float,
-        textureview_dimension::dim2,
+        texture_view_dimension::dim2,
         0,
         1,
         0,

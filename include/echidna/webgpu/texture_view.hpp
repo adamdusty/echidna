@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <webgpu.h>
 
-namespace echidna {
+namespace echidna::webgpu {
 
 class ECHIDNA_EXPORT texture_view : public handle_base<texture_view, WGPUTextureView> {
     friend handle_base<texture_view, WGPUTextureView>;
@@ -20,7 +20,7 @@ public:
 constexpr auto texture_view_descriptor(
     const char* label,
     texture_format format,
-    textureview_dimension dimension,
+    texture_view_dimension dimension,
     std::uint32_t mip_level,
     std::uint32_t mip_level_count,
     std::uint32_t base_array,
@@ -40,4 +40,4 @@ constexpr auto texture_view_descriptor(
     };
 }
 
-} // namespace echidna
+} // namespace echidna::webgpu

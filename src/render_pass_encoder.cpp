@@ -1,6 +1,6 @@
 #include "echidna/webgpu/render_pass_encoder.hpp"
 
-namespace echidna {
+namespace echidna::webgpu {
 
 auto render_pass_encoder::begin_occlusion_query(std::uint32_t index) const -> void {
     wgpuRenderPassEncoderBeginOcclusionQuery(_handle, index);
@@ -104,4 +104,4 @@ auto render_pass_encoder::set_viewport(float x, float y, float width, float heig
     wgpuRenderPassEncoderSetViewport(_handle, x, y, width, height, min_depth, max_depth);
 }
 
-} // namespace echidna
+} // namespace echidna::webgpu
