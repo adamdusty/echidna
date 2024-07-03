@@ -8,10 +8,10 @@
 
 namespace echidna {
 
-constexpr auto device_lost_print_stderr = [](WGPUDeviceLostReason reason, char const* message, void*) {
-    auto loss_reason = reason == device_lost_reason::destroyed ? std::string{"destroyed"} : std::string{"undefined"};
+// constexpr auto device_lost_print_stderr = [](WGPUDeviceLostReason reason, char const* message, void*) {
+//     auto loss_reason = reason == device_lost_reason::destroyed ? std::string{"destroyed"} : std::string{"undefined"};
 
-    std::cerr << std::format("Device Lost[{}]: {}", loss_reason, message);
-};
+//     std::cerr << std::format("Device Lost[{}]: {}", loss_reason, message);
+// };
 
-}
+} // namespace echidna
