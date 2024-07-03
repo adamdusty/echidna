@@ -16,8 +16,11 @@ build:
 test:
     ctest --preset dev
 
+testv:
+    ctest --preset dev --verbose
+
 clean:
-    rm build -Recurse -Force
+    cmake --build --preset dev --target clean
 
 samples: build
     cp "build\dev\_deps\wgpu-src\wgpu_native.dll" "build\dev\samples\"

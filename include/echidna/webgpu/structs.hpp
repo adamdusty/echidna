@@ -3,6 +3,7 @@
 #include "echidna/export.hpp"
 #include "echidna/webgpu/bind_group_layout.hpp"
 #include "echidna/webgpu/buffer.hpp"
+#include "echidna/webgpu/chained_struct.hpp"
 #include "echidna/webgpu/device.hpp"
 #include "echidna/webgpu/enums.hpp"
 #include "echidna/webgpu/pipeline_layout.hpp"
@@ -22,9 +23,6 @@
 
 namespace echidna::webgpu {
 
-using chained_struct     = WGPUChainedStruct;
-using chained_struct_out = WGPUChainedStructOut;
-
 using device_lost_callback = WGPUDeviceLostCallback;
 
 struct ECHIDNA_EXPORT adapter_properties {
@@ -35,8 +33,8 @@ struct ECHIDNA_EXPORT adapter_properties {
     std::uint32_t device_id;
     std::string device;
     std::string description;
-    backend_type backend_type;
-    adapter_type adapter_type;
+    backend_type backend;
+    adapter_type adapter;
 
     constexpr adapter_properties(WGPUAdapterProperties& p) :
         next(p.nextInChain),
@@ -46,8 +44,8 @@ struct ECHIDNA_EXPORT adapter_properties {
         device_id(p.deviceID),
         device(p.name),
         description(p.driverDescription),
-        backend_type(static_cast<echidna::webgpu::backend_type>(p.backendType)),
-        adapter_type(static_cast<echidna::webgpu::adapter_type>(p.adapterType)) {}
+        backend(static_cast<echidna::webgpu::backend_type>(p.backendType)),
+        adapter(static_cast<echidna::webgpu::adapter_type>(p.adapterType)) {}
 
     constexpr operator WGPUAdapterProperties() const {
         return WGPUAdapterProperties{
@@ -58,8 +56,8 @@ struct ECHIDNA_EXPORT adapter_properties {
             .deviceID          = device_id,
             .name              = device.c_str(),
             .driverDescription = description.c_str(),
-            .adapterType       = static_cast<WGPUAdapterType>(adapter_type),
-            .backendType       = static_cast<WGPUBackendType>(backend_type),
+            .adapterType       = static_cast<WGPUAdapterType>(adapter),
+            .backendType       = static_cast<WGPUBackendType>(backend),
         };
     }
 };
@@ -67,30 +65,30 @@ struct ECHIDNA_EXPORT adapter_properties {
 struct ECHIDNA_EXPORT bind_group_entry {
     const chained_struct* next;
     std::uint32_t binding;
-    buffer buffer;
+    buffer buffer_binding;
     std::uint64_t offset;
     std::uint64_t size;
-    sampler sampler;
-    texture_view texture_view;
+    sampler sampler_binding;
+    texture_view texture_view_binding;
 
     constexpr bind_group_entry(const WGPUBindGroupEntry& e) :
         next(e.nextInChain),
         binding(e.binding),
-        buffer(e.buffer),
+        buffer_binding(e.buffer),
         offset(e.offset),
         size(e.size),
-        sampler(e.sampler),
-        texture_view(e.textureView) {}
+        sampler_binding(e.sampler),
+        texture_view_binding(e.textureView) {}
 
     constexpr operator WGPUBindGroupEntry() const {
         return WGPUBindGroupEntry{
             .nextInChain = next,
             .binding     = binding,
-            .buffer      = buffer,
+            .buffer      = buffer_binding,
             .offset      = offset,
             .size        = size,
-            .sampler     = sampler,
-            .textureView = texture_view,
+            .sampler     = sampler_binding,
+            .textureView = texture_view_binding,
         };
     }
 };
@@ -133,7 +131,7 @@ struct ECHIDNA_EXPORT buffer_binding_layout {
             .hasDynamicOffset = static_cast<WGPUBool>(dynamic_offset),
             .minBindingSize   = min_binding_size,
         };
-    };
+    }
 };
 
 struct ECHIDNA_EXPORT buffer_descriptor {
@@ -222,6 +220,7 @@ struct ECHIDNA_EXPORT compilation_message {
     constexpr operator WGPUCompilationMessage() const {
         return WGPUCompilationMessage{
             .nextInChain  = next,
+            .message      = message.c_str(),
             .type         = static_cast<WGPUCompilationMessageType>(type),
             .lineNum      = line,
             .linePos      = col,
@@ -282,6 +281,7 @@ struct ECHIDNA_EXPORT extent3d {
 struct ECHIDNA_EXPORT instance_descriptor {
     const chained_struct* next;
 
+    explicit constexpr instance_descriptor(const chained_struct* n = nullptr) : next(n) {}
     constexpr instance_descriptor(const WGPUInstanceDescriptor& i) : next((i.nextInChain)) {}
 
     constexpr operator WGPUInstanceDescriptor() const { return WGPUInstanceDescriptor{.nextInChain = next}; }
@@ -471,23 +471,23 @@ struct ECHIDNA_EXPORT primitive_state {
     const chained_struct* next;
     primitive_topology topology;
     index_format strip_index_format;
-    front_face front_face;
-    cull_mode cull_mode;
+    front_face front_face_winding;
+    cull_mode cull_mode_direction;
 
     constexpr primitive_state(const WGPUPrimitiveState& p) :
         next((p.nextInChain)),
         topology(static_cast<primitive_topology>(p.topology)),
         strip_index_format(static_cast<index_format>(p.stripIndexFormat)),
-        front_face(static_cast<echidna::webgpu::front_face>(p.frontFace)),
-        cull_mode(static_cast<echidna::webgpu::cull_mode>(p.cullMode)) {}
+        front_face_winding(static_cast<echidna::webgpu::front_face>(p.frontFace)),
+        cull_mode_direction(static_cast<echidna::webgpu::cull_mode>(p.cullMode)) {}
 
     constexpr operator WGPUPrimitiveState() const {
         return WGPUPrimitiveState{
             .nextInChain      = next,
             .topology         = static_cast<WGPUPrimitiveTopology>(topology),
             .stripIndexFormat = static_cast<WGPUIndexFormat>(strip_index_format),
-            .frontFace        = static_cast<WGPUFrontFace>(front_face),
-            .cullMode         = static_cast<WGPUCullMode>(cull_mode),
+            .frontFace        = static_cast<WGPUFrontFace>(front_face_winding),
+            .cullMode         = static_cast<WGPUCullMode>(cull_mode_direction),
         };
     }
 };
@@ -599,14 +599,25 @@ struct ECHIDNA_EXPORT render_pass_timestamp_writes {
 struct ECHIDNA_EXPORT request_adapter_options {
     const chained_struct* next;
     surface compatible_surface;
-    power_preference power_preference;
+    power_preference power_pref;
     backend_type backend;
     bool force_fallback;
 
+    request_adapter_options(
+        const chained_struct* n,
+        const surface& surf,
+        power_preference pref,
+        backend_type backend,
+        bool fallback
+    ) :
+        next(n), compatible_surface(surf), power_pref(pref), backend(backend), force_fallback(fallback) {}
+
+    request_adapter_options(surface& surf, power_preference pref, backend_type backend, bool fallback) :
+        request_adapter_options(nullptr, surf, pref, backend, fallback) {}
     constexpr request_adapter_options(const WGPURequestAdapterOptions& o) :
         next(o.nextInChain),
         compatible_surface(o.compatibleSurface),
-        power_preference(static_cast<echidna::webgpu::power_preference>(o.powerPreference)),
+        power_pref(static_cast<echidna::webgpu::power_preference>(o.powerPreference)),
         backend(static_cast<backend_type>(o.backendType)),
         force_fallback(static_cast<bool>(o.forceFallbackAdapter)) {}
 
@@ -614,7 +625,7 @@ struct ECHIDNA_EXPORT request_adapter_options {
         return WGPURequestAdapterOptions{
             .nextInChain          = next,
             .compatibleSurface    = compatible_surface,
-            .powerPreference      = static_cast<WGPUPowerPreference>(power_preference),
+            .powerPreference      = static_cast<WGPUPowerPreference>(power_pref),
             .backendType          = static_cast<WGPUBackendType>(backend),
             .forceFallbackAdapter = static_cast<WGPUBool>(force_fallback),
         };
@@ -830,24 +841,24 @@ class surface_configuration {
 
 public:
     const chained_struct* next;
-    device device;
+    device device_handle;
     texture_format format;
     texture_usage usage;
     std::vector<texture_format> view_formats;
     composite_alpha_mode alpha_mode;
     std::uint32_t width;
     std::uint32_t height;
-    present_mode present_mode;
+    present_mode present;
 
     constexpr surface_configuration(const WGPUSurfaceConfiguration& c) :
         next(c.nextInChain),
-        device(c.device),
+        device_handle(c.device),
         format(static_cast<texture_format>(c.format)),
         usage(static_cast<texture_usage>(c.usage)),
         alpha_mode(static_cast<composite_alpha_mode>(c.alphaMode)),
         width(c.width),
         height(c.height),
-        present_mode(static_cast<echidna::webgpu::present_mode>(c.presentMode)) {
+        present(static_cast<echidna::webgpu::present_mode>(c.presentMode)) {
 
         std::transform(c.viewFormats, c.viewFormats + c.viewFormatCount, std::back_inserter(view_formats), [](auto vf) {
             return static_cast<texture_format>(vf);
@@ -857,7 +868,7 @@ public:
     constexpr operator WGPUSurfaceConfiguration() {
         return WGPUSurfaceConfiguration{
             .nextInChain     = next,
-            .device          = device,
+            .device          = device_handle,
             .format          = static_cast<WGPUTextureFormat>(format),
             .usage           = static_cast<WGPUTextureUsage>(usage),
             .viewFormatCount = view_formats.size(),
@@ -865,128 +876,7 @@ public:
             .alphaMode       = static_cast<WGPUCompositeAlphaMode>(alpha_mode),
             .width           = width,
             .height          = height,
-            .presentMode     = static_cast<WGPUPresentMode>(present_mode),
-        };
-    }
-};
-
-struct ECHIDNA_EXPORT surface_descriptor {
-    const chained_struct* next;
-    std::string label;
-
-    constexpr surface_descriptor(const WGPUSurfaceDescriptor& d) : next(d.nextInChain), label(d.label) {}
-    constexpr operator WGPUSurfaceDescriptor() { return {.nextInChain = next, .label = label.c_str()}; }
-};
-
-struct ECHIDNA_EXPORT surface_descriptor_from_android_native_window {
-    chained_struct chain;
-    void* window;
-
-    constexpr surface_descriptor_from_android_native_window(const WGPUSurfaceDescriptorFromAndroidNativeWindow& d) :
-        chain(d.chain), window(d.window) {}
-
-    constexpr operator WGPUSurfaceDescriptorFromAndroidNativeWindow() {
-        return WGPUSurfaceDescriptorFromAndroidNativeWindow{
-            .chain  = chain,
-            .window = window,
-        };
-    }
-};
-
-struct ECHIDNA_EXPORT surface_descriptor_from_canvas_html_selector {
-    chained_struct chain;
-    std::string selector;
-
-    constexpr surface_descriptor_from_canvas_html_selector(const WGPUSurfaceDescriptorFromCanvasHTMLSelector& d) :
-        chain(d.chain), selector(d.selector) {}
-
-    constexpr operator WGPUSurfaceDescriptorFromCanvasHTMLSelector() {
-        return WGPUSurfaceDescriptorFromCanvasHTMLSelector{
-            .chain    = chain,
-            .selector = selector.c_str(),
-        };
-    }
-};
-
-struct ECHIDNA_EXPORT surface_descriptor_from_metal_layer {
-    chained_struct chain;
-    void* layer;
-
-    constexpr surface_descriptor_from_metal_layer(const WGPUSurfaceDescriptorFromMetalLayer& d) :
-        chain(d.chain), layer(d.layer) {}
-
-    constexpr operator WGPUSurfaceDescriptorFromMetalLayer() {
-        return WGPUSurfaceDescriptorFromMetalLayer{
-            .chain = chain,
-            .layer = layer,
-        };
-    }
-};
-
-struct ECHIDNA_EXPORT surface_descriptor_from_wayland_surface {
-    chained_struct chain;
-    void* display;
-    void* surface;
-
-    constexpr surface_descriptor_from_wayland_surface(const WGPUSurfaceDescriptorFromWaylandSurface& d) :
-        chain(d.chain), display(d.display), surface(d.surface) {}
-
-    constexpr operator WGPUSurfaceDescriptorFromWaylandSurface() {
-        return WGPUSurfaceDescriptorFromWaylandSurface{
-            .chain   = chain,
-            .display = display,
-            .surface = surface,
-        };
-    }
-};
-
-struct ECHIDNA_EXPORT surface_descriptor_from_windows_hwnd {
-    chained_struct chain;
-    void* instance;
-    void* hwnd;
-
-    constexpr surface_descriptor_from_windows_hwnd(const WGPUSurfaceDescriptorFromWindowsHWND& d) :
-        chain(d.chain), instance(d.hinstance), hwnd(d.hwnd) {}
-
-    constexpr operator WGPUSurfaceDescriptorFromWindowsHWND() {
-        return WGPUSurfaceDescriptorFromWindowsHWND{
-            .chain     = chain,
-            .hinstance = instance,
-            .hwnd      = hwnd,
-        };
-    }
-};
-
-struct ECHIDNA_EXPORT surface_descriptor_from_xcb_window {
-    chained_struct chain;
-    void* connection;
-    std::uint32_t window;
-
-    constexpr surface_descriptor_from_xcb_window(const WGPUSurfaceDescriptorFromXcbWindow& d) :
-        chain(d.chain), connection(d.connection), window(d.window) {}
-
-    constexpr operator WGPUSurfaceDescriptorFromXcbWindow() {
-        return WGPUSurfaceDescriptorFromXcbWindow{
-            .chain      = chain,
-            .connection = connection,
-            .window     = window,
-        };
-    }
-};
-
-struct ECHIDNA_EXPORT surface_descriptor_from_xlib_window {
-    chained_struct chain;
-    void* display;
-    std::uint64_t window;
-
-    constexpr surface_descriptor_from_xlib_window(const WGPUSurfaceDescriptorFromXlibWindow& d) :
-        chain(d.chain), display(d.display), window(d.window) {}
-
-    constexpr operator WGPUSurfaceDescriptorFromXlibWindow() {
-        return WGPUSurfaceDescriptorFromXlibWindow{
-            .chain   = chain,
-            .display = display,
-            .window  = window,
+            .presentMode     = static_cast<WGPUPresentMode>(present),
         };
     }
 };
@@ -1106,6 +996,7 @@ public:
         return WGPUBindGroupDescriptor{
             .nextInChain = next,
             .label       = label.c_str(),
+            .layout      = layout,
             .entryCount  = entries.size(),
             .entries     = this->get_wgpu_entries().data(),
         };
@@ -1182,7 +1073,7 @@ public:
     compute_pass_timestamp_writes timestamp_writes;
 
     constexpr compute_pass_descriptor(const WGPUComputePassDescriptor& d) :
-        next(d.nextInChain), label(d.label), wgpu_tsw(*d.timestampWrites), timestamp_writes(*d.timestampWrites) {}
+        wgpu_tsw(*d.timestampWrites), next(d.nextInChain), label(d.label), timestamp_writes(*d.timestampWrites) {}
 
     operator WGPUComputePassDescriptor() {
         return WGPUComputePassDescriptor{
@@ -1222,6 +1113,7 @@ struct ECHIDNA_EXPORT depth_stencil_state {
     constexpr operator WGPUDepthStencilState() {
         return WGPUDepthStencilState{
             .nextInChain         = next,
+            .format              = static_cast<WGPUTextureFormat>(format),
             .depthWriteEnabled   = static_cast<WGPUBool>(depth_write_enabled),
             .depthCompare        = static_cast<WGPUCompareFunction>(depth_compare),
             .stencilFront        = stencil_front,
@@ -1238,30 +1130,30 @@ struct ECHIDNA_EXPORT depth_stencil_state {
 struct ECHIDNA_EXPORT image_copy_buffer {
     const chained_struct* next;
     texture_data_layout layout;
-    buffer buffer;
+    buffer buffer_dst;
 
     constexpr image_copy_buffer(const WGPUImageCopyBuffer& b) :
-        next(b.nextInChain), layout(b.layout), buffer(b.buffer) {}
+        next(b.nextInChain), layout(b.layout), buffer_dst(b.buffer) {}
 
     constexpr operator WGPUImageCopyBuffer() {
         return WGPUImageCopyBuffer{
             .nextInChain = next,
             .layout      = layout,
-            .buffer      = buffer,
+            .buffer      = buffer_dst,
         };
     }
 };
 
 struct ECHIDNA_EXPORT image_copy_texture {
     const chained_struct* next;
-    texture texture;
+    texture texture_dst;
     std::uint32_t mip_level;
     origin3d origin;
     texture_aspect aspect;
 
     constexpr image_copy_texture(const WGPUImageCopyTexture& b) :
         next(b.nextInChain),
-        texture(b.texture),
+        texture_dst(b.texture),
         mip_level(b.mipLevel),
         origin(b.origin),
         aspect(static_cast<texture_aspect>(b.aspect)) {}
@@ -1269,7 +1161,7 @@ struct ECHIDNA_EXPORT image_copy_texture {
     constexpr operator WGPUImageCopyTexture() {
         return WGPUImageCopyTexture{
             .nextInChain = next,
-            .texture     = texture,
+            .texture     = texture_dst,
             .mipLevel    = mip_level,
             .origin      = origin,
             .aspect      = static_cast<WGPUTextureAspect>(aspect),
@@ -1312,16 +1204,16 @@ struct ECHIDNA_EXPORT render_pass_color_attachment {
     const chained_struct* next;
     texture_view view;
     texture_view resolve_target;
-    load_op load_op;
-    store_op store_op;
+    load_op load_operation;
+    store_op store_operation;
     color clear_value;
 
     constexpr render_pass_color_attachment(const WGPURenderPassColorAttachment& a) :
         next(a.nextInChain),
         view(a.view),
         resolve_target(a.resolveTarget),
-        load_op(static_cast<echidna::webgpu::load_op>(a.loadOp)),
-        store_op(static_cast<echidna::webgpu::store_op>(a.storeOp)),
+        load_operation(static_cast<echidna::webgpu::load_op>(a.loadOp)),
+        store_operation(static_cast<echidna::webgpu::store_op>(a.storeOp)),
         clear_value(a.clearValue) {}
 
     constexpr operator WGPURenderPassColorAttachment() {
@@ -1329,8 +1221,8 @@ struct ECHIDNA_EXPORT render_pass_color_attachment {
             .nextInChain   = next,
             .view          = view,
             .resolveTarget = resolve_target,
-            .loadOp        = static_cast<WGPULoadOp>(load_op),
-            .storeOp       = static_cast<WGPUStoreOp>(store_op),
+            .loadOp        = static_cast<WGPULoadOp>(load_operation),
+            .storeOp       = static_cast<WGPUStoreOp>(store_operation),
             .clearValue    = clear_value,
         };
     }
@@ -1338,10 +1230,10 @@ struct ECHIDNA_EXPORT render_pass_color_attachment {
 
 struct ECHIDNA_EXPORT required_limits {
     const chained_struct* next;
-    limits limits;
+    limits required_lims;
 
-    constexpr required_limits(const WGPURequiredLimits& l) : next(l.nextInChain), limits(l.limits) {}
-    constexpr operator WGPURequiredLimits() { return {.nextInChain = next, .limits = limits}; }
+    constexpr required_limits(const WGPURequiredLimits& l) : next(l.nextInChain), required_lims(l.limits) {}
+    constexpr operator WGPURequiredLimits() { return {.nextInChain = next, .limits = required_lims}; }
 };
 
 class shader_module_descriptor {
@@ -1372,10 +1264,10 @@ public:
 
 struct ECHIDNA_EXPORT supported_limits {
     chained_struct_out* next;
-    limits limits;
+    limits supported_lims;
 
-    constexpr supported_limits(const WGPUSupportedLimits& l) : next(l.nextInChain), limits(l.limits) {}
-    constexpr operator WGPUSupportedLimits() { return {.nextInChain = next, .limits = limits}; }
+    constexpr supported_limits(const WGPUSupportedLimits& l) : next(l.nextInChain), supported_lims(l.limits) {}
+    constexpr operator WGPUSupportedLimits() { return {.nextInChain = next, .limits = supported_lims}; }
 };
 
 class texture_descriptor {
@@ -1396,6 +1288,7 @@ public:
     extent3d size;
     texture_format format;
     std::uint32_t mip_level_count;
+    std::uint32_t sample_count;
     std::vector<texture_format> view_formats;
 
     constexpr texture_descriptor(const WGPUTextureDescriptor& d) :
@@ -1405,7 +1298,8 @@ public:
         dimension(static_cast<texture_dimension>(d.dimension)),
         size(d.size),
         format(static_cast<texture_format>(d.format)),
-        mip_level_count(d.mipLevelCount) {
+        mip_level_count(d.mipLevelCount),
+        sample_count(d.sampleCount) {
         std::transform(d.viewFormats, d.viewFormats + d.viewFormatCount, std::back_inserter(view_formats), [](auto f) {
             return static_cast<texture_format>(f);
         });
@@ -1420,6 +1314,7 @@ public:
             .size            = size,
             .format          = static_cast<WGPUTextureFormat>(format),
             .mipLevelCount   = mip_level_count,
+            .sampleCount     = sample_count,
             .viewFormatCount = view_formats.size(),
             .viewFormats     = this->wgpu_formats.data(),
         };
@@ -1496,11 +1391,11 @@ public:
     color_write_mask write_mask;
 
     constexpr color_target_state(const WGPUColorTargetState& s) :
+        wgpu_blend(*s.blend),
         next(s.nextInChain),
-        format(static_cast<texture_format>(format)),
+        format(static_cast<texture_format>(s.format)),
         blend(*s.blend),
-        write_mask(static_cast<color_write_mask>(s.writeMask)),
-        wgpu_blend(*s.blend) {}
+        write_mask(static_cast<color_write_mask>(s.writeMask)) {}
 
     constexpr operator WGPUColorTargetState() {
         return WGPUColorTargetState{
@@ -1536,7 +1431,7 @@ class device_descriptor {
     std::vector<WGPUFeatureName> wgpu_features;
 
     constexpr auto get_wgpu_limits() {
-        wgpu_limits = required_limits;
+        wgpu_limits = required_lims;
         return &wgpu_limits;
     }
 
@@ -1555,17 +1450,17 @@ public:
     const chained_struct* next;
     std::string label;
     std::vector<feature_name> required_features;
-    required_limits required_limits;
+    required_limits required_lims;
     queue_descriptor default_queue;
-    device_lost_callback device_lost_callback;
+    device_lost_callback dev_lost_callback;
     void* device_lost_user_data;
 
     constexpr device_descriptor(const WGPUDeviceDescriptor& d) :
         next(d.nextInChain),
         label(d.label),
-        required_limits(*d.requiredLimits),
+        required_lims(*d.requiredLimits),
         default_queue(d.defaultQueue),
-        device_lost_callback(d.deviceLostCallback),
+        dev_lost_callback(d.deviceLostCallback),
         device_lost_user_data(d.deviceLostUserdata) {
 
         std::transform(
@@ -1584,7 +1479,7 @@ public:
             .requiredFeatures     = this->get_wgpu_features().data(),
             .requiredLimits       = this->get_wgpu_limits(),
             .defaultQueue         = default_queue,
-            .deviceLostCallback   = device_lost_callback,
+            .deviceLostCallback   = dev_lost_callback,
             .deviceLostUserdata   = device_lost_user_data,
         };
     }
@@ -1619,15 +1514,14 @@ public:
     render_pass_timestamp_writes timestamp_writes;
 
     constexpr render_pass_descriptor(const WGPURenderPassDescriptor& d) :
+        wgpu_ds(*d.depthStencilAttachment),
+        wgpu_tsw(*d.timestampWrites),
         next(d.nextInChain),
         label(d.label),
         color_attachments(d.colorAttachments, d.colorAttachments + d.colorAttachmentCount),
-
         depth_stencil_attachment(*d.depthStencilAttachment),
-        wgpu_ds(*d.depthStencilAttachment),
         occlusion_query_set(d.occlusionQuerySet),
-        timestamp_writes(*d.timestampWrites),
-        wgpu_tsw(*d.timestampWrites) {
+        timestamp_writes(*d.timestampWrites) {
         wgpu_ca = std::vector<WGPURenderPassColorAttachment>(color_attachments.begin(), color_attachments.end());
     }
 
@@ -1751,16 +1645,16 @@ public:
     fragment_state fragment;
 
     constexpr render_pipeline_descriptor(const WGPURenderPipelineDescriptor& d) :
+        wgpu_ds(*d.depthStencil),
+        wgpu_fs(*d.fragment),
         next(d.nextInChain),
         label(d.label),
         layout(d.layout),
         vertex(d.vertex),
         primitive(d.primitive),
         depth_stencil(*d.depthStencil),
-        wgpu_ds(*d.depthStencil),
         multisample(d.multisample),
-        fragment(*d.fragment),
-        wgpu_fs(*d.fragment) {}
+        fragment(*d.fragment) {}
 
     constexpr operator WGPURenderPipelineDescriptor() {
         return WGPURenderPipelineDescriptor{

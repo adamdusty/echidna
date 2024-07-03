@@ -19,7 +19,7 @@ BinPackParameters: false
 BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
-ColumnLimit: 120
+ColumnLimit: 100
 CompactNamespaces: false
 IndentWidth: 4
 PackConstructorInitializers: NextLine

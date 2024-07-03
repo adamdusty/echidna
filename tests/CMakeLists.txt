@@ -16,7 +16,7 @@ include(FetchContent)
 FetchContent_Declare(
     snitch
     GIT_REPOSITORY https://github.com/snitch-org/snitch.git
-    GIT_TAG        v1.2.4
+    GIT_TAG        v1.2.5
     SYSTEM
     FIND_PACKAGE_ARGS # Use system package if installed
 )
@@ -26,13 +26,12 @@ if(NOT TARGET SDL2::SDL2)
 set(SDL_SHARED TRUE CACHE BOOL "Build a SDL shared library (if available)")
 FetchContent_Declare(
     SDL2
-    GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-    GIT_TAG        7de4f16710ba9a83a6f3d5d932a11623df6676df # release-2.30.x XINPUT_CAPABILITIES fix
-    SYSTEM            # Don't include in warnings
+    URL https://github.com/libsdl-org/SDL/releases/download/release-2.30.4/SDL2-2.30.4.tar.gz
+    SYSTEM
 )
-set(MESSAGE_QUIET ON)
+# set(MESSAGE_QUIET ON)
 FetchContent_MakeAvailable(SDL2)
-unset(MESSAGE_QUIET)
+# unset(MESSAGE_QUIET)
 endif()
 
 # Add test exe

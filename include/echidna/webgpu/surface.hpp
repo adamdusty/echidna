@@ -18,6 +18,7 @@ class ECHIDNA_EXPORT surface : public handle_base<surface, WGPUSurface> {
 
     friend handle_base<surface, WGPUSurface>;
     static auto release(WGPUSurface handle) { wgpuSurfaceRelease(handle); }
+    static auto reference(WGPUSurface handle) { wgpuSurfaceReference(handle); }
 
 public:
     using handle_base::handle_base;
