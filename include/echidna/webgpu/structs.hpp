@@ -36,7 +36,9 @@ struct ECHIDNA_EXPORT adapter_properties {
     backend_type backend;
     adapter_type adapter;
 
-    constexpr adapter_properties(WGPUAdapterProperties& p) :
+    adapter_properties() = default;
+
+    adapter_properties(WGPUAdapterProperties& p) :
         next(p.nextInChain),
         vendor_id(p.vendorID),
         vendor(p.vendorName),
@@ -47,7 +49,7 @@ struct ECHIDNA_EXPORT adapter_properties {
         backend(static_cast<echidna::webgpu::backend_type>(p.backendType)),
         adapter(static_cast<echidna::webgpu::adapter_type>(p.adapterType)) {}
 
-    constexpr operator WGPUAdapterProperties() const {
+    constexpr operator WGPUAdapterProperties() {
         return WGPUAdapterProperties{
             .nextInChain       = std::bit_cast<WGPUChainedStructOut*>(next),
             .vendorID          = vendor_id,
@@ -56,7 +58,7 @@ struct ECHIDNA_EXPORT adapter_properties {
             .deviceID          = device_id,
             .name              = device.c_str(),
             .driverDescription = description.c_str(),
-            .adapterType       = static_cast<WGPUAdapterType>(adapter),
+            .adapterType       = adapter,
             .backendType       = static_cast<WGPUBackendType>(backend),
         };
     }
@@ -99,9 +101,7 @@ struct ECHIDNA_EXPORT blend_component {
     blend_factor dst;
 
     constexpr blend_component(const WGPUBlendComponent& bc) :
-        op(static_cast<blend_op>(bc.operation)),
-        src(static_cast<blend_factor>(bc.srcFactor)),
-        dst(static_cast<blend_factor>(bc.dstFactor)) {}
+        op(static_cast<blend_op>(bc.operation)), src(bc.srcFactor), dst(bc.dstFactor) {}
 
     constexpr operator WGPUBlendComponent() const {
         return WGPUBlendComponent{
@@ -144,7 +144,7 @@ struct ECHIDNA_EXPORT buffer_descriptor {
     constexpr buffer_descriptor(const WGPUBufferDescriptor& bd) :
         next(bd.nextInChain),
         label(bd.label),
-        usage(static_cast<buffer_usage>(bd.usage)),
+        usage(bd.usage),
         size(bd.size),
         mapped_at_creation(static_cast<bool>(bd.mappedAtCreation)) {}
 
@@ -152,7 +152,7 @@ struct ECHIDNA_EXPORT buffer_descriptor {
         return WGPUBufferDescriptor{
             .nextInChain      = next,
             .label            = label.c_str(),
-            .usage            = static_cast<WGPUBufferUsage>(usage),
+            .usage            = usage,
             .size             = size,
             .mappedAtCreation = static_cast<WGPUBool>(mapped_at_creation),
         };
@@ -166,7 +166,9 @@ struct ECHIDNA_EXPORT color {
     double alpha;
 
     constexpr color(const WGPUColor& c) : red(c.r), green(c.g), blue(c.b), alpha(c.a) {}
-    constexpr operator WGPUColor() const { return WGPUColor{.r = red, .g = green, .b = blue, .a = alpha}; }
+    constexpr operator WGPUColor() const {
+        return WGPUColor{.r = red, .g = green, .b = blue, .a = alpha};
+    }
 };
 
 struct ECHIDNA_EXPORT command_buffer_descriptor {
@@ -239,7 +241,9 @@ struct ECHIDNA_EXPORT compute_pass_timestamp_writes {
     std::uint32_t end_index;
 
     constexpr compute_pass_timestamp_writes(const WGPUComputePassTimestampWrites& ctw) :
-        set(ctw.querySet), beginning_index(ctw.beginningOfPassWriteIndex), end_index(ctw.endOfPassWriteIndex) {}
+        set(ctw.querySet),
+        beginning_index(ctw.beginningOfPassWriteIndex),
+        end_index(ctw.endOfPassWriteIndex) {}
 
     constexpr operator WGPUComputePassTimestampWrites() const {
         return WGPUComputePassTimestampWrites{
@@ -271,7 +275,8 @@ struct ECHIDNA_EXPORT extent3d {
     std::uint32_t height;
     std::uint32_t depth;
 
-    constexpr extent3d(const WGPUExtent3D& e) : width(e.width), height(e.height), depth(e.depthOrArrayLayers) {}
+    constexpr extent3d(const WGPUExtent3D& e) :
+        width(e.width), height(e.height), depth(e.depthOrArrayLayers) {}
 
     constexpr operator WGPUExtent3D() const {
         return WGPUExtent3D{.width = width, .height = height, .depthOrArrayLayers = depth};
@@ -284,7 +289,9 @@ struct ECHIDNA_EXPORT instance_descriptor {
     explicit constexpr instance_descriptor(const chained_struct* n = nullptr) : next(n) {}
     constexpr instance_descriptor(const WGPUInstanceDescriptor& i) : next((i.nextInChain)) {}
 
-    constexpr operator WGPUInstanceDescriptor() const { return WGPUInstanceDescriptor{.nextInChain = next}; }
+    constexpr operator WGPUInstanceDescriptor() const {
+        return WGPUInstanceDescriptor{.nextInChain = next};
+    }
 };
 
 struct ECHIDNA_EXPORT limits {
@@ -329,8 +336,12 @@ struct ECHIDNA_EXPORT limits {
         max_bind_groups(lim.maxBindGroups),
         max_bind_groups_plus_vertex_buffers(lim.maxBindGroupsPlusVertexBuffers),
         max_bindings_per_group(lim.maxBindingsPerBindGroup),
-        max_dynamic_uniform_buffers_per_pipeline_layout(lim.maxDynamicUniformBuffersPerPipelineLayout),
-        max_dynamic_storage_buffers_per_pipeline_layout(lim.maxDynamicStorageBuffersPerPipelineLayout),
+        max_dynamic_uniform_buffers_per_pipeline_layout(
+            lim.maxDynamicUniformBuffersPerPipelineLayout
+        ),
+        max_dynamic_storage_buffers_per_pipeline_layout(
+            lim.maxDynamicStorageBuffersPerPipelineLayout
+        ),
         max_sampled_textures_per_shader_stage(lim.maxSampledTexturesPerShaderStage),
         max_samplers_per_shader_stage(lim.maxSamplersPerShaderStage),
         max_storage_buffers_per_shader_stage(lim.maxStorageBuffersPerShaderStage),
@@ -357,38 +368,40 @@ struct ECHIDNA_EXPORT limits {
 
     constexpr operator WGPULimits() const {
         return WGPULimits{
-            .maxTextureDimension1D                     = max_texture_dimension_1d,
-            .maxTextureDimension2D                     = max_texture_dimension_2d,
-            .maxTextureDimension3D                     = max_texture_dimension_3d,
-            .maxTextureArrayLayers                     = max_texture_array_layers,
-            .maxBindGroups                             = max_bind_groups,
-            .maxBindGroupsPlusVertexBuffers            = max_bind_groups_plus_vertex_buffers,
-            .maxBindingsPerBindGroup                   = max_bindings_per_group,
-            .maxDynamicUniformBuffersPerPipelineLayout = max_dynamic_uniform_buffers_per_pipeline_layout,
-            .maxDynamicStorageBuffersPerPipelineLayout = max_dynamic_storage_buffers_per_pipeline_layout,
-            .maxSampledTexturesPerShaderStage          = max_sampled_textures_per_shader_stage,
-            .maxSamplersPerShaderStage                 = max_samplers_per_shader_stage,
-            .maxStorageBuffersPerShaderStage           = max_storage_buffers_per_shader_stage,
-            .maxStorageTexturesPerShaderStage          = max_storage_textures_per_shader_stage,
-            .maxUniformBuffersPerShaderStage           = max_uniform_buffers_per_shader_stage,
-            .maxUniformBufferBindingSize               = max_uniform_buffer_binding_size,
-            .maxStorageBufferBindingSize               = max_storage_buffer_binding_size,
-            .minUniformBufferOffsetAlignment           = min_uniform_buffer_offset_alignment,
-            .minStorageBufferOffsetAlignment           = min_storage_buffer_offset_alignment,
-            .maxVertexBuffers                          = max_vertex_buffers,
-            .maxBufferSize                             = max_buffer_size,
-            .maxVertexAttributes                       = max_vertex_attributes,
-            .maxVertexBufferArrayStride                = max_vertex_buffer_array_stride,
-            .maxInterStageShaderComponents             = max_inter_stage_shader_components,
-            .maxInterStageShaderVariables              = max_inter_stage_shader_variables,
-            .maxColorAttachments                       = max_color_attachments,
-            .maxColorAttachmentBytesPerSample          = max_color_attachment_bytes_per_sample,
-            .maxComputeWorkgroupStorageSize            = max_compute_workgroup_storage_size,
-            .maxComputeInvocationsPerWorkgroup         = max_compute_invocations_per_workgroup,
-            .maxComputeWorkgroupSizeX                  = max_compute_workgroup_size_X,
-            .maxComputeWorkgroupSizeY                  = max_compute_workgroup_size_Y,
-            .maxComputeWorkgroupSizeZ                  = max_compute_workgroup_size_Z,
-            .maxComputeWorkgroupsPerDimension          = max_compute_workgroups_per_dimension,
+            .maxTextureDimension1D          = max_texture_dimension_1d,
+            .maxTextureDimension2D          = max_texture_dimension_2d,
+            .maxTextureDimension3D          = max_texture_dimension_3d,
+            .maxTextureArrayLayers          = max_texture_array_layers,
+            .maxBindGroups                  = max_bind_groups,
+            .maxBindGroupsPlusVertexBuffers = max_bind_groups_plus_vertex_buffers,
+            .maxBindingsPerBindGroup        = max_bindings_per_group,
+            .maxDynamicUniformBuffersPerPipelineLayout =
+                max_dynamic_uniform_buffers_per_pipeline_layout,
+            .maxDynamicStorageBuffersPerPipelineLayout =
+                max_dynamic_storage_buffers_per_pipeline_layout,
+            .maxSampledTexturesPerShaderStage  = max_sampled_textures_per_shader_stage,
+            .maxSamplersPerShaderStage         = max_samplers_per_shader_stage,
+            .maxStorageBuffersPerShaderStage   = max_storage_buffers_per_shader_stage,
+            .maxStorageTexturesPerShaderStage  = max_storage_textures_per_shader_stage,
+            .maxUniformBuffersPerShaderStage   = max_uniform_buffers_per_shader_stage,
+            .maxUniformBufferBindingSize       = max_uniform_buffer_binding_size,
+            .maxStorageBufferBindingSize       = max_storage_buffer_binding_size,
+            .minUniformBufferOffsetAlignment   = min_uniform_buffer_offset_alignment,
+            .minStorageBufferOffsetAlignment   = min_storage_buffer_offset_alignment,
+            .maxVertexBuffers                  = max_vertex_buffers,
+            .maxBufferSize                     = max_buffer_size,
+            .maxVertexAttributes               = max_vertex_attributes,
+            .maxVertexBufferArrayStride        = max_vertex_buffer_array_stride,
+            .maxInterStageShaderComponents     = max_inter_stage_shader_components,
+            .maxInterStageShaderVariables      = max_inter_stage_shader_variables,
+            .maxColorAttachments               = max_color_attachments,
+            .maxColorAttachmentBytesPerSample  = max_color_attachment_bytes_per_sample,
+            .maxComputeWorkgroupStorageSize    = max_compute_workgroup_storage_size,
+            .maxComputeInvocationsPerWorkgroup = max_compute_invocations_per_workgroup,
+            .maxComputeWorkgroupSizeX          = max_compute_workgroup_size_X,
+            .maxComputeWorkgroupSizeY          = max_compute_workgroup_size_Y,
+            .maxComputeWorkgroupSizeZ          = max_compute_workgroup_size_Z,
+            .maxComputeWorkgroupsPerDimension  = max_compute_workgroups_per_dimension,
         };
     }
 };
@@ -499,7 +512,10 @@ struct ECHIDNA_EXPORT query_set_descriptor {
     std::uint32_t count;
 
     constexpr query_set_descriptor(const WGPUQuerySetDescriptor& q) :
-        next(q.nextInChain), label(q.label), type(static_cast<query_type>(q.type)), count(q.count) {}
+        next(q.nextInChain),
+        label(q.label),
+        type(static_cast<query_type>(q.type)),
+        count(q.count) {}
 
     constexpr operator WGPUQuerySetDescriptor() const {
         return WGPUQuerySetDescriptor{
@@ -515,16 +531,22 @@ struct ECHIDNA_EXPORT queue_descriptor {
     const chained_struct* next;
     std::string label;
 
-    constexpr queue_descriptor(const WGPUQueueDescriptor& q) : next(q.nextInChain), label(q.label) {}
-    constexpr operator WGPUQueueDescriptor() { return {.nextInChain = next, .label = label.c_str()}; }
+    constexpr queue_descriptor(const WGPUQueueDescriptor& q) :
+        next(q.nextInChain), label(q.label) {}
+    constexpr operator WGPUQueueDescriptor() {
+        return {.nextInChain = next, .label = label.c_str()};
+    }
 };
 
 struct ECHIDNA_EXPORT render_bundle_descriptor {
     const chained_struct* next;
     std::string label;
 
-    constexpr render_bundle_descriptor(const WGPURenderBundleDescriptor& q) : next(q.nextInChain), label(q.label) {}
-    constexpr operator WGPURenderBundleDescriptor() const { return {.nextInChain = next, .label = label.c_str()}; }
+    constexpr render_bundle_descriptor(const WGPURenderBundleDescriptor& q) :
+        next(q.nextInChain), label(q.label) {}
+    constexpr operator WGPURenderBundleDescriptor() const {
+        return {.nextInChain = next, .label = label.c_str()};
+    }
 };
 
 struct ECHIDNA_EXPORT render_pass_depth_stencil_attachment {
@@ -568,7 +590,8 @@ struct ECHIDNA_EXPORT render_pass_descriptor_max_draw_count {
     chained_struct chain;
     std::uint64_t max_draw_count;
 
-    constexpr render_pass_descriptor_max_draw_count(const WGPURenderPassDescriptorMaxDrawCount& mdc) :
+    constexpr render_pass_descriptor_max_draw_count(const WGPURenderPassDescriptorMaxDrawCount& mdc
+    ) :
         chain(mdc.chain), max_draw_count(mdc.maxDrawCount) {}
 
     constexpr operator WGPURenderPassDescriptorMaxDrawCount() const {
@@ -585,7 +608,9 @@ struct ECHIDNA_EXPORT render_pass_timestamp_writes {
     std::uint32_t end_index;
 
     constexpr render_pass_timestamp_writes(const WGPURenderPassTimestampWrites& w) :
-        set(w.querySet), beginning_index(w.beginningOfPassWriteIndex), end_index(w.endOfPassWriteIndex) {}
+        set(w.querySet),
+        beginning_index(w.beginningOfPassWriteIndex),
+        end_index(w.endOfPassWriteIndex) {}
 
     constexpr operator WGPURenderPassTimestampWrites() const {
         return WGPURenderPassTimestampWrites{
@@ -610,9 +635,18 @@ struct ECHIDNA_EXPORT request_adapter_options {
         backend_type backend,
         bool fallback
     ) :
-        next(n), compatible_surface(surf), power_pref(pref), backend(backend), force_fallback(fallback) {}
+        next(n),
+        compatible_surface(surf),
+        power_pref(pref),
+        backend(backend),
+        force_fallback(fallback) {}
 
-    request_adapter_options(surface& surf, power_preference pref, backend_type backend, bool fallback) :
+    request_adapter_options(
+        surface& surf,
+        power_preference pref,
+        backend_type backend,
+        bool fallback
+    ) :
         request_adapter_options(nullptr, surf, pref, backend, fallback) {}
     constexpr request_adapter_options(const WGPURequestAdapterOptions& o) :
         next(o.nextInChain),
@@ -679,9 +713,9 @@ struct ECHIDNA_EXPORT sampler_descriptor {
         return WGPUSamplerDescriptor{
             .nextInChain   = next,
             .label         = label.c_str(),
-            .addressModeU  = static_cast<WGPUAddressMode>(address_mode_u),
-            .addressModeV  = static_cast<WGPUAddressMode>(address_mode_v),
-            .addressModeW  = static_cast<WGPUAddressMode>(address_mode_w),
+            .addressModeU  = address_mode_u,
+            .addressModeV  = address_mode_v,
+            .addressModeW  = address_mode_w,
             .magFilter     = static_cast<WGPUFilterMode>(mag_filter),
             .minFilter     = static_cast<WGPUFilterMode>(min_filter),
             .mipmapFilter  = static_cast<WGPUMipmapFilterMode>(mip_map_filter),
@@ -731,8 +765,11 @@ struct ECHIDNA_EXPORT shader_module_wgsl_descriptor {
     chained_struct chain;
     std::string code;
 
-    constexpr shader_module_wgsl_descriptor(const WGPUShaderModuleWGSLDescriptor& d) : chain(d.chain), code(d.code) {}
-    constexpr operator WGPUShaderModuleWGSLDescriptor() const { return {.chain = chain, .code = code.c_str()}; }
+    constexpr shader_module_wgsl_descriptor(const WGPUShaderModuleWGSLDescriptor& d) :
+        chain(d.chain), code(d.code) {}
+    constexpr operator WGPUShaderModuleWGSLDescriptor() const {
+        return {.chain = chain, .code = code.c_str()};
+    }
 };
 
 struct ECHIDNA_EXPORT stencil_face_state {
@@ -792,16 +829,22 @@ class surface_capabilities {
     }
 
     constexpr auto get_wgpu_pm() {
-        std::transform(present_modes.begin(), present_modes.end(), std::back_inserter(wgpu_pm), [](auto pm) {
-            return static_cast<WGPUPresentMode>(pm);
-        });
+        std::transform(
+            present_modes.begin(),
+            present_modes.end(),
+            std::back_inserter(wgpu_pm),
+            [](auto pm) { return static_cast<WGPUPresentMode>(pm); }
+        );
         return wgpu_pm;
     }
 
     constexpr auto get_wgpu_cam() {
-        std::transform(formats.begin(), formats.end(), std::back_inserter(wgpu_cam), [](auto am) {
-            return static_cast<WGPUCompositeAlphaMode>(am);
-        });
+        std::transform(
+            alpha_modes.begin(),
+            alpha_modes.end(),
+            std::back_inserter(wgpu_cam),
+            [](auto am) { return static_cast<WGPUCompositeAlphaMode>(am); }
+        );
         return wgpu_cam;
     }
 
@@ -811,9 +854,12 @@ public:
     std::vector<composite_alpha_mode> alpha_modes;
 
     constexpr surface_capabilities(const WGPUSurfaceCapabilities& c) {
-        std::transform(c.formats, c.formats + c.formatCount, std::back_inserter(formats), [](auto f) {
-            return static_cast<texture_format>(f);
-        });
+        std::transform(
+            c.formats,
+            c.formats + c.formatCount,
+            std::back_inserter(formats),
+            [](auto f) { return static_cast<texture_format>(f); }
+        );
 
         std::transform(
             c.presentModes,
@@ -822,9 +868,12 @@ public:
             [](auto pm) { return static_cast<present_mode>(pm); }
         );
 
-        std::transform(c.alphaModes, c.alphaModes + c.alphaModeCount, std::back_inserter(alpha_modes), [](auto am) {
-            return static_cast<composite_alpha_mode>(am);
-        });
+        std::transform(
+            c.alphaModes,
+            c.alphaModes + c.alphaModeCount,
+            std::back_inserter(alpha_modes),
+            [](auto am) { return static_cast<composite_alpha_mode>(am); }
+        );
     }
 };
 
@@ -832,9 +881,12 @@ class surface_configuration {
     std::vector<WGPUTextureFormat> wgpu_formats;
 
     constexpr auto get_wgpu_formats() -> std::vector<WGPUTextureFormat> {
-        std::transform(view_formats.begin(), view_formats.end(), std::back_inserter(wgpu_formats), [](auto f) {
-            return static_cast<WGPUTextureFormat>(f);
-        });
+        std::transform(
+            view_formats.begin(),
+            view_formats.end(),
+            std::back_inserter(wgpu_formats),
+            [](auto f) { return static_cast<WGPUTextureFormat>(f); }
+        );
 
         return wgpu_formats;
     }
@@ -860,17 +912,20 @@ public:
         height(c.height),
         present(static_cast<echidna::webgpu::present_mode>(c.presentMode)) {
 
-        std::transform(c.viewFormats, c.viewFormats + c.viewFormatCount, std::back_inserter(view_formats), [](auto vf) {
-            return static_cast<texture_format>(vf);
-        });
+        std::transform(
+            c.viewFormats,
+            c.viewFormats + c.viewFormatCount,
+            std::back_inserter(view_formats),
+            [](auto vf) { return static_cast<texture_format>(vf); }
+        );
     }
 
     constexpr operator WGPUSurfaceConfiguration() {
         return WGPUSurfaceConfiguration{
             .nextInChain     = next,
             .device          = device_handle,
-            .format          = static_cast<WGPUTextureFormat>(format),
-            .usage           = static_cast<WGPUTextureUsage>(usage),
+            .format          = format,
+            .usage           = usage,
             .viewFormatCount = view_formats.size(),
             .viewFormats     = this->get_wgpu_formats().data(),
             .alphaMode       = static_cast<WGPUCompositeAlphaMode>(alpha_mode),
@@ -910,7 +965,10 @@ struct ECHIDNA_EXPORT texture_data_layout {
     std::uint32_t rows_per_image;
 
     constexpr texture_data_layout(const WGPUTextureDataLayout& l) :
-        next(l.nextInChain), offset(l.offset), bytes_per_row(l.bytesPerRow), rows_per_image(l.rowsPerImage) {}
+        next(l.nextInChain),
+        offset(l.offset),
+        bytes_per_row(l.bytesPerRow),
+        rows_per_image(l.rowsPerImage) {}
     constexpr operator WGPUTextureDataLayout() {
         return WGPUTextureDataLayout{
             .nextInChain  = next,
@@ -964,7 +1022,9 @@ struct ECHIDNA_EXPORT vertex_attribute {
     std::uint32_t shader_location;
 
     constexpr vertex_attribute(const WGPUVertexAttribute& a) :
-        format(static_cast<vertex_format>(a.format)), offset(a.offset), shader_location(a.shaderLocation) {}
+        format(static_cast<vertex_format>(a.format)),
+        offset(a.offset),
+        shader_location(a.shaderLocation) {}
 
     constexpr operator WGPUVertexAttribute() {
         return WGPUVertexAttribute{
@@ -1025,7 +1085,7 @@ struct ECHIDNA_EXPORT bind_group_layout_entry {
         return WGPUBindGroupLayoutEntry{
             .nextInChain    = next,
             .binding        = binding,
-            .visibility     = static_cast<WGPUShaderStage>(visibility),
+            .visibility     = visibility,
             .buffer         = buffer,
             .sampler        = sampler,
             .texture        = texture,
@@ -1073,7 +1133,10 @@ public:
     compute_pass_timestamp_writes timestamp_writes;
 
     constexpr compute_pass_descriptor(const WGPUComputePassDescriptor& d) :
-        wgpu_tsw(*d.timestampWrites), next(d.nextInChain), label(d.label), timestamp_writes(*d.timestampWrites) {}
+        wgpu_tsw(*d.timestampWrites),
+        next(d.nextInChain),
+        label(d.label),
+        timestamp_writes(*d.timestampWrites) {}
 
     operator WGPUComputePassDescriptor() {
         return WGPUComputePassDescriptor{
@@ -1232,8 +1295,11 @@ struct ECHIDNA_EXPORT required_limits {
     const chained_struct* next;
     limits required_lims;
 
-    constexpr required_limits(const WGPURequiredLimits& l) : next(l.nextInChain), required_lims(l.limits) {}
-    constexpr operator WGPURequiredLimits() { return {.nextInChain = next, .limits = required_lims}; }
+    constexpr required_limits(const WGPURequiredLimits& l) :
+        next(l.nextInChain), required_lims(l.limits) {}
+    constexpr operator WGPURequiredLimits() {
+        return {.nextInChain = next, .limits = required_lims};
+    }
 };
 
 class shader_module_descriptor {
@@ -1266,17 +1332,23 @@ struct ECHIDNA_EXPORT supported_limits {
     chained_struct_out* next;
     limits supported_lims;
 
-    constexpr supported_limits(const WGPUSupportedLimits& l) : next(l.nextInChain), supported_lims(l.limits) {}
-    constexpr operator WGPUSupportedLimits() { return {.nextInChain = next, .limits = supported_lims}; }
+    constexpr supported_limits(const WGPUSupportedLimits& l) :
+        next(l.nextInChain), supported_lims(l.limits) {}
+    constexpr operator WGPUSupportedLimits() {
+        return {.nextInChain = next, .limits = supported_lims};
+    }
 };
 
 class texture_descriptor {
     std::vector<WGPUTextureFormat> wgpu_formats;
 
     constexpr auto get_wgpu_formats() {
-        std::transform(view_formats.begin(), view_formats.end(), std::back_inserter(wgpu_formats), [](auto f) {
-            return static_cast<WGPUTextureFormat>(f);
-        });
+        std::transform(
+            view_formats.begin(),
+            view_formats.end(),
+            std::back_inserter(wgpu_formats),
+            [](auto f) { return static_cast<WGPUTextureFormat>(f); }
+        );
         return wgpu_formats;
     }
 
@@ -1300,16 +1372,19 @@ public:
         format(static_cast<texture_format>(d.format)),
         mip_level_count(d.mipLevelCount),
         sample_count(d.sampleCount) {
-        std::transform(d.viewFormats, d.viewFormats + d.viewFormatCount, std::back_inserter(view_formats), [](auto f) {
-            return static_cast<texture_format>(f);
-        });
+        std::transform(
+            d.viewFormats,
+            d.viewFormats + d.viewFormatCount,
+            std::back_inserter(view_formats),
+            [](auto f) { return static_cast<texture_format>(f); }
+        );
     }
 
     constexpr operator WGPUTextureDescriptor() {
         return WGPUTextureDescriptor{
             .nextInChain     = next,
             .label           = label.c_str(),
-            .usage           = static_cast<WGPUTextureUsage>(usage),
+            .usage           = usage,
             .dimension       = static_cast<WGPUTextureDimension>(dimension),
             .size            = size,
             .format          = static_cast<WGPUTextureFormat>(format),
@@ -1402,7 +1477,7 @@ public:
             .nextInChain = next,
             .format      = static_cast<WGPUTextureFormat>(format),
             .blend       = this->get_wgpu_blend(),
-            .writeMask   = static_cast<WGPUColorWriteMask>(write_mask),
+            .writeMask   = write_mask,
         };
     }
 };
@@ -1501,7 +1576,10 @@ class render_pass_descriptor {
     }
 
     constexpr auto get_wgpu_ca() {
-        wgpu_ca = std::vector<WGPURenderPassColorAttachment>(color_attachments.begin(), color_attachments.end());
+        wgpu_ca = std::vector<WGPURenderPassColorAttachment>(
+            color_attachments.begin(),
+            color_attachments.end()
+        );
         return wgpu_ca;
     }
 
@@ -1522,7 +1600,10 @@ public:
         depth_stencil_attachment(*d.depthStencilAttachment),
         occlusion_query_set(d.occlusionQuerySet),
         timestamp_writes(*d.timestampWrites) {
-        wgpu_ca = std::vector<WGPURenderPassColorAttachment>(color_attachments.begin(), color_attachments.end());
+        wgpu_ca = std::vector<WGPURenderPassColorAttachment>(
+            color_attachments.begin(),
+            color_attachments.end()
+        );
     }
 
     constexpr operator WGPURenderPassDescriptor() {
