@@ -14,12 +14,16 @@
 #include "echidna/webgpu/texture.hpp"
 #include "echidna/webgpu/texture_view.hpp"
 
-#include <algorithm>
 #include <bit>
 #include <cstdint>
 #include <string>
 #include <vector>
 #include <webgpu.h>
+
+/* NOTES
+    - Structs that hold a collection of other structs currently duplicate the WGPU structs so that
+        they can be pointed to on conversion. Need to determine if there is a way to avoid this.
+*/
 
 namespace echidna::webgpu {
 
@@ -811,30 +815,16 @@ class surface_capabilities {
     std::vector<WGPUCompositeAlphaMode> wgpu_cam;
 
     constexpr auto get_wgpu_fmts() {
-        std::transform(formats.begin(), formats.end(), std::back_inserter(wgpu_fmts), [](auto f) {
-            return f;
-        });
-        return wgpu_fmts;
+        return wgpu_fmts = std::vector<WGPUTextureFormat>(formats.begin(), formats.end());
     }
 
     constexpr auto get_wgpu_pm() {
-        std::transform(
-            present_modes.begin(),
-            present_modes.end(),
-            std::back_inserter(wgpu_pm),
-            [](auto pm) { return pm; }
-        );
-        return wgpu_pm;
+        return wgpu_pm = std::vector<WGPUPresentMode>(present_modes.begin(), present_modes.end());
     }
 
     constexpr auto get_wgpu_cam() {
-        std::transform(
-            alpha_modes.begin(),
-            alpha_modes.end(),
-            std::back_inserter(wgpu_cam),
-            [](auto am) { return am; }
-        );
-        return wgpu_cam;
+        return wgpu_cam =
+                   std::vector<WGPUCompositeAlphaMode>(alpha_modes.begin(), alpha_modes.end());
     }
 
 public:
@@ -842,27 +832,21 @@ public:
     std::vector<present_mode> present_modes;
     std::vector<composite_alpha_mode> alpha_modes;
 
-    constexpr surface_capabilities(const WGPUSurfaceCapabilities& c) {
-        std::transform(
-            c.formats,
-            c.formats + c.formatCount,
-            std::back_inserter(formats),
-            [](auto f) { return f; }
-        );
+    constexpr surface_capabilities(const WGPUSurfaceCapabilities& c) :
+        formats(c.formats, c.formats + c.formatCount),
+        present_modes(c.presentModes, c.presentModes + c.presentModeCount),
+        alpha_modes(c.alphaModes, c.alphaModes + c.alphaModeCount) {}
 
-        std::transform(
-            c.presentModes,
-            c.presentModes + c.presentModeCount,
-            std::back_inserter(present_modes),
-            [](auto pm) { return pm; }
-        );
-
-        std::transform(
-            c.alphaModes,
-            c.alphaModes + c.alphaModeCount,
-            std::back_inserter(alpha_modes),
-            [](auto am) { return am; }
-        );
+    constexpr operator WGPUSurfaceCapabilities() {
+        return WGPUSurfaceCapabilities{
+            .nextInChain      = nullptr,
+            .formatCount      = formats.size(),
+            .formats          = this->get_wgpu_fmts().data(),
+            .presentModeCount = present_modes.size(),
+            .presentModes     = this->get_wgpu_pm().data(),
+            .alphaModeCount   = alpha_modes.size(),
+            .alphaModes       = this->get_wgpu_cam().data(),
+        };
     }
 };
 
@@ -870,14 +854,8 @@ class surface_configuration {
     std::vector<WGPUTextureFormat> wgpu_formats;
 
     constexpr auto get_wgpu_formats() -> std::vector<WGPUTextureFormat> {
-        std::transform(
-            view_formats.begin(),
-            view_formats.end(),
-            std::back_inserter(wgpu_formats),
-            [](auto f) { return f; }
-        );
-
-        return wgpu_formats;
+        return wgpu_formats =
+                   std::vector<WGPUTextureFormat>(view_formats.begin(), view_formats.end());
     }
 
 public:
@@ -896,18 +874,11 @@ public:
         device_handle(c.device),
         format(c.format),
         usage(c.usage),
+        view_formats(c.viewFormats, c.viewFormats + c.viewFormatCount),
         alpha_mode(c.alphaMode),
         width(c.width),
         height(c.height),
-        present(static_cast<echidna::webgpu::present_mode>(c.presentMode)) {
-
-        std::transform(
-            c.viewFormats,
-            c.viewFormats + c.viewFormatCount,
-            std::back_inserter(view_formats),
-            [](auto vf) { return vf; }
-        );
-    }
+        present(static_cast<echidna::webgpu::present_mode>(c.presentMode)) {}
 
     constexpr operator WGPUSurfaceConfiguration() {
         return WGPUSurfaceConfiguration{
@@ -1037,7 +1008,21 @@ public:
     std::vector<bind_group_entry> entries;
 
     constexpr bind_group_descriptor(const WGPUBindGroupDescriptor& d) :
-        next(d.nextInChain), label(d.label), entries(d.entries, d.entries + d.entryCount) {}
+        wgpu_entries(d.entries, d.entries + d.entryCount),
+        next(d.nextInChain),
+        label(d.label),
+        entries(d.entries, d.entries + d.entryCount) {}
+
+    bind_group_descriptor(
+        const char* label,
+        bind_group_layout& bgl,
+        const std::vector<bind_group_entry>& entries
+    ) :
+        wgpu_entries(entries.begin(), entries.end()),
+        next(nullptr),
+        label(label),
+        layout(bgl),
+        entries(entries) {}
 
     constexpr operator WGPUBindGroupDescriptor() {
         return WGPUBindGroupDescriptor{
@@ -1330,13 +1315,8 @@ class texture_descriptor {
     std::vector<WGPUTextureFormat> wgpu_formats;
 
     constexpr auto get_wgpu_formats() {
-        std::transform(
-            view_formats.begin(),
-            view_formats.end(),
-            std::back_inserter(wgpu_formats),
-            [](auto f) { return f; }
-        );
-        return wgpu_formats;
+        return wgpu_formats =
+                   std::vector<WGPUTextureFormat>(view_formats.begin(), view_formats.end());
     }
 
 public:
@@ -1358,14 +1338,8 @@ public:
         size(d.size),
         format(d.format),
         mip_level_count(d.mipLevelCount),
-        sample_count(d.sampleCount) {
-        std::transform(
-            d.viewFormats,
-            d.viewFormats + d.viewFormatCount,
-            std::back_inserter(view_formats),
-            [](auto f) { return f; }
-        );
-    }
+        sample_count(d.sampleCount),
+        view_formats(d.viewFormats, d.viewFormats + d.viewFormatCount) {}
 
     constexpr operator WGPUTextureDescriptor() {
         return WGPUTextureDescriptor{
@@ -1426,6 +1400,9 @@ public:
 
     constexpr bind_group_layout_descriptor(const WGPUBindGroupLayoutDescriptor& d) :
         next(d.nextInChain), label(d.label), entries(d.entries, d.entries + d.entryCount) {}
+
+    bind_group_layout_descriptor(const char* label, std::vector<bind_group_layout_entry>& entries) :
+        next(nullptr), label(label), entries(entries) {}
 
     constexpr operator WGPUBindGroupLayoutDescriptor() {
         return WGPUBindGroupLayoutDescriptor{
@@ -1498,14 +1475,8 @@ class device_descriptor {
     }
 
     constexpr auto get_wgpu_features() {
-        std::transform(
-            required_features.begin(),
-            required_features.end(),
-            std::back_inserter(wgpu_features),
-            [](auto f) { return f; }
-        );
-
-        return wgpu_features;
+        return wgpu_features =
+                   std::vector<WGPUFeatureName>(required_features.begin(), required_features.end());
     }
 
 public:
@@ -1521,18 +1492,11 @@ public:
         wgpu_limits(*d.requiredLimits),
         next(d.nextInChain),
         label(d.label),
+        required_features(d.requiredFeatures, d.requiredFeatures + d.requiredFeatureCount),
         required_lims(*d.requiredLimits),
         default_queue(d.defaultQueue),
         dev_lost_callback(d.deviceLostCallback),
-        device_lost_user_data(d.deviceLostUserdata) {
-
-        std::transform(
-            d.requiredFeatures,
-            d.requiredFeatures + d.requiredFeatureCount,
-            std::back_inserter(required_features),
-            [](auto f) { return f; }
-        );
-    }
+        device_lost_user_data(d.deviceLostUserdata) {}
 
     constexpr operator WGPUDeviceDescriptor() {
         return WGPUDeviceDescriptor{

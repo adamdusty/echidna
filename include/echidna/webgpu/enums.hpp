@@ -1,5 +1,7 @@
 #pragma once
 
+#include "echidna/export.hpp"
+
 #include <type_traits>
 #include <webgpu.h>
 
@@ -31,7 +33,7 @@ public:
     constexpr auto operator&(const W& other) const -> W { return raw & other; }
 };
 
-struct adapter_type : public wgpuenum<adapter_type, WGPUAdapterType> {
+struct ECHIDNA_EXPORT adapter_type : public wgpuenum<adapter_type, WGPUAdapterType> {
     static constexpr WGPUAdapterType discrete   = WGPUAdapterType_DiscreteGPU;
     static constexpr WGPUAdapterType integrated = WGPUAdapterType_IntegratedGPU;
     static constexpr WGPUAdapterType cpu        = WGPUAdapterType_CPU;
@@ -43,7 +45,7 @@ struct adapter_type : public wgpuenum<adapter_type, WGPUAdapterType> {
     constexpr adapter_type() : wgpuenum(adapter_type::unknown) {}
 };
 
-struct address_mode : public wgpuenum<address_mode, WGPUAddressMode> {
+struct ECHIDNA_EXPORT address_mode : public wgpuenum<address_mode, WGPUAddressMode> {
     static constexpr WGPUAddressMode repeat        = WGPUAddressMode_Repeat;
     static constexpr WGPUAddressMode mirror_repeat = WGPUAddressMode_MirrorRepeat;
     static constexpr WGPUAddressMode clamp_to_edge = WGPUAddressMode_ClampToEdge;
@@ -54,7 +56,7 @@ struct address_mode : public wgpuenum<address_mode, WGPUAddressMode> {
     constexpr address_mode() : wgpuenum(address_mode::repeat) {}
 };
 
-struct backend_type : public wgpuenum<backend_type, WGPUBackendType> {
+struct ECHIDNA_EXPORT backend_type : public wgpuenum<backend_type, WGPUBackendType> {
     static constexpr WGPUBackendType undefined = WGPUBackendType_Undefined;
     static constexpr WGPUBackendType null      = WGPUBackendType_Null;
     static constexpr WGPUBackendType webgpu    = WGPUBackendType_WebGPU;
@@ -71,7 +73,7 @@ struct backend_type : public wgpuenum<backend_type, WGPUBackendType> {
     constexpr backend_type() : wgpuenum(backend_type::undefined) {}
 };
 
-struct blend_factor : public wgpuenum<blend_factor, WGPUBlendFactor> {
+struct ECHIDNA_EXPORT blend_factor : public wgpuenum<blend_factor, WGPUBlendFactor> {
     static constexpr WGPUBlendFactor zero                = WGPUBlendFactor_Zero;
     static constexpr WGPUBlendFactor one                 = WGPUBlendFactor_One;
     static constexpr WGPUBlendFactor src                 = WGPUBlendFactor_Src;
@@ -91,7 +93,7 @@ struct blend_factor : public wgpuenum<blend_factor, WGPUBlendFactor> {
     using wgpuenum::operator==;
 };
 
-struct blend_op : public wgpuenum<blend_op, WGPUBlendOperation> {
+struct ECHIDNA_EXPORT blend_op : public wgpuenum<blend_op, WGPUBlendOperation> {
     static constexpr WGPUBlendOperation add              = WGPUBlendOperation_Add;
     static constexpr WGPUBlendOperation subtract         = WGPUBlendOperation_Subtract;
     static constexpr WGPUBlendOperation reverse_subtract = WGPUBlendOperation_ReverseSubtract;
@@ -103,7 +105,8 @@ struct blend_op : public wgpuenum<blend_op, WGPUBlendOperation> {
     using wgpuenum::operator==;
 };
 
-struct buffer_binding_type : public wgpuenum<buffer_binding_type, WGPUBufferBindingType> {
+struct ECHIDNA_EXPORT buffer_binding_type
+    : public wgpuenum<buffer_binding_type, WGPUBufferBindingType> {
     static constexpr WGPUBufferBindingType undefined = WGPUBufferBindingType_Undefined;
     static constexpr WGPUBufferBindingType uniform   = WGPUBufferBindingType_Uniform;
     static constexpr WGPUBufferBindingType storage   = WGPUBufferBindingType_Storage;
@@ -116,7 +119,7 @@ struct buffer_binding_type : public wgpuenum<buffer_binding_type, WGPUBufferBind
     constexpr buffer_binding_type() : wgpuenum(buffer_binding_type::undefined) {}
 };
 
-struct buffer_map_async_status
+struct ECHIDNA_EXPORT buffer_map_async_status
     : public wgpuenum<buffer_map_async_status, WGPUBufferMapAsyncStatus> {
     static constexpr WGPUBufferMapAsyncStatus success = WGPUBufferMapAsyncStatus_Success;
     static constexpr WGPUBufferMapAsyncStatus validation_error =
@@ -140,7 +143,7 @@ struct buffer_map_async_status
     constexpr buffer_map_async_status() : wgpuenum(buffer_map_async_status::unknown) {}
 };
 
-struct buffer_map_state : public wgpuenum<buffer_map_state, WGPUBufferMapState> {
+struct ECHIDNA_EXPORT buffer_map_state : public wgpuenum<buffer_map_state, WGPUBufferMapState> {
     static constexpr WGPUBufferMapState unmapped = WGPUBufferMapState_Unmapped;
     static constexpr WGPUBufferMapState pending  = WGPUBufferMapState_Pending;
     static constexpr WGPUBufferMapState mapped   = WGPUBufferMapState_Mapped;
@@ -150,7 +153,7 @@ struct buffer_map_state : public wgpuenum<buffer_map_state, WGPUBufferMapState> 
     using wgpuenum::operator==;
 };
 
-struct compare_function : public wgpuenum<compare_function, WGPUCompareFunction> {
+struct ECHIDNA_EXPORT compare_function : public wgpuenum<compare_function, WGPUCompareFunction> {
     static constexpr WGPUCompareFunction undefined     = WGPUCompareFunction_Undefined;
     static constexpr WGPUCompareFunction never         = WGPUCompareFunction_Never;
     static constexpr WGPUCompareFunction less          = WGPUCompareFunction_Less;
@@ -167,7 +170,7 @@ struct compare_function : public wgpuenum<compare_function, WGPUCompareFunction>
     constexpr compare_function() : wgpuenum(compare_function::undefined) {}
 };
 
-struct compilation_info_request_status
+struct ECHIDNA_EXPORT compilation_info_request_status
     : public wgpuenum<compilation_info_request_status, WGPUCompilationInfoRequestStatus> {
     static constexpr WGPUCompilationInfoRequestStatus success =
         WGPUCompilationInfoRequestStatus_Success;
@@ -185,7 +188,7 @@ struct compilation_info_request_status
         wgpuenum(compilation_info_request_status::unknown) {}
 };
 
-struct compilation_message_type
+struct ECHIDNA_EXPORT compilation_message_type
     : public wgpuenum<compilation_message_type, WGPUCompilationMessageType> {
     static constexpr WGPUCompilationMessageType error   = WGPUCompilationMessageType_Error;
     static constexpr WGPUCompilationMessageType warning = WGPUCompilationMessageType_Warning;
@@ -196,7 +199,8 @@ struct compilation_message_type
     using wgpuenum::operator==;
 };
 
-struct composite_alpha_mode : public wgpuenum<composite_alpha_mode, WGPUCompositeAlphaMode> {
+struct ECHIDNA_EXPORT composite_alpha_mode
+    : public wgpuenum<composite_alpha_mode, WGPUCompositeAlphaMode> {
     static constexpr WGPUCompositeAlphaMode automatic     = WGPUCompositeAlphaMode_Auto;
     static constexpr WGPUCompositeAlphaMode opaque        = WGPUCompositeAlphaMode_Opaque;
     static constexpr WGPUCompositeAlphaMode premultiplied = WGPUCompositeAlphaMode_Premultiplied;
@@ -210,7 +214,7 @@ struct composite_alpha_mode : public wgpuenum<composite_alpha_mode, WGPUComposit
     constexpr composite_alpha_mode() : wgpuenum(composite_alpha_mode::automatic) {}
 };
 
-struct create_pipeline_async_status
+struct ECHIDNA_EXPORT create_pipeline_async_status
     : public wgpuenum<create_pipeline_async_status, WGPUCreatePipelineAsyncStatus> {
     static constexpr WGPUCreatePipelineAsyncStatus success = WGPUCreatePipelineAsyncStatus_Success;
     static constexpr WGPUCreatePipelineAsyncStatus validation_error =
@@ -229,7 +233,7 @@ struct create_pipeline_async_status
     constexpr create_pipeline_async_status() : wgpuenum(create_pipeline_async_status::unknown) {}
 };
 
-struct cull_mode : public wgpuenum<cull_mode, WGPUCullMode> {
+struct ECHIDNA_EXPORT cull_mode : public wgpuenum<cull_mode, WGPUCullMode> {
     static constexpr WGPUCullMode none  = WGPUCullMode_None;
     static constexpr WGPUCullMode front = WGPUCullMode_Front;
     static constexpr WGPUCullMode back  = WGPUCullMode_Back;
@@ -239,7 +243,8 @@ struct cull_mode : public wgpuenum<cull_mode, WGPUCullMode> {
     using wgpuenum::operator==;
 };
 
-struct device_lost_reason : public wgpuenum<device_lost_reason, WGPUDeviceLostReason> {
+struct ECHIDNA_EXPORT device_lost_reason
+    : public wgpuenum<device_lost_reason, WGPUDeviceLostReason> {
     static constexpr WGPUDeviceLostReason undefined = WGPUDeviceLostReason_Undefined;
     static constexpr WGPUDeviceLostReason destroyed = WGPUDeviceLostReason_Destroyed;
 
@@ -248,7 +253,7 @@ struct device_lost_reason : public wgpuenum<device_lost_reason, WGPUDeviceLostRe
     using wgpuenum::operator==;
 };
 
-struct error_filter : public wgpuenum<error_filter, WGPUErrorFilter> {
+struct ECHIDNA_EXPORT error_filter : public wgpuenum<error_filter, WGPUErrorFilter> {
     static constexpr WGPUErrorFilter validation    = WGPUErrorFilter_Validation;
     static constexpr WGPUErrorFilter out_of_memory = WGPUErrorFilter_OutOfMemory;
     static constexpr WGPUErrorFilter internal      = WGPUErrorFilter_Internal;
@@ -258,7 +263,7 @@ struct error_filter : public wgpuenum<error_filter, WGPUErrorFilter> {
     using wgpuenum::operator==;
 };
 
-struct error_type : public wgpuenum<error_type, WGPUErrorType> {
+struct ECHIDNA_EXPORT error_type : public wgpuenum<error_type, WGPUErrorType> {
     static constexpr WGPUErrorType no_error      = WGPUErrorType_NoError;
     static constexpr WGPUErrorType validation    = WGPUErrorType_Validation;
     static constexpr WGPUErrorType out_of_memory = WGPUErrorType_OutOfMemory;
@@ -271,7 +276,7 @@ struct error_type : public wgpuenum<error_type, WGPUErrorType> {
     using wgpuenum::operator==;
 };
 
-struct feature_name : public wgpuenum<feature_name, WGPUFeatureName> {
+struct ECHIDNA_EXPORT feature_name : public wgpuenum<feature_name, WGPUFeatureName> {
     static constexpr WGPUFeatureName undefined              = WGPUFeatureName_Undefined;
     static constexpr WGPUFeatureName depth_clip_control     = WGPUFeatureName_DepthClipControl;
     static constexpr WGPUFeatureName depth32_float_stencil8 = WGPUFeatureName_Depth32FloatStencil8;
@@ -294,7 +299,7 @@ struct feature_name : public wgpuenum<feature_name, WGPUFeatureName> {
     using wgpuenum::operator==;
 };
 
-struct filter_mode : public wgpuenum<filter_mode, WGPUFilterMode> {
+struct ECHIDNA_EXPORT filter_mode : public wgpuenum<filter_mode, WGPUFilterMode> {
     static constexpr WGPUFilterMode nearest = WGPUFilterMode_Nearest;
     static constexpr WGPUFilterMode linear  = WGPUFilterMode_Linear;
 
@@ -303,7 +308,7 @@ struct filter_mode : public wgpuenum<filter_mode, WGPUFilterMode> {
     using wgpuenum::operator==;
 };
 
-struct front_face : public wgpuenum<front_face, WGPUFrontFace> {
+struct ECHIDNA_EXPORT front_face : public wgpuenum<front_face, WGPUFrontFace> {
     static constexpr WGPUFrontFace ccw = WGPUFrontFace_CCW;
     static constexpr WGPUFrontFace cw  = WGPUFrontFace_CW;
 
@@ -312,7 +317,7 @@ struct front_face : public wgpuenum<front_face, WGPUFrontFace> {
     using wgpuenum::operator==;
 };
 
-struct index_format : public wgpuenum<index_format, WGPUIndexFormat> {
+struct ECHIDNA_EXPORT index_format : public wgpuenum<index_format, WGPUIndexFormat> {
     static constexpr WGPUIndexFormat undefined = WGPUIndexFormat_Undefined;
     static constexpr WGPUIndexFormat uint16    = WGPUIndexFormat_Uint16;
     static constexpr WGPUIndexFormat uint32    = WGPUIndexFormat_Uint32;
@@ -323,7 +328,7 @@ struct index_format : public wgpuenum<index_format, WGPUIndexFormat> {
     constexpr index_format() : wgpuenum(index_format::undefined) {}
 };
 
-struct load_op : public wgpuenum<load_op, WGPULoadOp> {
+struct ECHIDNA_EXPORT load_op : public wgpuenum<load_op, WGPULoadOp> {
     static constexpr WGPULoadOp undefined = WGPULoadOp_Undefined;
     static constexpr WGPULoadOp clear     = WGPULoadOp_Clear;
     static constexpr WGPULoadOp load      = WGPULoadOp_Load;
@@ -334,7 +339,8 @@ struct load_op : public wgpuenum<load_op, WGPULoadOp> {
     constexpr load_op() : wgpuenum(load_op::undefined) {}
 };
 
-struct mipmap_filter_mode : public wgpuenum<mipmap_filter_mode, WGPUMipmapFilterMode> {
+struct ECHIDNA_EXPORT mipmap_filter_mode
+    : public wgpuenum<mipmap_filter_mode, WGPUMipmapFilterMode> {
     static constexpr WGPUMipmapFilterMode nearest = WGPUMipmapFilterMode_Nearest;
     static constexpr WGPUMipmapFilterMode linear  = WGPUMipmapFilterMode_Linear;
 
@@ -343,7 +349,7 @@ struct mipmap_filter_mode : public wgpuenum<mipmap_filter_mode, WGPUMipmapFilter
     using wgpuenum::operator==;
 };
 
-struct power_preference : public wgpuenum<power_preference, WGPUPowerPreference> {
+struct ECHIDNA_EXPORT power_preference : public wgpuenum<power_preference, WGPUPowerPreference> {
     static constexpr WGPUPowerPreference undefined        = WGPUPowerPreference_Undefined;
     static constexpr WGPUPowerPreference low_power        = WGPUPowerPreference_LowPower;
     static constexpr WGPUPowerPreference high_performance = WGPUPowerPreference_HighPerformance;
@@ -353,7 +359,7 @@ struct power_preference : public wgpuenum<power_preference, WGPUPowerPreference>
     using wgpuenum::operator==;
 };
 
-struct present_mode : public wgpuenum<present_mode, WGPUPresentMode> {
+struct ECHIDNA_EXPORT present_mode : public wgpuenum<present_mode, WGPUPresentMode> {
     static constexpr WGPUPresentMode fifo         = WGPUPresentMode_Fifo;
     static constexpr WGPUPresentMode fifo_relaxed = WGPUPresentMode_FifoRelaxed;
     static constexpr WGPUPresentMode immediate    = WGPUPresentMode_Immediate;
@@ -364,7 +370,8 @@ struct present_mode : public wgpuenum<present_mode, WGPUPresentMode> {
     using wgpuenum::operator==;
 };
 
-struct primitive_topology : public wgpuenum<primitive_topology, WGPUPrimitiveTopology> {
+struct ECHIDNA_EXPORT primitive_topology
+    : public wgpuenum<primitive_topology, WGPUPrimitiveTopology> {
     static constexpr WGPUPrimitiveTopology point_list     = WGPUPrimitiveTopology_PointList;
     static constexpr WGPUPrimitiveTopology line_list      = WGPUPrimitiveTopology_LineList;
     static constexpr WGPUPrimitiveTopology line_string    = WGPUPrimitiveTopology_LineStrip;
@@ -376,7 +383,7 @@ struct primitive_topology : public wgpuenum<primitive_topology, WGPUPrimitiveTop
     using wgpuenum::operator==;
 };
 
-struct query_type : public wgpuenum<query_type, WGPUQueryType> {
+struct ECHIDNA_EXPORT query_type : public wgpuenum<query_type, WGPUQueryType> {
     static constexpr WGPUQueryType occlusion = WGPUQueryType_Occlusion;
     static constexpr WGPUQueryType timestamp = WGPUQueryType_Timestamp;
 
@@ -385,7 +392,8 @@ struct query_type : public wgpuenum<query_type, WGPUQueryType> {
     using wgpuenum::operator==;
 };
 
-struct queue_work_done_status : public wgpuenum<queue_work_done_status, WGPUQueueWorkDoneStatus> {
+struct ECHIDNA_EXPORT queue_work_done_status
+    : public wgpuenum<queue_work_done_status, WGPUQueueWorkDoneStatus> {
     static constexpr WGPUQueueWorkDoneStatus success     = WGPUQueueWorkDoneStatus_Success;
     static constexpr WGPUQueueWorkDoneStatus error       = WGPUQueueWorkDoneStatus_Error;
     static constexpr WGPUQueueWorkDoneStatus unknown     = WGPUQueueWorkDoneStatus_Unknown;
@@ -397,7 +405,8 @@ struct queue_work_done_status : public wgpuenum<queue_work_done_status, WGPUQueu
     constexpr queue_work_done_status() : wgpuenum(queue_work_done_status::unknown) {}
 };
 
-struct request_adapter_status : public wgpuenum<request_adapter_status, WGPURequestAdapterStatus> {
+struct ECHIDNA_EXPORT request_adapter_status
+    : public wgpuenum<request_adapter_status, WGPURequestAdapterStatus> {
     static constexpr WGPURequestAdapterStatus success     = WGPURequestAdapterStatus_Success;
     static constexpr WGPURequestAdapterStatus unavailable = WGPURequestAdapterStatus_Unavailable;
     static constexpr WGPURequestAdapterStatus error       = WGPURequestAdapterStatus_Error;
@@ -409,7 +418,8 @@ struct request_adapter_status : public wgpuenum<request_adapter_status, WGPURequ
     constexpr request_adapter_status() : wgpuenum(request_adapter_status::unknown) {}
 };
 
-struct request_device_status : public wgpuenum<request_device_status, WGPURequestDeviceStatus> {
+struct ECHIDNA_EXPORT request_device_status
+    : public wgpuenum<request_device_status, WGPURequestDeviceStatus> {
     static constexpr WGPURequestDeviceStatus success = WGPURequestDeviceStatus_Success;
     static constexpr WGPURequestDeviceStatus error   = WGPURequestDeviceStatus_Error;
     static constexpr WGPURequestDeviceStatus unknown = WGPURequestDeviceStatus_Unknown;
@@ -420,7 +430,7 @@ struct request_device_status : public wgpuenum<request_device_status, WGPUReques
     constexpr request_device_status() : wgpuenum(request_device_status::unknown) {}
 };
 
-struct stype : public wgpuenum<stype, WGPUSType> {
+struct ECHIDNA_EXPORT stype : public wgpuenum<stype, WGPUSType> {
     static constexpr WGPUSType invalid = WGPUSType_Invalid;
     static constexpr WGPUSType surface_descriptor_from_metal_layer =
         WGPUSType_SurfaceDescriptorFromMetalLayer;
@@ -448,7 +458,8 @@ struct stype : public wgpuenum<stype, WGPUSType> {
     constexpr stype() : wgpuenum(stype::invalid) {}
 };
 
-struct sampler_binding_type : public wgpuenum<sampler_binding_type, WGPUSamplerBindingType> {
+struct ECHIDNA_EXPORT sampler_binding_type
+    : public wgpuenum<sampler_binding_type, WGPUSamplerBindingType> {
     static constexpr WGPUSamplerBindingType undefined     = WGPUSamplerBindingType_Undefined;
     static constexpr WGPUSamplerBindingType filtering     = WGPUSamplerBindingType_Filtering;
     static constexpr WGPUSamplerBindingType non_filtering = WGPUSamplerBindingType_NonFiltering;
@@ -460,7 +471,7 @@ struct sampler_binding_type : public wgpuenum<sampler_binding_type, WGPUSamplerB
     constexpr sampler_binding_type() : wgpuenum(sampler_binding_type::undefined) {}
 };
 
-struct stencil_op : public wgpuenum<stencil_op, WGPUStencilOperation> {
+struct ECHIDNA_EXPORT stencil_op : public wgpuenum<stencil_op, WGPUStencilOperation> {
     static constexpr WGPUStencilOperation keep            = WGPUStencilOperation_Keep;
     static constexpr WGPUStencilOperation zero            = WGPUStencilOperation_Zero;
     static constexpr WGPUStencilOperation replace         = WGPUStencilOperation_Replace;
@@ -475,7 +486,8 @@ struct stencil_op : public wgpuenum<stencil_op, WGPUStencilOperation> {
     using wgpuenum::operator==;
 };
 
-struct storage_texture_access : public wgpuenum<storage_texture_access, WGPUStorageTextureAccess> {
+struct ECHIDNA_EXPORT storage_texture_access
+    : public wgpuenum<storage_texture_access, WGPUStorageTextureAccess> {
     static constexpr WGPUStorageTextureAccess undefined  = WGPUStorageTextureAccess_Undefined;
     static constexpr WGPUStorageTextureAccess write_only = WGPUStorageTextureAccess_WriteOnly;
 
@@ -485,7 +497,7 @@ struct storage_texture_access : public wgpuenum<storage_texture_access, WGPUStor
     constexpr storage_texture_access() : wgpuenum(storage_texture_access::undefined) {}
 };
 
-struct store_op : public wgpuenum<store_op, WGPUStoreOp> {
+struct ECHIDNA_EXPORT store_op : public wgpuenum<store_op, WGPUStoreOp> {
     static constexpr WGPUStoreOp undefined = WGPUStoreOp_Undefined;
     static constexpr WGPUStoreOp store     = WGPUStoreOp_Store;
     static constexpr WGPUStoreOp discard   = WGPUStoreOp_Discard;
@@ -496,7 +508,7 @@ struct store_op : public wgpuenum<store_op, WGPUStoreOp> {
     constexpr store_op() : wgpuenum(store_op::undefined) {}
 };
 
-struct surface_get_current_texture_status
+struct ECHIDNA_EXPORT surface_get_current_texture_status
     : public wgpuenum<surface_get_current_texture_status, WGPUSurfaceGetCurrentTextureStatus> {
     static constexpr WGPUSurfaceGetCurrentTextureStatus success =
         WGPUSurfaceGetCurrentTextureStatus_Success;
@@ -516,7 +528,7 @@ struct surface_get_current_texture_status
     using wgpuenum::operator==;
 };
 
-struct texture_aspect : wgpuenum<texture_aspect, WGPUTextureAspect> {
+struct ECHIDNA_EXPORT texture_aspect : wgpuenum<texture_aspect, WGPUTextureAspect> {
     static constexpr WGPUTextureAspect all          = WGPUTextureAspect_All;
     static constexpr WGPUTextureAspect stencil_only = WGPUTextureAspect_StencilOnly;
     static constexpr WGPUTextureAspect depth_only   = WGPUTextureAspect_DepthOnly;
@@ -526,13 +538,13 @@ struct texture_aspect : wgpuenum<texture_aspect, WGPUTextureAspect> {
     using wgpuenum::operator==;
 };
 
-struct texture_dimension : public wgpuenum<texture_dimension, WGPUTextureDimension> {
+struct ECHIDNA_EXPORT texture_dimension : public wgpuenum<texture_dimension, WGPUTextureDimension> {
     static constexpr WGPUTextureDimension dim1 = WGPUTextureDimension_1D;
     static constexpr WGPUTextureDimension dim2 = WGPUTextureDimension_2D;
     static constexpr WGPUTextureDimension dim3 = WGPUTextureDimension_3D;
 };
 
-struct texture_format : wgpuenum<texture_format, WGPUTextureFormat> {
+struct ECHIDNA_EXPORT texture_format : wgpuenum<texture_format, WGPUTextureFormat> {
     static constexpr WGPUTextureFormat undefined        = WGPUTextureFormat_Undefined;
     static constexpr WGPUTextureFormat r8_unorm         = WGPUTextureFormat_R8Unorm;
     static constexpr WGPUTextureFormat r8_snorm         = WGPUTextureFormat_R8Snorm;
@@ -637,7 +649,8 @@ struct texture_format : wgpuenum<texture_format, WGPUTextureFormat> {
     using wgpuenum::operator==;
 };
 
-struct texture_sample_type : public wgpuenum<texture_sample_type, WGPUTextureSampleType> {
+struct ECHIDNA_EXPORT texture_sample_type
+    : public wgpuenum<texture_sample_type, WGPUTextureSampleType> {
     static constexpr WGPUTextureSampleType undefined        = WGPUTextureSampleType_Undefined;
     static constexpr WGPUTextureSampleType filterable_float = WGPUTextureSampleType_Float;
     static constexpr WGPUTextureSampleType unfilterable_float =
@@ -651,7 +664,8 @@ struct texture_sample_type : public wgpuenum<texture_sample_type, WGPUTextureSam
     using wgpuenum::operator==;
 };
 
-struct texture_view_dimension : public wgpuenum<texture_view_dimension, WGPUTextureViewDimension> {
+struct ECHIDNA_EXPORT texture_view_dimension
+    : public wgpuenum<texture_view_dimension, WGPUTextureViewDimension> {
     static constexpr WGPUTextureViewDimension undefined  = WGPUTextureViewDimension_Undefined;
     static constexpr WGPUTextureViewDimension dim1       = WGPUTextureViewDimension_1D;
     static constexpr WGPUTextureViewDimension dim2       = WGPUTextureViewDimension_2D;
@@ -665,7 +679,7 @@ struct texture_view_dimension : public wgpuenum<texture_view_dimension, WGPUText
     using wgpuenum::operator==;
 };
 
-struct vertex_format : public wgpuenum<vertex_format, WGPUVertexFormat> {
+struct ECHIDNA_EXPORT vertex_format : public wgpuenum<vertex_format, WGPUVertexFormat> {
     static constexpr WGPUVertexFormat undefined = WGPUVertexFormat_Undefined;
     static constexpr WGPUVertexFormat uint8x2   = WGPUVertexFormat_Uint8x2;
     static constexpr WGPUVertexFormat uint8x4   = WGPUVertexFormat_Uint8x4;
@@ -703,7 +717,7 @@ struct vertex_format : public wgpuenum<vertex_format, WGPUVertexFormat> {
     using wgpuenum::operator==;
 };
 
-struct vertex_step_mode : public wgpuenum<vertex_step_mode, WGPUVertexStepMode> {
+struct ECHIDNA_EXPORT vertex_step_mode : public wgpuenum<vertex_step_mode, WGPUVertexStepMode> {
     static constexpr WGPUVertexStepMode vertex   = WGPUVertexStepMode_Vertex;
     static constexpr WGPUVertexStepMode instance = WGPUVertexStepMode_Instance;
     static constexpr WGPUVertexStepMode vertex_buffer_not_used =
@@ -715,7 +729,7 @@ struct vertex_step_mode : public wgpuenum<vertex_step_mode, WGPUVertexStepMode> 
 };
 
 // Flags
-struct buffer_usage : public wgpuenum<buffer_usage, WGPUBufferUsageFlags> {
+struct ECHIDNA_EXPORT buffer_usage : public wgpuenum<buffer_usage, WGPUBufferUsageFlags> {
     static constexpr WGPUBufferUsage none          = WGPUBufferUsage_None;
     static constexpr WGPUBufferUsage map_read      = WGPUBufferUsage_MapRead;
     static constexpr WGPUBufferUsage map_write     = WGPUBufferUsage_MapWrite;
@@ -735,7 +749,8 @@ struct buffer_usage : public wgpuenum<buffer_usage, WGPUBufferUsageFlags> {
     using wgpuenum::operator&;
 };
 
-struct color_write_mask : public wgpuenum<color_write_mask, WGPUColorWriteMaskFlags> {
+struct ECHIDNA_EXPORT color_write_mask
+    : public wgpuenum<color_write_mask, WGPUColorWriteMaskFlags> {
     static constexpr WGPUColorWriteMask none  = WGPUColorWriteMask_None;
     static constexpr WGPUColorWriteMask red   = WGPUColorWriteMask_Red;
     static constexpr WGPUColorWriteMask green = WGPUColorWriteMask_Green;
@@ -750,7 +765,7 @@ struct color_write_mask : public wgpuenum<color_write_mask, WGPUColorWriteMaskFl
     using wgpuenum::operator&;
 };
 
-struct map_mode : public wgpuenum<map_mode, WGPUMapModeFlags> {
+struct ECHIDNA_EXPORT map_mode : public wgpuenum<map_mode, WGPUMapModeFlags> {
     static constexpr WGPUMapMode none  = WGPUMapMode_None;
     static constexpr WGPUMapMode read  = WGPUMapMode_Read;
     static constexpr WGPUMapMode write = WGPUMapMode_Write;
@@ -762,7 +777,7 @@ struct map_mode : public wgpuenum<map_mode, WGPUMapModeFlags> {
     using wgpuenum::operator&;
 };
 
-struct shader_stage : public wgpuenum<shader_stage, WGPUShaderStageFlags> {
+struct ECHIDNA_EXPORT shader_stage : public wgpuenum<shader_stage, WGPUShaderStageFlags> {
     static constexpr WGPUShaderStage none     = WGPUShaderStage_None;
     static constexpr WGPUShaderStage vertex   = WGPUShaderStage_Vertex;
     static constexpr WGPUShaderStage fragment = WGPUShaderStage_Fragment;
@@ -775,7 +790,7 @@ struct shader_stage : public wgpuenum<shader_stage, WGPUShaderStageFlags> {
     using wgpuenum::operator&;
 };
 
-struct texture_usage : public wgpuenum<texture_usage, WGPUTextureUsageFlags> {
+struct ECHIDNA_EXPORT texture_usage : public wgpuenum<texture_usage, WGPUTextureUsageFlags> {
     static constexpr WGPUTextureUsage none              = WGPUTextureUsage_None;
     static constexpr WGPUTextureUsage copy_src          = WGPUTextureUsage_CopySrc;
     static constexpr WGPUTextureUsage copy_dst          = WGPUTextureUsage_CopyDst;

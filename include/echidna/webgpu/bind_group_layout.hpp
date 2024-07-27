@@ -1,14 +1,13 @@
 #pragma once
 
 #include "echidna/export.hpp"
-#include "echidna/webgpu/enums.hpp"
 #include "echidna/webgpu/handle.hpp"
-#include <vector>
 #include <webgpu.h>
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT bind_group_layout : public handle_base<bind_group_layout, WGPUBindGroupLayout> {
+class ECHIDNA_EXPORT bind_group_layout
+    : public handle_base<bind_group_layout, WGPUBindGroupLayout> {
     friend handle_base<bind_group_layout, WGPUBindGroupLayout>;
     static auto release(WGPUBindGroupLayout handle) { wgpuBindGroupLayoutRelease(handle); }
     static auto reference(WGPUBindGroupLayout handle) { wgpuBindGroupLayoutReference(handle); }
@@ -18,15 +17,16 @@ public:
     using handle_base::operator=;
 };
 
-constexpr auto bind_group_layout_desc(const char* label, const std::vector<WGPUBindGroupLayoutEntry>& entries)
-    -> WGPUBindGroupLayoutDescriptor {
-    return WGPUBindGroupLayoutDescriptor{
-        .nextInChain = nullptr,
-        .label       = label,
-        .entryCount  = entries.size(),
-        .entries     = entries.data(),
-    };
-}
+// constexpr auto bind_group_layout_desc(const char* label, const
+// std::vector<WGPUBindGroupLayoutEntry>& entries)
+//     -> WGPUBindGroupLayoutDescriptor {
+//     return WGPUBindGroupLayoutDescriptor{
+//         .nextInChain = nullptr,
+//         .label       = label,
+//         .entryCount  = entries.size(),
+//         .entries     = entries.data(),
+//     };
+// }
 
 // constexpr auto bind_group_layout_desc(const std::vector<WGPUBindGroupLayoutEntry>& entries)
 //     -> WGPUBindGroupLayoutDescriptor {
@@ -54,21 +54,25 @@ constexpr auto bind_group_layout_desc(const char* label, const std::vector<WGPUB
 //         .sampler =
 //             {
 //                 .nextInChain = nullptr,
-//                 .type        = static_cast<WGPUSamplerBindingType>(sampler_binding_type::undefined),
+//                 .type        =
+//                 static_cast<WGPUSamplerBindingType>(sampler_binding_type::undefined),
 //             },
 //         .texture =
 //             {
 //                 .nextInChain   = nullptr,
-//                 .sampleType    = static_cast<WGPUTextureSampleType>(texture_sample_type::undefined),
-//                 .viewDimension = static_cast<WGPUTextureViewDimension>(texture_view_dimension::undefined),
+//                 .sampleType    =
+//                 static_cast<WGPUTextureSampleType>(texture_sample_type::undefined),
+//                 .viewDimension =
+//                 static_cast<WGPUTextureViewDimension>(texture_view_dimension::undefined),
 //                 .multisampled  = static_cast<WGPUBool>(false),
 //             },
 //         .storageTexture =
 //             {
 //                 .nextInChain   = nullptr,
-//                 .access        = static_cast<WGPUStorageTextureAccess>(storage_texture_access::undefined),
-//                 .format        = static_cast<WGPUTextureFormat>(texture_format::undefined),
-//                 .viewDimension = static_cast<WGPUTextureViewDimension>(texture_view_dimension::undefined),
+//                 .access        =
+//                 static_cast<WGPUStorageTextureAccess>(storage_texture_access::undefined), .format
+//                 = static_cast<WGPUTextureFormat>(texture_format::undefined), .viewDimension =
+//                 static_cast<WGPUTextureViewDimension>(texture_view_dimension::undefined),
 //             }
 //     };
 // }
