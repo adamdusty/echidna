@@ -36,8 +36,6 @@ struct ECHIDNA_EXPORT adapter_properties {
     backend_type backend;
     adapter_type adapter;
 
-    adapter_properties() = default;
-
     adapter_properties(WGPUAdapterProperties& p) :
         next(p.nextInChain),
         vendor_id(p.vendorID),
@@ -46,8 +44,8 @@ struct ECHIDNA_EXPORT adapter_properties {
         device_id(p.deviceID),
         device(p.name),
         description(p.driverDescription),
-        backend(static_cast<echidna::webgpu::backend_type>(p.backendType)),
-        adapter(static_cast<echidna::webgpu::adapter_type>(p.adapterType)) {}
+        backend(p.backendType),
+        adapter(p.adapterType) {}
 
     constexpr operator WGPUAdapterProperties() {
         return WGPUAdapterProperties{
@@ -59,7 +57,7 @@ struct ECHIDNA_EXPORT adapter_properties {
             .name              = device.c_str(),
             .driverDescription = description.c_str(),
             .adapterType       = adapter,
-            .backendType       = static_cast<WGPUBackendType>(backend),
+            .backendType       = backend,
         };
     }
 };
@@ -101,13 +99,13 @@ struct ECHIDNA_EXPORT blend_component {
     blend_factor dst;
 
     constexpr blend_component(const WGPUBlendComponent& bc) :
-        op(static_cast<blend_op>(bc.operation)), src(bc.srcFactor), dst(bc.dstFactor) {}
+        op(bc.operation), src(bc.srcFactor), dst(bc.dstFactor) {}
 
     constexpr operator WGPUBlendComponent() const {
         return WGPUBlendComponent{
-            .operation = static_cast<WGPUBlendOperation>(op),
-            .srcFactor = static_cast<WGPUBlendFactor>(src),
-            .dstFactor = static_cast<WGPUBlendFactor>(dst),
+            .operation = op,
+            .srcFactor = src,
+            .dstFactor = dst,
         };
     }
 };
@@ -120,14 +118,14 @@ struct ECHIDNA_EXPORT buffer_binding_layout {
 
     constexpr buffer_binding_layout(const WGPUBufferBindingLayout& b) :
         next(b.nextInChain),
-        type(static_cast<buffer_binding_type>(b.type)),
-        dynamic_offset(static_cast<bool>(b.hasDynamicOffset)),
+        type(b.type),
+        dynamic_offset(b.hasDynamicOffset != 0u),
         min_binding_size(b.minBindingSize) {}
 
     constexpr operator WGPUBufferBindingLayout() const {
         return WGPUBufferBindingLayout{
             .nextInChain      = next,
-            .type             = static_cast<WGPUBufferBindingType>(type),
+            .type             = type,
             .hasDynamicOffset = static_cast<WGPUBool>(dynamic_offset),
             .minBindingSize   = min_binding_size,
         };
@@ -146,7 +144,7 @@ struct ECHIDNA_EXPORT buffer_descriptor {
         label(bd.label),
         usage(bd.usage),
         size(bd.size),
-        mapped_at_creation(static_cast<bool>(bd.mappedAtCreation)) {}
+        mapped_at_creation(bd.mappedAtCreation != 0u) {}
 
     constexpr operator WGPUBufferDescriptor() const {
         return WGPUBufferDescriptor{
@@ -210,7 +208,7 @@ struct ECHIDNA_EXPORT compilation_message {
     constexpr compilation_message(const WGPUCompilationMessage& cm) :
         next(cm.nextInChain),
         message(cm.message),
-        type(static_cast<compilation_message_type>(cm.type)),
+        type(cm.type),
         line(cm.lineNum),
         col(cm.linePos),
         offset(cm.offset),
@@ -223,7 +221,7 @@ struct ECHIDNA_EXPORT compilation_message {
         return WGPUCompilationMessage{
             .nextInChain  = next,
             .message      = message.c_str(),
-            .type         = static_cast<WGPUCompilationMessageType>(type),
+            .type         = type,
             .lineNum      = line,
             .linePos      = col,
             .offset       = offset,
@@ -416,7 +414,7 @@ struct ECHIDNA_EXPORT multisample_state {
         next(s.nextInChain),
         count(s.count),
         mask(s.mask),
-        alpha_to_coverage_enabled(static_cast<bool>(s.alphaToCoverageEnabled)) {}
+        alpha_to_coverage_enabled(s.alphaToCoverageEnabled != 0u) {}
 
     constexpr operator WGPUMultisampleState() const {
         return WGPUMultisampleState{
@@ -470,7 +468,7 @@ struct ECHIDNA_EXPORT primitive_depth_clip_control {
     bool unclipped_depth;
 
     constexpr primitive_depth_clip_control(WGPUPrimitiveDepthClipControl& pdc) :
-        chain(pdc.chain), unclipped_depth(static_cast<bool>(pdc.unclippedDepth)) {}
+        chain(pdc.chain), unclipped_depth(pdc.unclippedDepth != 0u) {}
 
     constexpr operator WGPUPrimitiveDepthClipControl() const {
         return WGPUPrimitiveDepthClipControl{
@@ -489,18 +487,18 @@ struct ECHIDNA_EXPORT primitive_state {
 
     constexpr primitive_state(const WGPUPrimitiveState& p) :
         next((p.nextInChain)),
-        topology(static_cast<primitive_topology>(p.topology)),
-        strip_index_format(static_cast<index_format>(p.stripIndexFormat)),
+        topology(p.topology),
+        strip_index_format(p.stripIndexFormat),
         front_face_winding(static_cast<echidna::webgpu::front_face>(p.frontFace)),
         cull_mode_direction(static_cast<echidna::webgpu::cull_mode>(p.cullMode)) {}
 
     constexpr operator WGPUPrimitiveState() const {
         return WGPUPrimitiveState{
             .nextInChain      = next,
-            .topology         = static_cast<WGPUPrimitiveTopology>(topology),
-            .stripIndexFormat = static_cast<WGPUIndexFormat>(strip_index_format),
-            .frontFace        = static_cast<WGPUFrontFace>(front_face_winding),
-            .cullMode         = static_cast<WGPUCullMode>(cull_mode_direction),
+            .topology         = topology,
+            .stripIndexFormat = strip_index_format,
+            .frontFace        = front_face_winding,
+            .cullMode         = cull_mode_direction,
         };
     }
 };
@@ -512,16 +510,13 @@ struct ECHIDNA_EXPORT query_set_descriptor {
     std::uint32_t count;
 
     constexpr query_set_descriptor(const WGPUQuerySetDescriptor& q) :
-        next(q.nextInChain),
-        label(q.label),
-        type(static_cast<query_type>(q.type)),
-        count(q.count) {}
+        next(q.nextInChain), label(q.label), type(q.type), count(q.count) {}
 
     constexpr operator WGPUQuerySetDescriptor() const {
         return WGPUQuerySetDescriptor{
             .nextInChain = next,
             .label       = label.c_str(),
-            .type        = static_cast<WGPUQueryType>(type),
+            .type        = type,
             .count       = count,
         };
     }
@@ -562,24 +557,24 @@ struct ECHIDNA_EXPORT render_pass_depth_stencil_attachment {
 
     constexpr render_pass_depth_stencil_attachment(const WGPURenderPassDepthStencilAttachment& a) :
         view(a.view),
-        depth_load_op(static_cast<load_op>(a.depthLoadOp)),
-        depth_store_op(static_cast<store_op>(a.depthStoreOp)),
+        depth_load_op(a.depthLoadOp),
+        depth_store_op(a.depthStoreOp),
         depth_clear_value(a.depthClearValue),
-        depth_read_only(static_cast<bool>(a.depthReadOnly)),
-        stencil_load_op(static_cast<load_op>(a.stencilLoadOp)),
-        stencil_store_op(static_cast<store_op>(a.stencilStoreOp)),
+        depth_read_only(a.depthReadOnly != 0u),
+        stencil_load_op(a.stencilLoadOp),
+        stencil_store_op(a.stencilStoreOp),
         stencil_clear_value(a.stencilClearValue),
-        stencil_read_only(static_cast<bool>(a.stencilReadOnly)) {}
+        stencil_read_only(a.stencilReadOnly != 0u) {}
 
     constexpr operator WGPURenderPassDepthStencilAttachment() const {
         return WGPURenderPassDepthStencilAttachment{
             .view              = view,
-            .depthLoadOp       = static_cast<WGPULoadOp>(depth_load_op),
-            .depthStoreOp      = static_cast<WGPUStoreOp>(depth_store_op),
+            .depthLoadOp       = depth_load_op,
+            .depthStoreOp      = depth_store_op,
             .depthClearValue   = depth_clear_value,
             .depthReadOnly     = static_cast<WGPUBool>(depth_read_only),
-            .stencilLoadOp     = static_cast<WGPULoadOp>(stencil_load_op),
-            .stencilStoreOp    = static_cast<WGPUStoreOp>(stencil_store_op),
+            .stencilLoadOp     = stencil_load_op,
+            .stencilStoreOp    = stencil_store_op,
             .stencilClearValue = stencil_clear_value,
             .stencilReadOnly   = static_cast<WGPUBool>(stencil_read_only),
         };
@@ -652,15 +647,15 @@ struct ECHIDNA_EXPORT request_adapter_options {
         next(o.nextInChain),
         compatible_surface(o.compatibleSurface),
         power_pref(static_cast<echidna::webgpu::power_preference>(o.powerPreference)),
-        backend(static_cast<backend_type>(o.backendType)),
-        force_fallback(static_cast<bool>(o.forceFallbackAdapter)) {}
+        backend(o.backendType),
+        force_fallback(o.forceFallbackAdapter != 0u) {}
 
     constexpr operator WGPURequestAdapterOptions() {
         return WGPURequestAdapterOptions{
             .nextInChain          = next,
             .compatibleSurface    = compatible_surface,
-            .powerPreference      = static_cast<WGPUPowerPreference>(power_pref),
-            .backendType          = static_cast<WGPUBackendType>(backend),
+            .powerPreference      = power_pref,
+            .backendType          = backend,
             .forceFallbackAdapter = static_cast<WGPUBool>(force_fallback),
         };
     }
@@ -671,12 +666,12 @@ struct ECHIDNA_EXPORT sampler_binding_layout {
     sampler_binding_type type;
 
     constexpr sampler_binding_layout(const WGPUSamplerBindingLayout& l) :
-        next(l.nextInChain), type(static_cast<sampler_binding_type>(l.type)) {}
+        next(l.nextInChain), type(l.type) {}
 
     constexpr operator WGPUSamplerBindingLayout() const {
         return WGPUSamplerBindingLayout{
             .nextInChain = next,
-            .type        = static_cast<WGPUSamplerBindingType>(type),
+            .type        = type,
         };
     }
 };
@@ -698,15 +693,15 @@ struct ECHIDNA_EXPORT sampler_descriptor {
     constexpr sampler_descriptor(const WGPUSamplerDescriptor& d) :
         next(d.nextInChain),
         label(d.label),
-        address_mode_u(static_cast<address_mode>(d.addressModeU)),
-        address_mode_v(static_cast<address_mode>(d.addressModeV)),
-        address_mode_w(static_cast<address_mode>(d.addressModeW)),
-        mag_filter(static_cast<filter_mode>(d.magFilter)),
-        min_filter(static_cast<filter_mode>(d.minFilter)),
-        mip_map_filter(static_cast<mipmap_filter_mode>(d.mipmapFilter)),
+        address_mode_u(d.addressModeU),
+        address_mode_v(d.addressModeV),
+        address_mode_w(d.addressModeW),
+        mag_filter(d.magFilter),
+        min_filter(d.minFilter),
+        mip_map_filter(d.mipmapFilter),
         lod_min_clamp(d.lodMinClamp),
         lod_max_clamp(d.lodMaxClamp),
-        compare(static_cast<compare_function>(d.compare)),
+        compare(d.compare),
         max_anisotropy(d.maxAnisotropy) {}
 
     constexpr operator WGPUSamplerDescriptor() const {
@@ -716,12 +711,12 @@ struct ECHIDNA_EXPORT sampler_descriptor {
             .addressModeU  = address_mode_u,
             .addressModeV  = address_mode_v,
             .addressModeW  = address_mode_w,
-            .magFilter     = static_cast<WGPUFilterMode>(mag_filter),
-            .minFilter     = static_cast<WGPUFilterMode>(min_filter),
-            .mipmapFilter  = static_cast<WGPUMipmapFilterMode>(mip_map_filter),
+            .magFilter     = mag_filter,
+            .minFilter     = min_filter,
+            .mipmapFilter  = mip_map_filter,
             .lodMinClamp   = lod_min_clamp,
             .lodMaxClamp   = lod_max_clamp,
-            .compare       = static_cast<WGPUCompareFunction>(compare),
+            .compare       = compare,
             .maxAnisotropy = max_anisotropy,
         };
     }
@@ -779,17 +774,14 @@ struct ECHIDNA_EXPORT stencil_face_state {
     stencil_op pass;
 
     constexpr stencil_face_state(const WGPUStencilFaceState& s) :
-        compare(static_cast<compare_function>(s.compare)),
-        fail(static_cast<stencil_op>(s.failOp)),
-        depth_fail(static_cast<stencil_op>(s.depthFailOp)),
-        pass(static_cast<stencil_op>(s.passOp)) {}
+        compare(s.compare), fail(s.failOp), depth_fail(s.depthFailOp), pass(s.passOp) {}
 
     constexpr operator WGPUStencilFaceState() const {
         return WGPUStencilFaceState{
-            .compare     = static_cast<WGPUCompareFunction>(compare),
-            .failOp      = static_cast<WGPUStencilOperation>(fail),
-            .depthFailOp = static_cast<WGPUStencilOperation>(depth_fail),
-            .passOp      = static_cast<WGPUStencilOperation>(pass),
+            .compare     = compare,
+            .failOp      = fail,
+            .depthFailOp = depth_fail,
+            .passOp      = pass,
         };
     }
 };
@@ -801,17 +793,14 @@ struct ECHIDNA_EXPORT storage_texture_binding_layout {
     texture_view_dimension view_dimension;
 
     constexpr storage_texture_binding_layout(const WGPUStorageTextureBindingLayout& l) :
-        next(l.nextInChain),
-        access(static_cast<storage_texture_access>(l.access)),
-        format(static_cast<texture_format>(l.format)),
-        view_dimension(static_cast<texture_view_dimension>(l.viewDimension)) {}
+        next(l.nextInChain), access(l.access), format(l.format), view_dimension(l.viewDimension) {}
 
     constexpr operator WGPUStorageTextureBindingLayout() const {
         return WGPUStorageTextureBindingLayout{
             .nextInChain   = next,
-            .access        = static_cast<WGPUStorageTextureAccess>(access),
-            .format        = static_cast<WGPUTextureFormat>(format),
-            .viewDimension = static_cast<WGPUTextureViewDimension>(view_dimension),
+            .access        = access,
+            .format        = format,
+            .viewDimension = view_dimension,
         };
     }
 };
@@ -823,7 +812,7 @@ class surface_capabilities {
 
     constexpr auto get_wgpu_fmts() {
         std::transform(formats.begin(), formats.end(), std::back_inserter(wgpu_fmts), [](auto f) {
-            return static_cast<WGPUTextureFormat>(f);
+            return f;
         });
         return wgpu_fmts;
     }
@@ -833,7 +822,7 @@ class surface_capabilities {
             present_modes.begin(),
             present_modes.end(),
             std::back_inserter(wgpu_pm),
-            [](auto pm) { return static_cast<WGPUPresentMode>(pm); }
+            [](auto pm) { return pm; }
         );
         return wgpu_pm;
     }
@@ -843,7 +832,7 @@ class surface_capabilities {
             alpha_modes.begin(),
             alpha_modes.end(),
             std::back_inserter(wgpu_cam),
-            [](auto am) { return static_cast<WGPUCompositeAlphaMode>(am); }
+            [](auto am) { return am; }
         );
         return wgpu_cam;
     }
@@ -858,21 +847,21 @@ public:
             c.formats,
             c.formats + c.formatCount,
             std::back_inserter(formats),
-            [](auto f) { return static_cast<texture_format>(f); }
+            [](auto f) { return f; }
         );
 
         std::transform(
             c.presentModes,
             c.presentModes + c.presentModeCount,
             std::back_inserter(present_modes),
-            [](auto pm) { return static_cast<present_mode>(pm); }
+            [](auto pm) { return pm; }
         );
 
         std::transform(
             c.alphaModes,
             c.alphaModes + c.alphaModeCount,
             std::back_inserter(alpha_modes),
-            [](auto am) { return static_cast<composite_alpha_mode>(am); }
+            [](auto am) { return am; }
         );
     }
 };
@@ -885,7 +874,7 @@ class surface_configuration {
             view_formats.begin(),
             view_formats.end(),
             std::back_inserter(wgpu_formats),
-            [](auto f) { return static_cast<WGPUTextureFormat>(f); }
+            [](auto f) { return f; }
         );
 
         return wgpu_formats;
@@ -905,9 +894,9 @@ public:
     constexpr surface_configuration(const WGPUSurfaceConfiguration& c) :
         next(c.nextInChain),
         device_handle(c.device),
-        format(static_cast<texture_format>(c.format)),
-        usage(static_cast<texture_usage>(c.usage)),
-        alpha_mode(static_cast<composite_alpha_mode>(c.alphaMode)),
+        format(c.format),
+        usage(c.usage),
+        alpha_mode(c.alphaMode),
         width(c.width),
         height(c.height),
         present(static_cast<echidna::webgpu::present_mode>(c.presentMode)) {
@@ -916,7 +905,7 @@ public:
             c.viewFormats,
             c.viewFormats + c.viewFormatCount,
             std::back_inserter(view_formats),
-            [](auto vf) { return static_cast<texture_format>(vf); }
+            [](auto vf) { return vf; }
         );
     }
 
@@ -928,10 +917,10 @@ public:
             .usage           = usage,
             .viewFormatCount = view_formats.size(),
             .viewFormats     = this->get_wgpu_formats().data(),
-            .alphaMode       = static_cast<WGPUCompositeAlphaMode>(alpha_mode),
+            .alphaMode       = alpha_mode,
             .width           = width,
             .height          = height,
-            .presentMode     = static_cast<WGPUPresentMode>(present),
+            .presentMode     = present,
         };
     }
 };
@@ -944,15 +933,15 @@ struct ECHIDNA_EXPORT texture_binding_layout {
 
     constexpr texture_binding_layout(const WGPUTextureBindingLayout& l) :
         next(l.nextInChain),
-        sample_type(static_cast<texture_sample_type>(l.sampleType)),
-        view_dimension(static_cast<texture_view_dimension>(l.viewDimension)),
-        multisampled(static_cast<bool>(l.multisampled)) {}
+        sample_type(l.sampleType),
+        view_dimension(l.viewDimension),
+        multisampled(l.multisampled != 0u) {}
 
     constexpr operator WGPUTextureBindingLayout() const {
         return WGPUTextureBindingLayout{
             .nextInChain   = next,
-            .sampleType    = static_cast<WGPUTextureSampleType>(sample_type),
-            .viewDimension = static_cast<WGPUTextureViewDimension>(view_dimension),
+            .sampleType    = sample_type,
+            .viewDimension = view_dimension,
             .multisampled  = static_cast<WGPUBool>(multisampled),
         };
     }
@@ -993,25 +982,25 @@ struct ECHIDNA_EXPORT texture_view_descriptor {
     constexpr texture_view_descriptor(const WGPUTextureViewDescriptor& d) :
         next(d.nextInChain),
         label(d.label),
-        format(static_cast<texture_format>(d.format)),
-        dimension(static_cast<texture_view_dimension>(d.dimension)),
+        format(d.format),
+        dimension(d.dimension),
         base_mip_level(d.baseMipLevel),
         mip_level_count(d.mipLevelCount),
         base_array_layer(d.baseArrayLayer),
         array_layer_count(d.arrayLayerCount),
-        aspect(static_cast<texture_aspect>(d.aspect)) {}
+        aspect(d.aspect) {}
 
     constexpr operator WGPUTextureViewDescriptor() {
         return WGPUTextureViewDescriptor{
             .nextInChain     = next,
             .label           = label.c_str(),
-            .format          = static_cast<WGPUTextureFormat>(format),
-            .dimension       = static_cast<WGPUTextureViewDimension>(dimension),
+            .format          = format,
+            .dimension       = dimension,
             .baseMipLevel    = base_mip_level,
             .mipLevelCount   = mip_level_count,
             .baseArrayLayer  = base_array_layer,
             .arrayLayerCount = array_layer_count,
-            .aspect          = static_cast<WGPUTextureAspect>(aspect),
+            .aspect          = aspect,
         };
     }
 };
@@ -1022,13 +1011,11 @@ struct ECHIDNA_EXPORT vertex_attribute {
     std::uint32_t shader_location;
 
     constexpr vertex_attribute(const WGPUVertexAttribute& a) :
-        format(static_cast<vertex_format>(a.format)),
-        offset(a.offset),
-        shader_location(a.shaderLocation) {}
+        format(a.format), offset(a.offset), shader_location(a.shaderLocation) {}
 
     constexpr operator WGPUVertexAttribute() {
         return WGPUVertexAttribute{
-            .format         = static_cast<WGPUVertexFormat>(format),
+            .format         = format,
             .offset         = offset,
             .shaderLocation = shader_location,
         };
@@ -1075,7 +1062,7 @@ struct ECHIDNA_EXPORT bind_group_layout_entry {
     constexpr bind_group_layout_entry(const WGPUBindGroupLayoutEntry& e) :
         next(e.nextInChain),
         binding(e.binding),
-        visibility(static_cast<shader_stage>(e.visibility)),
+        visibility(e.visibility),
         buffer(e.buffer),
         sampler(e.sampler),
         texture(e.texture),
@@ -1162,9 +1149,9 @@ struct ECHIDNA_EXPORT depth_stencil_state {
 
     constexpr depth_stencil_state(const WGPUDepthStencilState& s) :
         next(s.nextInChain),
-        format(static_cast<texture_format>(s.format)),
-        depth_write_enabled(static_cast<bool>(s.depthWriteEnabled)),
-        depth_compare(static_cast<compare_function>(s.depthCompare)),
+        format(s.format),
+        depth_write_enabled(s.depthWriteEnabled != 0u),
+        depth_compare(s.depthCompare),
         stencil_front(s.stencilFront),
         stencil_back(s.stencilBack),
         stencil_read_mask(s.stencilReadMask),
@@ -1176,9 +1163,9 @@ struct ECHIDNA_EXPORT depth_stencil_state {
     constexpr operator WGPUDepthStencilState() {
         return WGPUDepthStencilState{
             .nextInChain         = next,
-            .format              = static_cast<WGPUTextureFormat>(format),
+            .format              = format,
             .depthWriteEnabled   = static_cast<WGPUBool>(depth_write_enabled),
-            .depthCompare        = static_cast<WGPUCompareFunction>(depth_compare),
+            .depthCompare        = depth_compare,
             .stencilFront        = stencil_front,
             .stencilBack         = stencil_back,
             .stencilReadMask     = stencil_read_mask,
@@ -1219,7 +1206,7 @@ struct ECHIDNA_EXPORT image_copy_texture {
         texture_dst(b.texture),
         mip_level(b.mipLevel),
         origin(b.origin),
-        aspect(static_cast<texture_aspect>(b.aspect)) {}
+        aspect(b.aspect) {}
 
     constexpr operator WGPUImageCopyTexture() {
         return WGPUImageCopyTexture{
@@ -1227,7 +1214,7 @@ struct ECHIDNA_EXPORT image_copy_texture {
             .texture     = texture_dst,
             .mipLevel    = mip_level,
             .origin      = origin,
-            .aspect      = static_cast<WGPUTextureAspect>(aspect),
+            .aspect      = aspect,
         };
     }
 };
@@ -1284,8 +1271,8 @@ struct ECHIDNA_EXPORT render_pass_color_attachment {
             .nextInChain   = next,
             .view          = view,
             .resolveTarget = resolve_target,
-            .loadOp        = static_cast<WGPULoadOp>(load_operation),
-            .storeOp       = static_cast<WGPUStoreOp>(store_operation),
+            .loadOp        = load_operation,
+            .storeOp       = store_operation,
             .clearValue    = clear_value,
         };
     }
@@ -1347,7 +1334,7 @@ class texture_descriptor {
             view_formats.begin(),
             view_formats.end(),
             std::back_inserter(wgpu_formats),
-            [](auto f) { return static_cast<WGPUTextureFormat>(f); }
+            [](auto f) { return f; }
         );
         return wgpu_formats;
     }
@@ -1366,17 +1353,17 @@ public:
     constexpr texture_descriptor(const WGPUTextureDescriptor& d) :
         next(d.nextInChain),
         label(d.label),
-        usage(static_cast<texture_usage>(d.usage)),
-        dimension(static_cast<texture_dimension>(d.dimension)),
+        usage(d.usage),
+        dimension(d.dimension),
         size(d.size),
-        format(static_cast<texture_format>(d.format)),
+        format(d.format),
         mip_level_count(d.mipLevelCount),
         sample_count(d.sampleCount) {
         std::transform(
             d.viewFormats,
             d.viewFormats + d.viewFormatCount,
             std::back_inserter(view_formats),
-            [](auto f) { return static_cast<texture_format>(f); }
+            [](auto f) { return f; }
         );
     }
 
@@ -1385,9 +1372,9 @@ public:
             .nextInChain     = next,
             .label           = label.c_str(),
             .usage           = usage,
-            .dimension       = static_cast<WGPUTextureDimension>(dimension),
+            .dimension       = dimension,
             .size            = size,
-            .format          = static_cast<WGPUTextureFormat>(format),
+            .format          = format,
             .mipLevelCount   = mip_level_count,
             .sampleCount     = sample_count,
             .viewFormatCount = view_formats.size(),
@@ -1411,13 +1398,13 @@ public:
 
     constexpr vertex_buffer_layout(const WGPUVertexBufferLayout& l) :
         array_stride(l.arrayStride),
-        step_mode(static_cast<vertex_step_mode>(l.stepMode)),
+        step_mode(l.stepMode),
         attributes(l.attributes, l.attributes + l.attributeCount) {}
 
     constexpr operator WGPUVertexBufferLayout() {
         return WGPUVertexBufferLayout{
             .arrayStride    = array_stride,
-            .stepMode       = static_cast<WGPUVertexStepMode>(step_mode),
+            .stepMode       = step_mode,
             .attributeCount = attributes.size(),
             .attributes     = this->get_wgpu_attributes().data(),
         };
@@ -1468,14 +1455,14 @@ public:
     constexpr color_target_state(const WGPUColorTargetState& s) :
         wgpu_blend(*s.blend),
         next(s.nextInChain),
-        format(static_cast<texture_format>(s.format)),
+        format(s.format),
         blend(*s.blend),
-        write_mask(static_cast<color_write_mask>(s.writeMask)) {}
+        write_mask(s.writeMask) {}
 
     constexpr operator WGPUColorTargetState() {
         return WGPUColorTargetState{
             .nextInChain = next,
-            .format      = static_cast<WGPUTextureFormat>(format),
+            .format      = format,
             .blend       = this->get_wgpu_blend(),
             .writeMask   = write_mask,
         };
@@ -1515,7 +1502,7 @@ class device_descriptor {
             required_features.begin(),
             required_features.end(),
             std::back_inserter(wgpu_features),
-            [](auto f) { return static_cast<WGPUFeatureName>(f); }
+            [](auto f) { return f; }
         );
 
         return wgpu_features;
@@ -1531,6 +1518,7 @@ public:
     void* device_lost_user_data;
 
     constexpr device_descriptor(const WGPUDeviceDescriptor& d) :
+        wgpu_limits(*d.requiredLimits),
         next(d.nextInChain),
         label(d.label),
         required_lims(*d.requiredLimits),
@@ -1542,7 +1530,7 @@ public:
             d.requiredFeatures,
             d.requiredFeatures + d.requiredFeatureCount,
             std::back_inserter(required_features),
-            [](auto f) { return static_cast<feature_name>(f); }
+            [](auto f) { return f; }
         );
     }
 
