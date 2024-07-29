@@ -75,6 +75,38 @@ struct ECHIDNA_EXPORT bind_group_entry {
     sampler sampler_binding;
     texture_view texture_view_binding;
 
+    bind_group_entry(
+        std::uint32_t binding,
+        const buffer& buf,
+        std::uint64_t offset,
+        std::uint64_t size
+    ) :
+        next(nullptr),
+        binding(binding),
+        buffer_binding(buf),
+        offset(offset),
+        size(size),
+        sampler_binding(nullptr),
+        texture_view_binding(nullptr) {}
+
+    bind_group_entry(std::uint32_t binding, const sampler& sampler) :
+        next(nullptr),
+        binding(binding),
+        buffer_binding(nullptr),
+        offset(0),
+        size(0),
+        sampler_binding(sampler),
+        texture_view_binding(nullptr) {}
+
+    bind_group_entry(std::uint32_t binding, const texture_view& texture_view_binding) :
+        next(nullptr),
+        binding(binding),
+        buffer_binding(nullptr),
+        offset(0),
+        size(0),
+        sampler_binding(nullptr),
+        texture_view_binding(texture_view_binding) {}
+
     constexpr bind_group_entry(const WGPUBindGroupEntry& e) :
         next(e.nextInChain),
         binding(e.binding),
@@ -102,6 +134,9 @@ struct ECHIDNA_EXPORT blend_component {
     blend_factor src;
     blend_factor dst;
 
+    constexpr blend_component(blend_op op, blend_factor src, blend_factor dst) :
+        op(op), src(src), dst(dst) {}
+
     constexpr blend_component(const WGPUBlendComponent& bc) :
         op(bc.operation), src(bc.srcFactor), dst(bc.dstFactor) {}
 
@@ -119,6 +154,22 @@ struct ECHIDNA_EXPORT buffer_binding_layout {
     buffer_binding_type type;
     bool dynamic_offset;
     std::uint64_t min_binding_size;
+
+    constexpr buffer_binding_layout() :
+        next(nullptr),
+        type(buffer_binding_type::undefined),
+        dynamic_offset(false),
+        min_binding_size(0) {}
+
+    constexpr buffer_binding_layout(
+        buffer_binding_type type,
+        bool has_dynamic_offset,
+        std::uint64_t min_binding_size
+    ) :
+        next(nullptr),
+        type(type),
+        dynamic_offset(has_dynamic_offset),
+        min_binding_size(min_binding_size) {}
 
     constexpr buffer_binding_layout(const WGPUBufferBindingLayout& b) :
         next(b.nextInChain),
@@ -142,6 +193,21 @@ struct ECHIDNA_EXPORT buffer_descriptor {
     buffer_usage usage;
     std::uint64_t size;
     bool mapped_at_creation;
+
+    constexpr buffer_descriptor(
+        const char* label,
+        buffer_usage usage,
+        std::uint64_t size,
+        bool mapped_at_creation
+    ) :
+        next(nullptr),
+        label(label),
+        usage(usage),
+        size(size),
+        mapped_at_creation(mapped_at_creation) {}
+
+    constexpr buffer_descriptor(buffer_usage usage, std::uint64_t size) :
+        buffer_descriptor(nullptr, usage, size, false) {}
 
     constexpr buffer_descriptor(const WGPUBufferDescriptor& bd) :
         next(bd.nextInChain),
@@ -167,6 +233,7 @@ struct ECHIDNA_EXPORT color {
     double blue;
     double alpha;
 
+    constexpr color(double r, double g, double b, double a) : red(r), green(g), blue(b), alpha(a) {}
     constexpr color(const WGPUColor& c) : red(c.r), green(c.g), blue(c.b), alpha(c.a) {}
     constexpr operator WGPUColor() const {
         return WGPUColor{.r = red, .g = green, .b = blue, .a = alpha};
@@ -176,6 +243,8 @@ struct ECHIDNA_EXPORT color {
 struct ECHIDNA_EXPORT command_buffer_descriptor {
     const chained_struct* next;
     std::string label;
+
+    constexpr command_buffer_descriptor(const char* label) : next(nullptr), label(label) {}
 
     constexpr command_buffer_descriptor(const WGPUCommandBufferDescriptor& cbd) :
         next(cbd.nextInChain), label(cbd.label) {}
@@ -188,6 +257,8 @@ struct ECHIDNA_EXPORT command_buffer_descriptor {
 struct ECHIDNA_EXPORT command_encoder_descriptor {
     const chained_struct* next;
     std::string label;
+
+    constexpr command_encoder_descriptor(const char* label) : next(nullptr), label(label) {}
 
     constexpr command_encoder_descriptor(const WGPUCommandEncoderDescriptor& ced) :
         next(ced.nextInChain), label(ced.label) {}
@@ -242,6 +313,9 @@ struct ECHIDNA_EXPORT compute_pass_timestamp_writes {
     std::uint32_t beginning_index;
     std::uint32_t end_index;
 
+    compute_pass_timestamp_writes(const query_set& set, std::uint32_t begin, std::uint32_t end) :
+        set(set), beginning_index(begin), end_index(end) {}
+
     constexpr compute_pass_timestamp_writes(const WGPUComputePassTimestampWrites& ctw) :
         set(ctw.querySet),
         beginning_index(ctw.beginningOfPassWriteIndex),
@@ -261,6 +335,9 @@ struct ECHIDNA_EXPORT constant_entry {
     std::string key;
     double value;
 
+    constexpr constant_entry(const std::string& key, double val) :
+        next(nullptr), key(key), value(val) {}
+
     constant_entry(const WGPUConstantEntry& e) : next(e.nextInChain), key(e.key), value(e.value) {}
 
     constexpr operator WGPUConstantEntry() const {
@@ -276,6 +353,9 @@ struct ECHIDNA_EXPORT extent3d {
     std::uint32_t width;
     std::uint32_t height;
     std::uint32_t depth;
+
+    constexpr extent3d(std::uint32_t width, std::uint32_t height, std::uint32_t depth) :
+        width(width), height(height), depth(depth) {}
 
     constexpr extent3d(const WGPUExtent3D& e) :
         width(e.width), height(e.height), depth(e.depthOrArrayLayers) {}
@@ -296,6 +376,7 @@ struct ECHIDNA_EXPORT instance_descriptor {
     }
 };
 
+// TODO: Figure out constructor for this
 struct ECHIDNA_EXPORT limits {
     std::uint32_t max_texture_dimension_1d;
     std::uint32_t max_texture_dimension_2d;
@@ -414,6 +495,9 @@ struct ECHIDNA_EXPORT multisample_state {
     std::uint32_t mask;
     bool alpha_to_coverage_enabled;
 
+    constexpr multisample_state(std::uint32_t count, std::uint32_t mask, bool alpha) :
+        next(nullptr), count(count), mask(mask), alpha_to_coverage_enabled(alpha) {}
+
     constexpr multisample_state(const WGPUMultisampleState& s) :
         next(s.nextInChain),
         count(s.count),
@@ -435,6 +519,7 @@ struct ECHIDNA_EXPORT origin3d {
     std::uint32_t y;
     std::uint32_t z;
 
+    constexpr origin3d(std::uint32_t x, std::uint32_t y, std::uint32_t z) : x(x), y(y), z(z) {}
     constexpr origin3d(const WGPUOrigin3D& o) : x(o.x), y(o.y), z(o.z) {}
     constexpr operator WGPUOrigin3D() const { return WGPUOrigin3D{.x = x, .y = y, .z = z}; }
 };
@@ -451,6 +536,15 @@ public:
     const chained_struct* next;
     std::string label;
     std::vector<bind_group_layout> layouts;
+
+    constexpr pipeline_layout_descriptor(
+        const std::string& label,
+        const std::vector<bind_group_layout>& layouts
+    ) :
+        wgpu_layouts(layouts.begin(), layouts.end()),
+        next(nullptr),
+        label(label),
+        layouts(layouts) {}
 
     constexpr pipeline_layout_descriptor(const WGPUPipelineLayoutDescriptor& pld) :
         next(pld.nextInChain),
@@ -471,6 +565,9 @@ struct ECHIDNA_EXPORT primitive_depth_clip_control {
     chained_struct chain;
     bool unclipped_depth;
 
+    constexpr primitive_depth_clip_control(chained_struct chain, bool unclipped) :
+        chain(chain), unclipped_depth(unclipped) {}
+
     constexpr primitive_depth_clip_control(WGPUPrimitiveDepthClipControl& pdc) :
         chain(pdc.chain), unclipped_depth(pdc.unclippedDepth != 0u) {}
 
@@ -488,6 +585,18 @@ struct ECHIDNA_EXPORT primitive_state {
     index_format strip_index_format;
     front_face front_face_winding;
     cull_mode cull_mode_direction;
+
+    constexpr primitive_state(
+        primitive_topology topology,
+        index_format format,
+        front_face front,
+        cull_mode cull_direction
+    ) :
+        next(nullptr),
+        topology(topology),
+        strip_index_format(format),
+        front_face_winding(front),
+        cull_mode_direction(cull_direction) {}
 
     constexpr primitive_state(const WGPUPrimitiveState& p) :
         next((p.nextInChain)),
@@ -513,6 +622,9 @@ struct ECHIDNA_EXPORT query_set_descriptor {
     query_type type;
     std::uint32_t count;
 
+    constexpr query_set_descriptor(const std::string& label, query_type type, std::uint32_t count) :
+        next(nullptr), label(label), type(type), count(count) {}
+
     constexpr query_set_descriptor(const WGPUQuerySetDescriptor& q) :
         next(q.nextInChain), label(q.label), type(q.type), count(q.count) {}
 
@@ -530,6 +642,7 @@ struct ECHIDNA_EXPORT queue_descriptor {
     const chained_struct* next;
     std::string label;
 
+    constexpr queue_descriptor(const std::string& label) : next(nullptr), label(label) {}
     constexpr queue_descriptor(const WGPUQueueDescriptor& q) :
         next(q.nextInChain), label(q.label) {}
     constexpr operator WGPUQueueDescriptor() {
@@ -541,6 +654,7 @@ struct ECHIDNA_EXPORT render_bundle_descriptor {
     const chained_struct* next;
     std::string label;
 
+    constexpr render_bundle_descriptor(const std::string& label) : next(nullptr), label(label) {}
     constexpr render_bundle_descriptor(const WGPURenderBundleDescriptor& q) :
         next(q.nextInChain), label(q.label) {}
     constexpr operator WGPURenderBundleDescriptor() const {
@@ -558,6 +672,27 @@ struct ECHIDNA_EXPORT render_pass_depth_stencil_attachment {
     store_op stencil_store_op;
     std::uint32_t stencil_clear_value;
     bool stencil_read_only;
+
+    render_pass_depth_stencil_attachment(
+        const texture_view& view,
+        load_op depth_load,
+        store_op depth_store,
+        float depth_clear_val,
+        bool depth_read_only,
+        load_op stencil_load,
+        store_op stencil_store,
+        std::uint32_t stencil_clear_val,
+        bool stencil_read_only
+    ) :
+        view(view),
+        depth_load_op(depth_load),
+        depth_store_op(depth_store),
+        depth_clear_value(depth_clear_val),
+        depth_read_only(depth_read_only),
+        stencil_load_op(stencil_load),
+        stencil_store_op(stencil_store),
+        stencil_clear_value(stencil_clear_val),
+        stencil_read_only(stencil_read_only) {}
 
     constexpr render_pass_depth_stencil_attachment(const WGPURenderPassDepthStencilAttachment& a) :
         view(a.view),
@@ -589,6 +724,12 @@ struct ECHIDNA_EXPORT render_pass_descriptor_max_draw_count {
     chained_struct chain;
     std::uint64_t max_draw_count;
 
+    constexpr render_pass_descriptor_max_draw_count(chained_struct chain, std::uint64_t count) :
+        chain(chain), max_draw_count(count) {}
+
+    constexpr render_pass_descriptor_max_draw_count(std::uint64_t count) :
+        chain(), max_draw_count(count) {}
+
     constexpr render_pass_descriptor_max_draw_count(const WGPURenderPassDescriptorMaxDrawCount& mdc
     ) :
         chain(mdc.chain), max_draw_count(mdc.maxDrawCount) {}
@@ -605,6 +746,9 @@ struct ECHIDNA_EXPORT render_pass_timestamp_writes {
     query_set set;
     std::uint32_t beginning_index;
     std::uint32_t end_index;
+
+    render_pass_timestamp_writes(const query_set& set, std::uint32_t begin, std::uint32_t end) :
+        set(set), beginning_index(begin), end_index(end) {}
 
     constexpr render_pass_timestamp_writes(const WGPURenderPassTimestampWrites& w) :
         set(w.querySet),
@@ -647,6 +791,7 @@ struct ECHIDNA_EXPORT request_adapter_options {
         bool fallback
     ) :
         request_adapter_options(nullptr, surf, pref, backend, fallback) {}
+
     constexpr request_adapter_options(const WGPURequestAdapterOptions& o) :
         next(o.nextInChain),
         compatible_surface(o.compatibleSurface),
@@ -668,6 +813,10 @@ struct ECHIDNA_EXPORT request_adapter_options {
 struct ECHIDNA_EXPORT sampler_binding_layout {
     const chained_struct* next;
     sampler_binding_type type;
+
+    constexpr sampler_binding_layout() : next(nullptr), type(sampler_binding_type::undefined) {}
+
+    constexpr sampler_binding_layout(sampler_binding_type type) : next(nullptr), type(type) {}
 
     constexpr sampler_binding_layout(const WGPUSamplerBindingLayout& l) :
         next(l.nextInChain), type(l.type) {}
@@ -693,6 +842,32 @@ struct ECHIDNA_EXPORT sampler_descriptor {
     float lod_max_clamp;
     compare_function compare;
     std::uint16_t max_anisotropy;
+
+    constexpr sampler_descriptor(
+        const std::string& label,
+        address_mode u,
+        address_mode v,
+        address_mode w,
+        filter_mode mag,
+        filter_mode min,
+        mipmap_filter_mode mipmap,
+        float lod_min,
+        float lod_max,
+        compare_function comp,
+        std::uint16_t anisotropy
+    ) :
+        next(nullptr),
+        label(label),
+        address_mode_u(u),
+        address_mode_v(v),
+        address_mode_w(w),
+        mag_filter(mag),
+        min_filter(min),
+        mip_map_filter(mipmap),
+        lod_min_clamp(lod_min),
+        lod_max_clamp(lod_max),
+        compare(comp),
+        max_anisotropy(anisotropy) {}
 
     constexpr sampler_descriptor(const WGPUSamplerDescriptor& d) :
         next(d.nextInChain),
@@ -731,6 +906,9 @@ struct ECHIDNA_EXPORT shader_module_compilation_hint {
     std::string entry_point;
     pipeline_layout layout;
 
+    shader_module_compilation_hint(const std::string& entry, const pipeline_layout& layout) :
+        next(nullptr), entry_point(entry), layout(layout) {}
+
     constexpr shader_module_compilation_hint(const WGPUShaderModuleCompilationHint& h) :
         next(h.nextInChain), entry_point(h.entryPoint), layout(h.layout) {}
 
@@ -748,6 +926,9 @@ struct ECHIDNA_EXPORT shader_module_spirv_descriptor {
     std::uint32_t size;
     const std::uint32_t* code;
 
+    constexpr shader_module_spirv_descriptor(std::uint32_t size, std::uint32_t* code) :
+        chain(), size(size), code(code) {}
+
     constexpr shader_module_spirv_descriptor(const WGPUShaderModuleSPIRVDescriptor& d) :
         chain(d.chain), size(d.codeSize), code(d.code) {}
 
@@ -764,6 +945,8 @@ struct ECHIDNA_EXPORT shader_module_wgsl_descriptor {
     chained_struct chain;
     std::string code;
 
+    constexpr shader_module_wgsl_descriptor(const std::string& code) : chain(), code(code) {}
+
     constexpr shader_module_wgsl_descriptor(const WGPUShaderModuleWGSLDescriptor& d) :
         chain(d.chain), code(d.code) {}
     constexpr operator WGPUShaderModuleWGSLDescriptor() const {
@@ -776,6 +959,14 @@ struct ECHIDNA_EXPORT stencil_face_state {
     stencil_op fail;
     stencil_op depth_fail;
     stencil_op pass;
+
+    constexpr stencil_face_state(
+        compare_function comp,
+        stencil_op fail,
+        stencil_op depth_fail,
+        stencil_op pass
+    ) :
+        compare(comp), fail(fail), depth_fail(depth_fail), pass(pass) {}
 
     constexpr stencil_face_state(const WGPUStencilFaceState& s) :
         compare(s.compare), fail(s.failOp), depth_fail(s.depthFailOp), pass(s.passOp) {}
@@ -795,6 +986,19 @@ struct ECHIDNA_EXPORT storage_texture_binding_layout {
     storage_texture_access access;
     texture_format format;
     texture_view_dimension view_dimension;
+
+    constexpr storage_texture_binding_layout() :
+        next(nullptr),
+        access(storage_texture_access::undefined),
+        format(texture_format::undefined),
+        view_dimension(texture_view_dimension::undefined) {}
+
+    constexpr storage_texture_binding_layout(
+        storage_texture_access access,
+        texture_format format,
+        texture_view_dimension dim
+    ) :
+        next(nullptr), access(access), format(format), view_dimension(dim) {}
 
     constexpr storage_texture_binding_layout(const WGPUStorageTextureBindingLayout& l) :
         next(l.nextInChain), access(l.access), format(l.format), view_dimension(l.viewDimension) {}
@@ -831,6 +1035,18 @@ public:
     std::vector<texture_format> formats;
     std::vector<present_mode> present_modes;
     std::vector<composite_alpha_mode> alpha_modes;
+
+    surface_capabilities(
+        const std::vector<texture_format>& formats,
+        const std::vector<present_mode>& present_modes,
+        std::vector<composite_alpha_mode>& alpha_modes
+    ) :
+        wgpu_fmts(formats.begin(), formats.end()),
+        wgpu_pm(present_modes.begin(), present_modes.end()),
+        wgpu_cam(alpha_modes.begin(), alpha_modes.end()),
+        formats(formats),
+        present_modes(present_modes),
+        alpha_modes(alpha_modes) {}
 
     constexpr surface_capabilities(const WGPUSurfaceCapabilities& c) :
         formats(c.formats, c.formats + c.formatCount),
@@ -869,6 +1085,27 @@ public:
     std::uint32_t height;
     present_mode present;
 
+    surface_configuration(
+        const device& device,
+        texture_format format,
+        texture_usage usage,
+        const std::vector<texture_format>& view_formats,
+        composite_alpha_mode alpha,
+        std::uint32_t width,
+        std::uint32_t height,
+        present_mode present
+    ) :
+        wgpu_formats(view_formats.begin(), view_formats.end()),
+        next(nullptr),
+        device_handle(device),
+        format(format),
+        usage(usage),
+        view_formats(view_formats),
+        alpha_mode(alpha),
+        width(width),
+        height(height),
+        present(present) {}
+
     constexpr surface_configuration(const WGPUSurfaceConfiguration& c) :
         next(c.nextInChain),
         device_handle(c.device),
@@ -902,6 +1139,19 @@ struct ECHIDNA_EXPORT texture_binding_layout {
     texture_view_dimension view_dimension;
     bool multisampled;
 
+    constexpr texture_binding_layout() :
+        next(nullptr),
+        sample_type(texture_sample_type::undefined),
+        view_dimension(texture_view_dimension::undefined),
+        multisampled(false) {}
+
+    constexpr texture_binding_layout(
+        texture_sample_type sample_type,
+        texture_view_dimension dim,
+        bool multisampled
+    ) :
+        next(nullptr), sample_type(sample_type), view_dimension(dim), multisampled(multisampled) {}
+
     constexpr texture_binding_layout(const WGPUTextureBindingLayout& l) :
         next(l.nextInChain),
         sample_type(l.sampleType),
@@ -923,6 +1173,13 @@ struct ECHIDNA_EXPORT texture_data_layout {
     std::uint64_t offset;
     std::uint32_t bytes_per_row;
     std::uint32_t rows_per_image;
+
+    constexpr texture_data_layout(
+        std::uint64_t offset,
+        std::uint32_t bytes_per_row,
+        std::uint32_t rows
+    ) :
+        next(nullptr), offset(offset), bytes_per_row(bytes_per_row), rows_per_image(rows) {}
 
     constexpr texture_data_layout(const WGPUTextureDataLayout& l) :
         next(l.nextInChain),
@@ -949,6 +1206,26 @@ struct ECHIDNA_EXPORT texture_view_descriptor {
     std::uint32_t base_array_layer;
     std::uint32_t array_layer_count;
     texture_aspect aspect;
+
+    constexpr texture_view_descriptor(
+        const std::string& label,
+        texture_format format,
+        texture_view_dimension dim,
+        std::uint32_t base_mip,
+        std::uint32_t mip_count,
+        std::uint32_t base_array,
+        std::uint32_t array_count,
+        texture_aspect aspect
+    ) :
+        next(nullptr),
+        label(label),
+        format(format),
+        dimension(dim),
+        base_mip_level(base_mip),
+        mip_level_count(mip_count),
+        base_array_layer(base_array),
+        array_layer_count(array_count),
+        aspect(aspect) {}
 
     constexpr texture_view_descriptor(const WGPUTextureViewDescriptor& d) :
         next(d.nextInChain),
@@ -981,6 +1258,13 @@ struct ECHIDNA_EXPORT vertex_attribute {
     std::uint64_t offset;
     std::uint32_t shader_location;
 
+    constexpr vertex_attribute(
+        vertex_format format,
+        std::uint64_t offset,
+        std::uint32_t shader_loc
+    ) :
+        format(format), offset(offset), shader_location(shader_loc) {}
+
     constexpr vertex_attribute(const WGPUVertexAttribute& a) :
         format(a.format), offset(a.offset), shader_location(a.shaderLocation) {}
 
@@ -1007,12 +1291,6 @@ public:
     bind_group_layout layout;
     std::vector<bind_group_entry> entries;
 
-    constexpr bind_group_descriptor(const WGPUBindGroupDescriptor& d) :
-        wgpu_entries(d.entries, d.entries + d.entryCount),
-        next(d.nextInChain),
-        label(d.label),
-        entries(d.entries, d.entries + d.entryCount) {}
-
     bind_group_descriptor(
         const char* label,
         bind_group_layout& bgl,
@@ -1023,6 +1301,12 @@ public:
         label(label),
         layout(bgl),
         entries(entries) {}
+
+    constexpr bind_group_descriptor(const WGPUBindGroupDescriptor& d) :
+        wgpu_entries(d.entries, d.entries + d.entryCount),
+        next(d.nextInChain),
+        label(d.label),
+        entries(d.entries, d.entries + d.entryCount) {}
 
     constexpr operator WGPUBindGroupDescriptor() {
         return WGPUBindGroupDescriptor{
@@ -1043,6 +1327,30 @@ struct ECHIDNA_EXPORT bind_group_layout_entry {
     sampler_binding_layout sampler;
     texture_binding_layout texture;
     storage_texture_binding_layout storage_texture;
+
+    bind_group_layout_entry(std::uint32_t binding, shader_stage vis, buffer_binding_layout layout) :
+        next(nullptr), binding(binding), visibility(vis), buffer(layout) {}
+
+    bind_group_layout_entry(
+        std::uint32_t binding,
+        shader_stage vis,
+        sampler_binding_layout layout
+    ) :
+        next(nullptr), binding(binding), visibility(vis), sampler(layout) {}
+
+    bind_group_layout_entry(
+        std::uint32_t binding,
+        shader_stage vis,
+        texture_binding_layout layout
+    ) :
+        next(nullptr), binding(binding), visibility(vis), texture(layout) {}
+
+    bind_group_layout_entry(
+        std::uint32_t binding,
+        shader_stage vis,
+        storage_texture_binding_layout layout
+    ) :
+        next(nullptr), binding(binding), visibility(vis), storage_texture(layout) {}
 
     constexpr bind_group_layout_entry(const WGPUBindGroupLayoutEntry& e) :
         next(e.nextInChain),
@@ -1070,6 +1378,8 @@ struct ECHIDNA_EXPORT blend_state {
     blend_component color;
     blend_component alpha;
 
+    constexpr blend_state(blend_component color, blend_component alpha) :
+        color(color), alpha(alpha) {}
     constexpr blend_state(const WGPUBlendState& s) : color(s.color), alpha(s.alpha) {}
     constexpr operator WGPUBlendState() { return {.color = color, .alpha = alpha}; }
 };
@@ -1086,11 +1396,13 @@ public:
     const chained_struct* next;
     std::vector<compilation_message> messages;
 
+    compilation_info(const std::vector<compilation_message> msg) :
+        wgpu_messages(msg.begin(), msg.end()), next(nullptr), messages(msg) {}
+
     constexpr compilation_info(const WGPUCompilationInfo& i) :
         next(i.nextInChain), messages(i.messages, i.messages + i.messageCount) {}
 };
 
-// TODO: If timestamp_writes changes wgpu_tsw will be outdated
 class compute_pass_descriptor {
     WGPUComputePassTimestampWrites wgpu_tsw;
 
@@ -1103,6 +1415,9 @@ public:
     const chained_struct* next;
     std::string label;
     compute_pass_timestamp_writes timestamp_writes;
+
+    compute_pass_descriptor(const std::string& label, const compute_pass_timestamp_writes& tsw) :
+        wgpu_tsw(tsw), next(nullptr), label(label), timestamp_writes(tsw) {}
 
     constexpr compute_pass_descriptor(const WGPUComputePassDescriptor& d) :
         wgpu_tsw(*d.timestampWrites),
@@ -1131,6 +1446,30 @@ struct ECHIDNA_EXPORT depth_stencil_state {
     std::int32_t depth_bias;
     float depth_bias_slope_scale;
     float depth_bias_clamp;
+
+    constexpr depth_stencil_state(
+        texture_format format,
+        bool depth_write_enabled,
+        compare_function depth_compare,
+        const stencil_face_state& front,
+        const stencil_face_state& back,
+        std::uint32_t stencil_read_mask,
+        std::uint32_t stencil_write_mask,
+        std::int32_t depth_bias,
+        float slope_scale,
+        float clamp
+    ) :
+        next(nullptr),
+        format(format),
+        depth_write_enabled(depth_write_enabled),
+        depth_compare(depth_compare),
+        stencil_front(front),
+        stencil_back(back),
+        stencil_read_mask(stencil_read_mask),
+        stencil_write_mask(stencil_write_mask),
+        depth_bias(depth_bias),
+        depth_bias_slope_scale(slope_scale),
+        depth_bias_clamp(clamp) {}
 
     constexpr depth_stencil_state(const WGPUDepthStencilState& s) :
         next(s.nextInChain),
@@ -1166,6 +1505,9 @@ struct ECHIDNA_EXPORT image_copy_buffer {
     const chained_struct* next;
     texture_data_layout layout;
     buffer buffer_dst;
+
+    image_copy_buffer(texture_data_layout layout, const buffer& dest) :
+        next(nullptr), layout(layout), buffer_dst(dest) {}
 
     constexpr image_copy_buffer(const WGPUImageCopyBuffer& b) :
         next(b.nextInChain), layout(b.layout), buffer_dst(b.buffer) {}
@@ -1218,6 +1560,9 @@ public:
     std::string entry_point;
     std::vector<constant_entry> constants;
 
+    programmable_stage_descriptor(const shader_module& module, const std::string& entry) :
+        next(nullptr), module(module), entry_point(entry) {}
+
     constexpr programmable_stage_descriptor(const WGPUProgrammableStageDescriptor& d) :
         next(d.nextInChain),
         module(d.module),
@@ -1243,6 +1588,20 @@ struct ECHIDNA_EXPORT render_pass_color_attachment {
     store_op store_operation;
     color clear_value;
 
+    render_pass_color_attachment(
+        const texture_view& view,
+        const texture_view& resolve,
+        load_op load,
+        store_op store,
+        color clear
+    ) :
+        next(nullptr),
+        view(view),
+        resolve_target(resolve),
+        load_operation(load),
+        store_operation(store),
+        clear_value(clear) {}
+
     constexpr render_pass_color_attachment(const WGPURenderPassColorAttachment& a) :
         next(a.nextInChain),
         view(a.view),
@@ -1267,6 +1626,7 @@ struct ECHIDNA_EXPORT required_limits {
     const chained_struct* next;
     limits required_lims;
 
+    constexpr required_limits(limits limits) : next(nullptr), required_lims(limits) {}
     constexpr required_limits(const WGPURequiredLimits& l) :
         next(l.nextInChain), required_lims(l.limits) {}
     constexpr operator WGPURequiredLimits() {
@@ -1287,6 +1647,12 @@ public:
     std::string label;
     std::vector<shader_module_compilation_hint> hints;
 
+    constexpr shader_module_descriptor(
+        const std::string& label,
+        const std::vector<shader_module_compilation_hint>& hints
+    ) :
+        next(nullptr), label(label), hints(hints) {}
+
     constexpr shader_module_descriptor(const WGPUShaderModuleDescriptor& d) :
         next(d.nextInChain), label(d.label), hints(d.hints, d.hints + d.hintCount) {}
 
@@ -1304,6 +1670,7 @@ struct ECHIDNA_EXPORT supported_limits {
     chained_struct_out* next;
     limits supported_lims;
 
+    constexpr supported_limits(limits limits) : next(nullptr), supported_lims(limits) {}
     constexpr supported_limits(const WGPUSupportedLimits& l) :
         next(l.nextInChain), supported_lims(l.limits) {}
     constexpr operator WGPUSupportedLimits() {
@@ -1329,6 +1696,26 @@ public:
     std::uint32_t mip_level_count;
     std::uint32_t sample_count;
     std::vector<texture_format> view_formats;
+
+    texture_descriptor(
+        const std::string& label,
+        texture_usage usage,
+        texture_dimension dim,
+        extent3d size,
+        texture_format format,
+        std::uint32_t mip_level_count,
+        std::uint32_t sample_count,
+        const std::vector<texture_format>& view_formats
+    ) :
+        next(nullptr),
+        label(label),
+        usage(usage),
+        dimension(dim),
+        size(size),
+        format(format),
+        mip_level_count(mip_level_count),
+        sample_count(sample_count),
+        view_formats(view_formats) {}
 
     constexpr texture_descriptor(const WGPUTextureDescriptor& d) :
         next(d.nextInChain),
@@ -1370,6 +1757,13 @@ public:
     vertex_step_mode step_mode;
     std::vector<vertex_attribute> attributes;
 
+    vertex_buffer_layout(
+        std::uint64_t stride,
+        vertex_step_mode step_mode,
+        const std::vector<vertex_attribute>& attributes
+    ) :
+        array_stride(stride), step_mode(step_mode), attributes(attributes) {}
+
     constexpr vertex_buffer_layout(const WGPUVertexBufferLayout& l) :
         array_stride(l.arrayStride),
         step_mode(l.stepMode),
@@ -1397,6 +1791,12 @@ public:
     const chained_struct* next;
     std::string label;
     std::vector<bind_group_layout_entry> entries;
+
+    bind_group_layout_descriptor(
+        const std::string& label,
+        const std::vector<bind_group_layout_entry>& entries
+    ) :
+        next(nullptr), label(label), entries(entries) {}
 
     constexpr bind_group_layout_descriptor(const WGPUBindGroupLayoutDescriptor& d) :
         next(d.nextInChain), label(d.label), entries(d.entries, d.entries + d.entryCount) {}
@@ -1429,6 +1829,13 @@ public:
     blend_state blend;
     color_write_mask write_mask;
 
+    constexpr color_target_state(
+        texture_format format,
+        const blend_state& blend,
+        const color_write_mask& mask
+    ) :
+        wgpu_blend(), next(nullptr), format(format), blend(blend), write_mask(mask) {}
+
     constexpr color_target_state(const WGPUColorTargetState& s) :
         wgpu_blend(*s.blend),
         next(s.nextInChain),
@@ -1451,6 +1858,13 @@ struct ECHIDNA_EXPORT compute_pipeline_descriptor {
     std::string label;
     pipeline_layout layout;
     programmable_stage_descriptor compute;
+
+    compute_pipeline_descriptor(
+        const std::string& label,
+        const pipeline_layout& layout,
+        const programmable_stage_descriptor& compute
+    ) :
+        next(nullptr), label(label), layout(layout), compute(compute) {}
 
     constexpr compute_pipeline_descriptor(const WGPUComputePipelineDescriptor& d) :
         next(d.nextInChain), label(d.label), layout(d.layout), compute(d.compute) {}
@@ -1487,6 +1901,23 @@ public:
     queue_descriptor default_queue;
     device_lost_callback dev_lost_callback;
     void* device_lost_user_data;
+
+    device_descriptor(
+        const std::string& label,
+        const std::vector<feature_name>& features,
+        const required_limits& limits,
+        const queue_descriptor& default_queue,
+        const device_lost_callback& device_lost_callback,
+        void* device_lost_user_data
+    ) :
+        wgpu_limits(),
+        next(nullptr),
+        label(label),
+        required_features(features),
+        required_lims(limits),
+        default_queue(default_queue),
+        dev_lost_callback(device_lost_callback),
+        device_lost_user_data(device_lost_user_data) {}
 
     constexpr device_descriptor(const WGPUDeviceDescriptor& d) :
         wgpu_limits(*d.requiredLimits),
@@ -1543,6 +1974,22 @@ public:
     query_set occlusion_query_set;
     render_pass_timestamp_writes timestamp_writes;
 
+    render_pass_descriptor(
+        const std::string& label,
+        const std::vector<render_pass_color_attachment>& color_attachments,
+        const render_pass_depth_stencil_attachment& depth_stencil_attachment,
+        const query_set& occlusion_query,
+        const render_pass_timestamp_writes& tsw
+    ) :
+        wgpu_ds(),
+        wgpu_tsw(),
+        next(nullptr),
+        label(label),
+        color_attachments(color_attachments),
+        depth_stencil_attachment(depth_stencil_attachment),
+        occlusion_query_set(occlusion_query),
+        timestamp_writes(tsw) {}
+
     constexpr render_pass_descriptor(const WGPURenderPassDescriptor& d) :
         wgpu_ds(*d.depthStencilAttachment),
         wgpu_tsw(*d.timestampWrites),
@@ -1592,6 +2039,14 @@ public:
     std::vector<constant_entry> constants;
     std::vector<vertex_buffer_layout> buffers;
 
+    vertex_state(
+        const shader_module& module,
+        const std::string& entry,
+        const std::vector<constant_entry>& constants,
+        const std::vector<vertex_buffer_layout>& buffers
+    ) :
+        next(nullptr), module(module), entry_point(entry), constants(constants), buffers(buffers) {}
+
     constexpr vertex_state(const WGPUVertexState& s) :
         next(s.nextInChain),
         module(s.module),
@@ -1632,6 +2087,14 @@ public:
     std::string entry_point;
     std::vector<constant_entry> constants;
     std::vector<color_target_state> targets;
+
+    fragment_state(
+        const shader_module& module,
+        const std::string& entry,
+        const std::vector<constant_entry>& constants,
+        const std::vector<color_target_state>& targets
+    ) :
+        next(nullptr), module(module), entry_point(entry), constants(constants), targets(targets) {}
 
     constexpr fragment_state(const WGPUFragmentState& s) :
         next(s.nextInChain),
@@ -1676,6 +2139,26 @@ public:
     depth_stencil_state depth_stencil;
     multisample_state multisample;
     fragment_state fragment;
+
+    render_pipeline_descriptor(
+        const std::string& label,
+        const pipeline_layout& layout,
+        const vertex_state& vertex,
+        const primitive_state& primitive,
+        const depth_stencil_state& depth_stencil,
+        const multisample_state& multisample,
+        const fragment_state& fragment
+    ) :
+        wgpu_ds(),
+        wgpu_fs(),
+        next(nullptr),
+        label(label),
+        layout(layout),
+        vertex(vertex),
+        primitive(primitive),
+        depth_stencil(depth_stencil),
+        multisample(multisample),
+        fragment(fragment) {}
 
     constexpr render_pipeline_descriptor(const WGPURenderPipelineDescriptor& d) :
         wgpu_ds(*d.depthStencil),
