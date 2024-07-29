@@ -926,7 +926,7 @@ struct ECHIDNA_EXPORT shader_module_spirv_descriptor {
     std::uint32_t size;
     const std::uint32_t* code;
 
-    constexpr shader_module_spirv_descriptor(std::uint32_t size, std::uint32_t* code) :
+    constexpr shader_module_spirv_descriptor(std::uint32_t size, const std::uint32_t* code) :
         chain(), size(size), code(code) {}
 
     constexpr shader_module_spirv_descriptor(const WGPUShaderModuleSPIRVDescriptor& d) :
@@ -1396,7 +1396,7 @@ public:
     const chained_struct* next;
     std::vector<compilation_message> messages;
 
-    compilation_info(const std::vector<compilation_message> msg) :
+    compilation_info(const std::vector<compilation_message>& msg) :
         wgpu_messages(msg.begin(), msg.end()), next(nullptr), messages(msg) {}
 
     constexpr compilation_info(const WGPUCompilationInfo& i) :
