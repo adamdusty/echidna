@@ -1,21 +1,24 @@
 #include "echidna/webgpu/texture.hpp"
 
+#include <cassert>
+
 namespace echidna::webgpu {
 
 auto texture::texture_view_descriptor(const char* label) const -> WGPUTextureViewDescriptor {
     WGPUTextureViewDimension dim = WGPUTextureViewDimension_Undefined;
 
     switch(this->dimension()) {
-        using enum texture_dimension;
-    case dim1:
+    case texture_dimension::dim1:
         dim = WGPUTextureViewDimension_1D;
         break;
-    case dim2:
+    case texture_dimension::dim2:
         dim = WGPUTextureViewDimension_2D;
         break;
-    case dim3:
+    case texture_dimension::dim3:
         dim = WGPUTextureViewDimension_3D;
         break;
+    default:
+        assert(false); // Unreachable
     }
 
     return WGPUTextureViewDescriptor{

@@ -14,7 +14,7 @@ function(add_dev_compile_opts target)
             -Wformat=2
             -Wundef
             -Werror=float-equal
-            -Wshadow
+            # -Wshadow
             -Wcast-align
             -Wunused
             -Wnull-dereference

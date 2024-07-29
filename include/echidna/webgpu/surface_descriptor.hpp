@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <variant>
 #include <webgpu.h>
@@ -175,6 +176,7 @@ class ECHIDNA_EXPORT surface_descriptor {
     //     auto operator()(auto& /*unused*/) { return nullptr; }
     // };
     using platform_desc = std::variant<
+        std::monostate,
         surface_descriptor_from_android_native_window,
         surface_descriptor_from_canvas_html_selector,
         surface_descriptor_from_metal_layer,
@@ -187,6 +189,8 @@ class ECHIDNA_EXPORT surface_descriptor {
 
 public:
     std::string label;
+
+    surface_descriptor() : platform(std::monostate()), label("Uninitialized") {}
 
     surface_descriptor(const platform_desc& plat, const std::string& surf_label) :
         platform(plat), label(surf_label) {}

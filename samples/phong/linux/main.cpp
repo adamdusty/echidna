@@ -5,15 +5,13 @@
 
 #include <admat/mat.hpp>
 #include <array>
-#include <bit>
 #include <chrono>
 #include <cstdint>
-#include <echidna/echidna.hpp>
+#include <echidna/webgpu.hpp>
 #include <iostream>
 #include <vector>
-#include <wgpu.h>
 
-using namespace echidna;
+using namespace echidna::webgpu;
 
 static constexpr auto shader_code = R"(
     struct vertex_input{
@@ -128,37 +126,44 @@ static constexpr auto indices = std::array<std::uint32_t,36>{
 
 auto main() -> int {
     // GPU Initialization
-    auto* window =
-        SDL_CreateWindow("test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_SHOWN);
+    auto* window = SDL_CreateWindow(
+        "test",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        1920,
+        1080,
+        SDL_WINDOW_SHOWN
+    );
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
     SDL_GetWindowWMInfo(window, &info);
 
-    WGPUInstanceExtras instanceExtras = {};
-    instanceExtras.chain.sType        = (WGPUSType)WGPUSType_InstanceExtras;
-    instanceExtras.backends           = WGPUInstanceBackend_GL;
+    // WGPUInstanceExtras instanceExtras = {};
+    // instanceExtras.chain.sType        = (WGPUSType)WGPUSType_InstanceExtras;
+    // instanceExtras.backends           = WGPUInstanceBackend_GL;
 
-    WGPUInstanceDescriptor instanceDescriptor = {};
-    instanceDescriptor.nextInChain            = &instanceExtras.chain;
+    // WGPUInstanceDescriptor instanceDescriptor = {};
+    // instanceDescriptor.nextInChain            = &instanceExtras.chain;
 
-    auto inst = instance{instanceDescriptor};
-    // auto inst = instance(WGPUInstanceDescriptor{});
+    auto inst = instance(instance_descriptor());
 
-    WGPUSurfaceDescriptor surf_desc = {.nextInChain = nullptr, .label = nullptr};
+    auto surf_desc = surface_descriptor();
 
     if(info.subsystem == SDL_SYSWM_X11) {
         std::cerr << "x11" << '\n';
-        auto plat = surface_descriptor_from_xlib_window(info.info.x11.display, info.info.x11.window);
-        surf_desc = surface_descriptor(*std::bit_cast<WGPUChainedStruct*>(&plat), nullptr);
+        auto plat =
+            surface_descriptor_from_xlib_window(info.info.x11.display, info.info.x11.window);
+        surf_desc = surface_descriptor(plat, "xlib_window");
     } else {
         std::cerr << "wayland" << '\n';
-        auto plat = surface_descriptor_from_wayland_surface(info.info.wl.display, info.info.wl.surface);
-        surf_desc = surface_descriptor(*std::bit_cast<WGPUChainedStruct*>(&plat), nullptr);
+        auto plat =
+            surface_descriptor_from_wayland_surface(info.info.wl.display, info.info.wl.surface);
+        surf_desc = surface_descriptor(plat, "wayland_window");
     }
 
     auto surf = inst.create_surface(surf_desc);
 
-    auto opt   = adapter_options(surf);
+    auto opt   = request_adapter_options(surf);
     auto adapt = inst.request_adapter(opt);
 
     auto dev_desc = device_descriptor();
@@ -171,113 +176,132 @@ auto main() -> int {
     surf.configure(surf_conf);
 
     // Initialize rendering buffers
-    auto vertex_buffer =
-        dev.create_buffer(buffer_usage::vertex | buffer_usage::copy_dst, sizeof(float) * vertices.size());
-    auto index_buffer =
-        dev.create_buffer(buffer_usage::index | buffer_usage::copy_dst, sizeof(std::uint32_t) * indices.size());
-    auto mvp_buffer   = dev.create_buffer(buffer_usage::uniform | buffer_usage::copy_dst, sizeof(admat::mat4) * 4);
-    auto light_buffer = dev.create_buffer(buffer_usage::uniform | buffer_usage::copy_dst, sizeof(admat::vec3) * 3);
+    auto vertex_buffer = dev.create_buffer(
+        buffer_usage::vertex | buffer_usage::copy_dst,
+        sizeof(float) * vertices.size()
+    );
+    auto index_buffer = dev.create_buffer(
+        buffer_usage::index | buffer_usage::copy_dst,
+        sizeof(std::uint32_t) * indices.size()
+    );
+    auto mvp_buffer =
+        dev.create_buffer(buffer_usage::uniform | buffer_usage::copy_dst, sizeof(admat::mat4) * 4);
+    auto light_buffer =
+        dev.create_buffer(buffer_usage::uniform | buffer_usage::copy_dst, sizeof(admat::vec3) * 3);
 
     // Write static buffer data
     queue.write_buffer(vertex_buffer, 0, vertices.data(), sizeof(float) * vertices.size());
     queue.write_buffer(index_buffer, 0, indices.data(), sizeof(float) * indices.size());
 
     // Bind group layout
-    auto bind_group_layout_entries = std::vector<WGPUBindGroupLayoutEntry>();
+    auto bind_group_layout_entries = std::vector<bind_group_layout_entry>();
     bind_group_layout_entries.emplace_back(
-        buffer_bind_group_layout_entry(0, buffer_binding_type::uniform, false, mvp_buffer.size())
+        0,
+        shader_stage::vertex | shader_stage::fragment,
+        buffer_binding_layout(buffer_binding_type::uniform, false, mvp_buffer.size())
     );
 
-    auto bgld = bind_group_layout_desc(bind_group_layout_entries);
+    // auto bgld = bind_group_layout_desc(bind_group_layout_entries);
+    auto bgld = bind_group_layout_descriptor("Bind group 1", bind_group_layout_entries);
     auto bgl  = dev.create_bind_group_layout(bgld);
 
     // Bind group entries
-    auto mvp_bge = buffer_bind_group_entry(0, mvp_buffer, 0, mvp_buffer.size());
+    auto mvp_bge = bind_group_entry(0, mvp_buffer, 0, mvp_buffer.size());
 
-    auto bind_group_entries = std::vector<WGPUBindGroupEntry>();
+    auto bind_group_entries = std::vector<bind_group_entry>();
     bind_group_entries.emplace_back(mvp_bge);
 
     // Bind group
-    auto bind_group = dev.create_bind_group(bind_group_desc(bgl, bind_group_entries));
+    auto bind_group = dev.create_bind_group(bind_group_descriptor(bgl, bind_group_entries));
 
     auto clear_color = WGPUColor{0.05, 0.05, 0.05, 1.0};
 
-    auto shader_descriptor = echidna::shader_descriptor::create(shader_code);
+    // auto shader_descriptor = echidna::shader_descriptor::create(shader_code);
+    auto shader_descriptor = shader_module_descriptor();
     auto shader_module     = dev.create_shader_module(shader_descriptor);
 
     auto blend_state = WGPUBlendState{
-        .color = blend_component(blend_op::add, blend_factor::src_alpha, blend_factor::one_minus_src_alpha),
+        .color = blend_component(
+            blend_op::add,
+            blend_factor::src_alpha,
+            blend_factor::one_minus_src_alpha
+        ),
         .alpha = blend_component(blend_op::add, blend_factor::zero, blend_factor::one),
     };
 
     auto color_state = color_target_state(format, blend_state, color_write_mask::all);
 
-    auto vertex_info = echidna::vertex_buffer_layout(vertex_format::float32x3, vertex_format::float32x3);
+    auto vertex_layout = vertex_buffer_layout(
+        24,
+        vertex_step_mode::vertex,
+        {
+            vertex_attribute(vertex_format::float32x3, 0, 0),
+            vertex_attribute(vertex_format::float32x3, 12, 1),
+        }
+    );
 
-    auto vertex_state = WGPUVertexState{
-        .nextInChain   = nullptr,
-        .module        = shader_module,
-        .entryPoint    = "vs_main",
-        .constantCount = 0,
-        .constants     = nullptr,
-        .bufferCount   = 1,
-        .buffers       = &vertex_info.layout,
-    };
+    auto vertex_state =
+        echidna::webgpu::vertex_state(shader_module, "vs_main", {}, {vertex_layout});
 
-    auto fragment_state = WGPUFragmentState{
-        .nextInChain   = nullptr,
-        .module        = shader_module,
-        .entryPoint    = "fs_main",
-        .constantCount = 0,
-        .constants     = nullptr,
-        .targetCount   = 1,
-        .targets       = &color_state,
-    };
+    // auto fragment_state = WGPUFragmentState{
+    //     .nextInChain   = nullptr,
+    //     .module        = shader_module,
+    //     .entryPoint    = "fs_main",
+    //     .constantCount = 0,
+    //     .constants     = nullptr,
+    //     .targetCount   = 1,
+    //     .targets       = &color_state,
+    // };
 
-    auto primitive_state = echidna::primitive_state(
+    auto fragment_state =
+        echidna::webgpu::fragment_state(shader_module, "fs_main", {}, {color_state});
+
+    auto primitive_state = echidna::webgpu::primitive_state(
         primitive_topology::triangle_list,
         index_format::undefined,
         front_face::ccw,
         cull_mode::none
     );
 
-    auto multi_sample_state = WGPUMultisampleState{
-        .nextInChain            = nullptr,
-        .count                  = 1,
-        .mask                   = ~0U,
-        .alphaToCoverageEnabled = false,
-    };
+    auto multi_sample_state = multisample_state(1, ~0U, false);
 
-    auto depth_state = WGPUDepthStencilState{
-        .nextInChain       = nullptr,
-        .format            = WGPUTextureFormat_Depth32Float,
-        .depthWriteEnabled = true,
-        .depthCompare      = WGPUCompareFunction_LessEqual,
-        .stencilFront =
-            {
-                .compare     = WGPUCompareFunction_Always,
-                .failOp      = WGPUStencilOperation_Keep,
-                .depthFailOp = WGPUStencilOperation_Keep,
-                .passOp      = WGPUStencilOperation_Keep,
-            },
-        .stencilBack =
-            {
-                .compare     = WGPUCompareFunction_Always,
-                .failOp      = WGPUStencilOperation_Keep,
-                .depthFailOp = WGPUStencilOperation_Keep,
-                .passOp      = WGPUStencilOperation_Keep,
-            },
-        .stencilReadMask     = 0, // 0xFFFFFFFF,
-        .stencilWriteMask    = 0, // 0XFFFFFFFF,
-        .depthBias           = 0,
-        .depthBiasSlopeScale = 0,
-        .depthBiasClamp      = 0,
-    };
+    auto depth_state = depth_stencil_state(
+        texture_format::depth32_float,
+        true,
+        compare_function::less_equal,
+        stencil_face_state(
+            compare_function::always,
+            stencil_op::keep,
+            stencil_op::keep,
+            stencil_op::keep
+        ),
+        stencil_face_state(
+            compare_function::always,
+            stencil_op::keep,
+            stencil_op::keep,
+            stencil_op::keep
+        ),
+        0,
+        0,
+        0,
+        0.0f,
+        0.0f
+    );
 
     auto depth_formats = std::vector<texture_format>();
     depth_formats.emplace_back(static_cast<texture_format>(depth_state.format));
-    auto depth_texture_desc = echidna::texture_descriptor(
-        "depth tex",
+    // auto depth_texture_desc = texture_descriptor(
+    //     "depth tex",
+    //     texture_usage::render_attachment,
+    //     texture_dimension::dim2,
+    //     {1920, 1080, 1},
+    //     texture_format::depth32_float,
+    //     1,
+    //     1,
+    //     depth_formats
+    // );
+    auto depth_texture_desc = texture_descriptor(
+        "depth",
         texture_usage::render_attachment,
         texture_dimension::dim2,
         {1920, 1080, 1},
@@ -312,16 +336,14 @@ auto main() -> int {
         .stencilReadOnly   = true,
     };
 
-    auto color_attach     = renderpass_color_attachment(load_op::clear, store_op::store, clear_color);
-    auto render_pass_desc = WGPURenderPassDescriptor{
-        .nextInChain            = nullptr,
-        .label                  = "render pass",
-        .colorAttachmentCount   = 1,
-        .colorAttachments       = &color_attach,
-        .depthStencilAttachment = &depth_attachment,
-        .occlusionQuerySet      = nullptr,
-        .timestampWrites        = nullptr,
-    };
+    auto color_attach = render_pass_color_attachment(load_op::clear, store_op::store, clear_color);
+    auto render_pass_desc = render_pass_descriptor(
+        "renderpass",
+        {color_attach},
+        {depth_attachment},
+        query_set(),
+        render_pass_timestamp_writes()
+    );
 
     auto pipeline_layout_descriptor = WGPUPipelineLayoutDescriptor{
         .nextInChain          = nullptr,
@@ -396,14 +418,14 @@ auto main() -> int {
         queue.write_buffer(mvp_buffer, 2 * sizeof(admat::mat4), &model, sizeof(admat::mat4));
         queue.write_buffer(mvp_buffer, 3 * sizeof(admat::mat4), &model_it, sizeof(admat::mat4));
 
-        const auto* tex     = surf.current_texture();
+        auto tex            = surf.current_texture();
         const auto tex_view = tex->create_texture_view();
         // const auto depth_view = depth_texture.create_texture_view(depth_texture_view_desc);
 
         color_attach.view = tex_view;
         // depth_attachment.view = depth_view;
 
-        auto cmd_enc = dev.create_command_encoder("traingle encoder");
+        auto cmd_enc = dev.create_command_encoder("phong encoder");
         auto rp_enc  = cmd_enc.begin_render_pass(render_pass_desc);
 
         rp_enc.set_pipeline(pipeline);

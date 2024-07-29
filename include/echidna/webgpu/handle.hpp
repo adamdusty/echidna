@@ -12,7 +12,6 @@ protected:
 public:
     handle_base() = default;
     // handle_base(const handle_base& other) = delete; // : handle_base(other.get()) {}
-    auto operator=(const handle_base&) = delete;
     constexpr handle_base(W handle) : _handle(handle) {}
     handle_base(handle_base&& other) noexcept : _handle(std::exchange(other._handle, nullptr)) {}
     handle_base(const handle_base& other) : _handle(other._handle) { E::reference(_handle); }
@@ -20,6 +19,16 @@ public:
         if(_handle != nullptr) {
             E::release(_handle);
         }
+    }
+
+    auto operator=(const handle_base& other) -> E& { // NOLINT
+        if(this == &other) {
+            return static_cast<E&>(*this);
+        }
+
+        _handle = other._handle;
+        E::reference(_handle);
+        return static_cast<E&>(*this);
     }
 
     auto operator=(handle_base&& other) noexcept -> E& { // NOLINT

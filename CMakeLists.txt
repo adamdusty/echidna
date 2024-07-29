@@ -81,13 +81,13 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
 endif()
 
 # Enable testing
-if(BUILD_TESTING AND ECHIDNA_BUILD_TESTING)
+if(BUILD_TESTING)
     include(CTest)
     enable_testing()
     add_subdirectory(tests)
 endif()
 
 # Samples
-if(ECHIDNA_BUILD_SAMPLES)
+if(BUILD_SAMPLES)
     add_subdirectory(samples)
 endif()

@@ -378,38 +378,40 @@ struct ECHIDNA_EXPORT instance_descriptor {
 
 // TODO: Figure out constructor for this
 struct ECHIDNA_EXPORT limits {
-    std::uint32_t max_texture_dimension_1d;
-    std::uint32_t max_texture_dimension_2d;
-    std::uint32_t max_texture_dimension_3d;
-    std::uint32_t max_texture_array_layers;
-    std::uint32_t max_bind_groups;
-    std::uint32_t max_bind_groups_plus_vertex_buffers;
-    std::uint32_t max_bindings_per_group;
-    std::uint32_t max_dynamic_uniform_buffers_per_pipeline_layout;
-    std::uint32_t max_dynamic_storage_buffers_per_pipeline_layout;
-    std::uint32_t max_sampled_textures_per_shader_stage;
-    std::uint32_t max_samplers_per_shader_stage;
-    std::uint32_t max_storage_buffers_per_shader_stage;
-    std::uint32_t max_storage_textures_per_shader_stage;
-    std::uint32_t max_uniform_buffers_per_shader_stage;
-    std::uint64_t max_uniform_buffer_binding_size;
-    std::uint64_t max_storage_buffer_binding_size;
-    std::uint32_t min_uniform_buffer_offset_alignment;
-    std::uint32_t min_storage_buffer_offset_alignment;
-    std::uint32_t max_vertex_buffers;
-    std::uint64_t max_buffer_size;
-    std::uint32_t max_vertex_attributes;
-    std::uint32_t max_vertex_buffer_array_stride;
-    std::uint32_t max_inter_stage_shader_components;
-    std::uint32_t max_inter_stage_shader_variables;
-    std::uint32_t max_color_attachments;
-    std::uint32_t max_color_attachment_bytes_per_sample;
-    std::uint32_t max_compute_workgroup_storage_size;
-    std::uint32_t max_compute_invocations_per_workgroup;
-    std::uint32_t max_compute_workgroup_size_X;
-    std::uint32_t max_compute_workgroup_size_Y;
-    std::uint32_t max_compute_workgroup_size_Z;
-    std::uint32_t max_compute_workgroups_per_dimension;
+    std::uint32_t max_texture_dimension_1d                        = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_texture_dimension_2d                        = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_texture_dimension_3d                        = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_texture_array_layers                        = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_bind_groups                                 = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_bind_groups_plus_vertex_buffers             = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_bindings_per_group                          = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_dynamic_uniform_buffers_per_pipeline_layout = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_dynamic_storage_buffers_per_pipeline_layout = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_sampled_textures_per_shader_stage           = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_samplers_per_shader_stage                   = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_storage_buffers_per_shader_stage            = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_storage_textures_per_shader_stage           = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_uniform_buffers_per_shader_stage            = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint64_t max_uniform_buffer_binding_size                 = WGPU_LIMIT_U64_UNDEFINED;
+    std::uint64_t max_storage_buffer_binding_size                 = WGPU_LIMIT_U64_UNDEFINED;
+    std::uint32_t min_uniform_buffer_offset_alignment             = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t min_storage_buffer_offset_alignment             = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_vertex_buffers                              = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint64_t max_buffer_size                                 = WGPU_LIMIT_U64_UNDEFINED;
+    std::uint32_t max_vertex_attributes                           = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_vertex_buffer_array_stride                  = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_inter_stage_shader_components               = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_inter_stage_shader_variables                = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_color_attachments                           = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_color_attachment_bytes_per_sample           = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_compute_workgroup_storage_size              = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_compute_invocations_per_workgroup           = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_compute_workgroup_size_X                    = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_compute_workgroup_size_Y                    = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_compute_workgroup_size_Z                    = WGPU_LIMIT_U32_UNDEFINED;
+    std::uint32_t max_compute_workgroups_per_dimension            = WGPU_LIMIT_U32_UNDEFINED;
+
+    constexpr limits() {}
 
     constexpr limits(const WGPULimits& lim) :
         max_texture_dimension_1d(lim.maxTextureDimension1D),
@@ -642,6 +644,7 @@ struct ECHIDNA_EXPORT queue_descriptor {
     const chained_struct* next;
     std::string label;
 
+    constexpr queue_descriptor() : next(nullptr) {}
     constexpr queue_descriptor(const std::string& label) : next(nullptr), label(label) {}
     constexpr queue_descriptor(const WGPUQueueDescriptor& q) :
         next(q.nextInChain), label(q.label) {}
@@ -747,6 +750,8 @@ struct ECHIDNA_EXPORT render_pass_timestamp_writes {
     std::uint32_t beginning_index;
     std::uint32_t end_index;
 
+    render_pass_timestamp_writes() : set(nullptr), beginning_index(0), end_index(0) {}
+
     render_pass_timestamp_writes(const query_set& set, std::uint32_t begin, std::uint32_t end) :
         set(set), beginning_index(begin), end_index(end) {}
 
@@ -791,6 +796,14 @@ struct ECHIDNA_EXPORT request_adapter_options {
         bool fallback
     ) :
         request_adapter_options(nullptr, surf, pref, backend, fallback) {}
+
+    request_adapter_options(surface& surf) :
+        request_adapter_options(
+            surf,
+            power_preference::high_performance,
+            backend_type::undefined,
+            false
+        ) {}
 
     constexpr request_adapter_options(const WGPURequestAdapterOptions& o) :
         next(o.nextInChain),
@@ -1095,7 +1108,6 @@ public:
         std::uint32_t height,
         present_mode present
     ) :
-        wgpu_formats(view_formats.begin(), view_formats.end()),
         next(nullptr),
         device_handle(device),
         format(format),
@@ -1105,6 +1117,21 @@ public:
         width(width),
         height(height),
         present(present) {}
+
+    surface_configuration(
+        const device& dev,
+        texture_format format,
+        std::uint32_t width,
+        std::uint32_t height
+    ) :
+        next(nullptr),
+        device_handle(dev),
+        format(format),
+        usage(texture_usage::render_attachment),
+        alpha_mode(composite_alpha_mode::automatic),
+        width(width),
+        height(height),
+        present(present_mode::fifo) {}
 
     constexpr surface_configuration(const WGPUSurfaceConfiguration& c) :
         next(c.nextInChain),
@@ -1296,11 +1323,13 @@ public:
         bind_group_layout& bgl,
         const std::vector<bind_group_entry>& entries
     ) :
-        wgpu_entries(entries.begin(), entries.end()),
-        next(nullptr),
-        label(label),
-        layout(bgl),
-        entries(entries) {}
+        next(nullptr), label(label), layout(bgl), entries(entries) {}
+
+    bind_group_descriptor(
+        const bind_group_layout& layout,
+        const std::vector<bind_group_entry>& entries
+    ) :
+        next(nullptr), layout(layout), entries(entries) {}
 
     constexpr bind_group_descriptor(const WGPUBindGroupDescriptor& d) :
         wgpu_entries(d.entries, d.entries + d.entryCount),
@@ -1588,6 +1617,14 @@ struct ECHIDNA_EXPORT render_pass_color_attachment {
     store_op store_operation;
     color clear_value;
 
+    render_pass_color_attachment(load_op load, store_op store, color clear) :
+        next(nullptr),
+        view(nullptr),
+        resolve_target(nullptr),
+        load_operation(load),
+        store_operation(store),
+        clear_value(clear) {}
+
     render_pass_color_attachment(
         const texture_view& view,
         const texture_view& resolve,
@@ -1626,6 +1663,7 @@ struct ECHIDNA_EXPORT required_limits {
     const chained_struct* next;
     limits required_lims;
 
+    constexpr required_limits() : next(nullptr) {}
     constexpr required_limits(limits limits) : next(nullptr), required_lims(limits) {}
     constexpr required_limits(const WGPURequiredLimits& l) :
         next(l.nextInChain), required_lims(l.limits) {}
@@ -1893,6 +1931,13 @@ class device_descriptor {
                    std::vector<WGPUFeatureName>(required_features.begin(), required_features.end());
     }
 
+    static constexpr auto device_lost = [](WGPUDeviceLostReason reason, const char* msg, void*) {
+        std::cerr << "Device lost: " << reason;
+        if(msg != nullptr) {
+            std::cerr << "(message: " << msg << ")";
+        }
+    };
+
 public:
     const chained_struct* next;
     std::string label;
@@ -1918,6 +1963,12 @@ public:
         default_queue(default_queue),
         dev_lost_callback(device_lost_callback),
         device_lost_user_data(device_lost_user_data) {}
+
+    device_descriptor() :
+        wgpu_limits(),
+        next(nullptr),
+        dev_lost_callback(device_descriptor::device_lost),
+        device_lost_user_data(nullptr) {}
 
     constexpr device_descriptor(const WGPUDeviceDescriptor& d) :
         wgpu_limits(*d.requiredLimits),
@@ -1973,6 +2024,18 @@ public:
     render_pass_depth_stencil_attachment depth_stencil_attachment;
     query_set occlusion_query_set;
     render_pass_timestamp_writes timestamp_writes;
+
+    render_pass_descriptor(
+        const std::vector<render_pass_color_attachment>& color_attachments,
+        const render_pass_depth_stencil_attachment& depth_stencil_attachment
+    ) :
+        wgpu_ds(),
+        wgpu_tsw(),
+        next(nullptr),
+        color_attachments(color_attachments),
+        depth_stencil_attachment(depth_stencil_attachment),
+        occlusion_query_set(),
+        timestamp_writes() {}
 
     render_pass_descriptor(
         const std::string& label,

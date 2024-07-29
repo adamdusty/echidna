@@ -1,12 +1,13 @@
 #pragma once
 
 #include "echidna/webgpu/enums.hpp"
-#include <vector>
+#include <cstdint>
 #include <webgpu.h>
 
 namespace echidna {
 
-// constexpr auto blend_component(blend_op op, blend_factor src, blend_factor dst) -> WGPUBlendComponent {
+// constexpr auto blend_component(blend_op op, blend_factor src, blend_factor dst) ->
+// WGPUBlendComponent {
 //     return WGPUBlendComponent{
 //         .operation = static_cast<WGPUBlendOperation>(op),
 //         .srcFactor = static_cast<WGPUBlendFactor>(src),
@@ -14,7 +15,8 @@ namespace echidna {
 //     };
 // }
 
-// constexpr auto color_target_state(texture_format fmt, const WGPUBlendState& state, color_write_mask mask)
+// constexpr auto color_target_state(texture_format fmt, const WGPUBlendState& state,
+// color_write_mask mask)
 //     -> WGPUColorTargetState {
 //     return WGPUColorTargetState{
 //         .nextInChain = nullptr,
@@ -24,7 +26,8 @@ namespace echidna {
 //     };
 // }
 
-// constexpr auto color_target_state(texture_format fmt, color_write_mask mask) -> WGPUColorTargetState {
+// constexpr auto color_target_state(texture_format fmt, color_write_mask mask) ->
+// WGPUColorTargetState {
 //     return WGPUColorTargetState{
 //         .nextInChain = nullptr,
 //         .format      = static_cast<WGPUTextureFormat>(fmt),
@@ -48,9 +51,9 @@ namespace echidna {
 //     };
 // }
 
-// constexpr auto vertex_format_size(vertex_format fmt) -> std::uint64_t {
+// constexpr auto vertex_format_size(webgpu::vertex_format fmt) -> std::uint64_t {
 //     switch(fmt) {
-//         using enum vertex_format;
+//         using enum echidna::webgpu::vertex_format;
 //     case undefined:
 //         return 0;
 //     case uint8x2:
@@ -134,7 +137,8 @@ namespace echidna {
 //     return info;
 // }
 
-// constexpr auto vertex_buffer_layout(vertex_format fmt1, vertex_format fmt2, vertex_format fmt3) -> vertex_info {
+// constexpr auto vertex_buffer_layout(vertex_format fmt1, vertex_format fmt2, vertex_format fmt3)
+// -> vertex_info {
 //     auto info = vertex_info{};
 
 //     std::uint64_t size = 0;
@@ -157,7 +161,8 @@ namespace echidna {
 //     return info;
 // }
 
-// constexpr auto vertex_buffer_layout(vertex_format fmt1, vertex_format fmt2, vertex_format fmt3, vertex_format fmt4)
+// constexpr auto vertex_buffer_layout(vertex_format fmt1, vertex_format fmt2, vertex_format fmt3,
+// vertex_format fmt4)
 //     -> vertex_info {
 //     auto info = vertex_info{};
 

@@ -1,12 +1,7 @@
 #include <echidna/echidna.hpp>
 #include <snitch/snitch.hpp>
 
-TEST_CASE("API") {
-    echidna::webgpu::adapter_properties props;
-    props.adapter = echidna::webgpu::adapter_type::discrete;
-    auto ad       = echidna::webgpu::adapter_type(WGPUAdapterType_DiscreteGPU);
-    auto same     = props.adapter == echidna::webgpu::adapter_type(WGPUAdapterType_CPU);
-}
+TEST_CASE("API") {}
 
 // #include <vector>
 

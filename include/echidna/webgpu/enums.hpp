@@ -542,6 +542,10 @@ struct ECHIDNA_EXPORT texture_dimension : public wgpuenum<texture_dimension, WGP
     static constexpr WGPUTextureDimension dim1 = WGPUTextureDimension_1D;
     static constexpr WGPUTextureDimension dim2 = WGPUTextureDimension_2D;
     static constexpr WGPUTextureDimension dim3 = WGPUTextureDimension_3D;
+
+    using wgpuenum::wgpuenum;
+    using wgpuenum::operator=;
+    using wgpuenum::operator==;
 };
 
 struct ECHIDNA_EXPORT texture_format : wgpuenum<texture_format, WGPUTextureFormat> {
