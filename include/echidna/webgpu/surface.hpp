@@ -13,8 +13,7 @@ namespace echidna::webgpu {
 class surface_capabilities;
 
 class ECHIDNA_EXPORT surface : public handle_base<surface, WGPUSurface> {
-    // Should this be a shared pointer since any number of objects can get a reference to it?
-    std::shared_ptr<texture> current;
+    std::shared_ptr<texture> current = std::make_shared<texture>(nullptr);
 
     friend handle_base<surface, WGPUSurface>;
     static auto release(WGPUSurface handle) { wgpuSurfaceRelease(handle); }
@@ -34,4 +33,5 @@ public:
 
 } // namespace echidna::webgpu
 
-// wgpuSurfaceGetCurrentTexture(WGPUSurface surface, WGPUSurfaceTexture * surfaceTexture) WGPU_FUNCTION_ATTRIBUTE;
+// wgpuSurfaceGetCurrentTexture(WGPUSurface surface, WGPUSurfaceTexture * surfaceTexture)
+// WGPU_FUNCTION_ATTRIBUTE;

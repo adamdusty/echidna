@@ -11,10 +11,13 @@ protected:
 
 public:
     handle_base() = default;
-    // handle_base(const handle_base& other) = delete; // : handle_base(other.get()) {}
     constexpr handle_base(W handle) : _handle(handle) {}
     handle_base(handle_base&& other) noexcept : _handle(std::exchange(other._handle, nullptr)) {}
-    handle_base(const handle_base& other) : _handle(other._handle) { E::reference(_handle); }
+    handle_base(const handle_base& other) : _handle(other._handle) {
+        if(_handle != nullptr) {
+            E::reference(_handle);
+        }
+    }
     ~handle_base() {
         if(_handle != nullptr) {
             E::release(_handle);

@@ -3,6 +3,7 @@ function(add_dev_compile_opts target)
         $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
             $<$<NOT:$<CONFIG:debug>>:-U_FORTIFY_SOURCE>
             $<$<NOT:$<CONFIG:debug>>:-D_FORTIFY_SOURCE=3>
+            -fno-omit-frame-pointer
             -fstack-protector-strong
             -fcf-protection=full
             -Wall
@@ -14,7 +15,6 @@ function(add_dev_compile_opts target)
             -Wformat=2
             -Wundef
             -Werror=float-equal
-            # -Wshadow
             -Wcast-align
             -Wunused
             -Wnull-dereference

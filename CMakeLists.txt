@@ -39,6 +39,14 @@ target_link_libraries(echidna_echidna PUBLIC wgpu)
 
 # Add compile options
 add_dev_compile_opts(echidna_echidna)
+if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+
+target_compile_options(echidna_echidna PRIVATE -fsantize=address,undefined)
+target_link_options(echidna_echidna PRIVATE -fsantize=address,undefined)
+
+endif()
+endif()
 
 # Generate header for export
 include(GenerateExportHeader)

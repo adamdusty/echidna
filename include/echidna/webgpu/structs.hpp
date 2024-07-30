@@ -529,11 +529,6 @@ struct ECHIDNA_EXPORT origin3d {
 class pipeline_layout_descriptor {
     std::vector<WGPUBindGroupLayout> wgpu_layouts;
 
-    constexpr auto get_wgpu_layouts() -> std::vector<WGPUBindGroupLayout> {
-        wgpu_layouts = std::vector<WGPUBindGroupLayout>(layouts.begin(), layouts.end());
-        return wgpu_layouts;
-    }
-
 public:
     const chained_struct* next;
     std::string label;
@@ -554,11 +549,13 @@ public:
         layouts(pld.bindGroupLayouts, pld.bindGroupLayouts + pld.bindGroupLayoutCount) {}
 
     constexpr operator WGPUPipelineLayoutDescriptor() {
+        wgpu_layouts = std::vector<WGPUBindGroupLayout>(layouts.begin(), layouts.end());
+
         return WGPUPipelineLayoutDescriptor{
             .nextInChain          = next,
             .label                = label.c_str(),
             .bindGroupLayoutCount = layouts.size(),
-            .bindGroupLayouts     = this->get_wgpu_layouts().data(),
+            .bindGroupLayouts     = wgpu_layouts.data(),
         };
     }
 };
@@ -750,7 +747,7 @@ struct ECHIDNA_EXPORT render_pass_timestamp_writes {
     std::uint32_t beginning_index;
     std::uint32_t end_index;
 
-    render_pass_timestamp_writes() : set(nullptr), beginning_index(0), end_index(0) {}
+    render_pass_timestamp_writes() : set(nullptr), beginning_index(), end_index() {}
 
     render_pass_timestamp_writes(const query_set& set, std::uint32_t begin, std::uint32_t end) :
         set(set), beginning_index(begin), end_index(end) {}
@@ -812,7 +809,7 @@ struct ECHIDNA_EXPORT request_adapter_options {
         backend(o.backendType),
         force_fallback(o.forceFallbackAdapter != 0u) {}
 
-    constexpr operator WGPURequestAdapterOptions() {
+    constexpr operator WGPURequestAdapterOptions() const {
         return WGPURequestAdapterOptions{
             .nextInChain          = next,
             .compatibleSurface    = compatible_surface,
@@ -940,7 +937,7 @@ struct ECHIDNA_EXPORT shader_module_spirv_descriptor {
     const std::uint32_t* code;
 
     constexpr shader_module_spirv_descriptor(std::uint32_t size, const std::uint32_t* code) :
-        chain(), size(size), code(code) {}
+        chain(make_chained(stype::shader_module_spirv)), size(size), code(code) {}
 
     constexpr shader_module_spirv_descriptor(const WGPUShaderModuleSPIRVDescriptor& d) :
         chain(d.chain), size(d.codeSize), code(d.code) {}
@@ -958,10 +955,12 @@ struct ECHIDNA_EXPORT shader_module_wgsl_descriptor {
     chained_struct chain;
     std::string code;
 
-    constexpr shader_module_wgsl_descriptor(const std::string& code) : chain(), code(code) {}
+    constexpr shader_module_wgsl_descriptor(const std::string& code) :
+        chain(make_chained(stype::shader_module_wgsl)), code(code) {}
 
     constexpr shader_module_wgsl_descriptor(const WGPUShaderModuleWGSLDescriptor& d) :
         chain(d.chain), code(d.code) {}
+
     constexpr operator WGPUShaderModuleWGSLDescriptor() const {
         return {.chain = chain, .code = code.c_str()};
     }
@@ -1031,19 +1030,6 @@ class surface_capabilities {
     std::vector<WGPUPresentMode> wgpu_pm;
     std::vector<WGPUCompositeAlphaMode> wgpu_cam;
 
-    constexpr auto get_wgpu_fmts() {
-        return wgpu_fmts = std::vector<WGPUTextureFormat>(formats.begin(), formats.end());
-    }
-
-    constexpr auto get_wgpu_pm() {
-        return wgpu_pm = std::vector<WGPUPresentMode>(present_modes.begin(), present_modes.end());
-    }
-
-    constexpr auto get_wgpu_cam() {
-        return wgpu_cam =
-                   std::vector<WGPUCompositeAlphaMode>(alpha_modes.begin(), alpha_modes.end());
-    }
-
 public:
     std::vector<texture_format> formats;
     std::vector<present_mode> present_modes;
@@ -1067,25 +1053,23 @@ public:
         alpha_modes(c.alphaModes, c.alphaModes + c.alphaModeCount) {}
 
     constexpr operator WGPUSurfaceCapabilities() {
+        wgpu_fmts = std::vector<WGPUTextureFormat>(formats.begin(), formats.end());
+        wgpu_pm   = std::vector<WGPUPresentMode>(present_modes.begin(), present_modes.end());
+        wgpu_cam  = std::vector<WGPUCompositeAlphaMode>(alpha_modes.begin(), alpha_modes.end());
         return WGPUSurfaceCapabilities{
             .nextInChain      = nullptr,
             .formatCount      = formats.size(),
-            .formats          = this->get_wgpu_fmts().data(),
+            .formats          = wgpu_fmts.data(),
             .presentModeCount = present_modes.size(),
-            .presentModes     = this->get_wgpu_pm().data(),
+            .presentModes     = wgpu_pm.data(),
             .alphaModeCount   = alpha_modes.size(),
-            .alphaModes       = this->get_wgpu_cam().data(),
+            .alphaModes       = wgpu_cam.data(),
         };
     }
 };
 
 class surface_configuration {
     std::vector<WGPUTextureFormat> wgpu_formats;
-
-    constexpr auto get_wgpu_formats() -> std::vector<WGPUTextureFormat> {
-        return wgpu_formats =
-                   std::vector<WGPUTextureFormat>(view_formats.begin(), view_formats.end());
-    }
 
 public:
     const chained_struct* next;
@@ -1145,13 +1129,14 @@ public:
         present(static_cast<echidna::webgpu::present_mode>(c.presentMode)) {}
 
     constexpr operator WGPUSurfaceConfiguration() {
+        wgpu_formats = std::vector<WGPUTextureFormat>(view_formats.begin(), view_formats.end());
         return WGPUSurfaceConfiguration{
             .nextInChain     = next,
             .device          = device_handle,
             .format          = format,
             .usage           = usage,
             .viewFormatCount = view_formats.size(),
-            .viewFormats     = this->get_wgpu_formats().data(),
+            .viewFormats     = wgpu_formats.data(),
             .alphaMode       = alpha_mode,
             .width           = width,
             .height          = height,
@@ -1307,11 +1292,6 @@ struct ECHIDNA_EXPORT vertex_attribute {
 class bind_group_descriptor {
     std::vector<WGPUBindGroupEntry> wgpu_entries;
 
-    constexpr auto get_wgpu_entries() {
-        wgpu_entries = std::vector<WGPUBindGroupEntry>(entries.begin(), entries.end());
-        return wgpu_entries;
-    }
-
 public:
     const chained_struct* next;
     std::string label;
@@ -1338,12 +1318,14 @@ public:
         entries(d.entries, d.entries + d.entryCount) {}
 
     constexpr operator WGPUBindGroupDescriptor() {
+        wgpu_entries = std::vector<WGPUBindGroupEntry>(entries.begin(), entries.end());
+
         return WGPUBindGroupDescriptor{
             .nextInChain = next,
             .label       = label.c_str(),
             .layout      = layout,
             .entryCount  = entries.size(),
-            .entries     = this->get_wgpu_entries().data(),
+            .entries     = wgpu_entries.data(),
         };
     }
 };
@@ -1430,15 +1412,19 @@ public:
 
     constexpr compilation_info(const WGPUCompilationInfo& i) :
         next(i.nextInChain), messages(i.messages, i.messages + i.messageCount) {}
+
+    constexpr operator WGPUCompilationInfo() {
+        wgpu_messages = std::vector<WGPUCompilationMessage>(messages.begin(), messages.end());
+        return WGPUCompilationInfo{
+            .nextInChain  = next,
+            .messageCount = messages.size(),
+            .messages     = wgpu_messages.data(),
+        };
+    }
 };
 
 class compute_pass_descriptor {
     WGPUComputePassTimestampWrites wgpu_tsw;
-
-    constexpr auto get_wgpu_tsw() {
-        wgpu_tsw = timestamp_writes;
-        return &wgpu_tsw;
-    }
 
 public:
     const chained_struct* next;
@@ -1455,10 +1441,11 @@ public:
         timestamp_writes(*d.timestampWrites) {}
 
     operator WGPUComputePassDescriptor() {
+        wgpu_tsw = timestamp_writes;
         return WGPUComputePassDescriptor{
             .nextInChain     = next,
             .label           = label.c_str(),
-            .timestampWrites = this->get_wgpu_tsw(),
+            .timestampWrites = &wgpu_tsw,
         };
     }
 };
@@ -1578,11 +1565,6 @@ struct ECHIDNA_EXPORT image_copy_texture {
 class programmable_stage_descriptor {
     std::vector<WGPUConstantEntry> wgpu_constants;
 
-    constexpr auto get_wgpu_entries() {
-        wgpu_constants = std::vector<WGPUConstantEntry>(constants.begin(), constants.end());
-        return wgpu_constants;
-    }
-
 public:
     const chained_struct* next;
     shader_module module;
@@ -1599,12 +1581,14 @@ public:
         constants(d.constants, d.constants + d.constantCount) {}
 
     constexpr operator WGPUProgrammableStageDescriptor() {
+        wgpu_constants = std::vector<WGPUConstantEntry>(constants.begin(), constants.end());
+
         return WGPUProgrammableStageDescriptor{
             .nextInChain   = next,
             .module        = module,
             .entryPoint    = entry_point.c_str(),
             .constantCount = constants.size(),
-            .constants     = this->get_wgpu_entries().data(),
+            .constants     = wgpu_constants.data(),
         };
     }
 };
@@ -1685,6 +1669,8 @@ public:
     std::string label;
     std::vector<shader_module_compilation_hint> hints;
 
+    shader_module_descriptor(const shader_module_wgsl_descriptor& chain) : next(&chain.chain) {}
+
     constexpr shader_module_descriptor(
         const std::string& label,
         const std::vector<shader_module_compilation_hint>& hints
@@ -1695,11 +1681,12 @@ public:
         next(d.nextInChain), label(d.label), hints(d.hints, d.hints + d.hintCount) {}
 
     constexpr operator WGPUShaderModuleDescriptor() {
+        wgpu_hints = std::vector<WGPUShaderModuleCompilationHint>(hints.begin(), hints.end());
         return WGPUShaderModuleDescriptor{
             .nextInChain = next,
             .label       = label.c_str(),
             .hintCount   = hints.size(),
-            .hints       = this->get_wgpu_hints().data(),
+            .hints       = wgpu_hints.data(),
         };
     }
 };
@@ -1718,11 +1705,6 @@ struct ECHIDNA_EXPORT supported_limits {
 
 class texture_descriptor {
     std::vector<WGPUTextureFormat> wgpu_formats;
-
-    constexpr auto get_wgpu_formats() {
-        return wgpu_formats =
-                   std::vector<WGPUTextureFormat>(view_formats.begin(), view_formats.end());
-    }
 
 public:
     const chained_struct* next;
@@ -1767,6 +1749,8 @@ public:
         view_formats(d.viewFormats, d.viewFormats + d.viewFormatCount) {}
 
     constexpr operator WGPUTextureDescriptor() {
+        wgpu_formats = std::vector<WGPUTextureFormat>(view_formats.begin(), view_formats.end());
+
         return WGPUTextureDescriptor{
             .nextInChain     = next,
             .label           = label.c_str(),
@@ -1777,18 +1761,13 @@ public:
             .mipLevelCount   = mip_level_count,
             .sampleCount     = sample_count,
             .viewFormatCount = view_formats.size(),
-            .viewFormats     = this->wgpu_formats.data(),
+            .viewFormats     = wgpu_formats.data(),
         };
     }
 };
 
 class vertex_buffer_layout {
     std::vector<WGPUVertexAttribute> wgpu_attributes;
-
-    constexpr auto get_wgpu_attributes() {
-        wgpu_attributes = std::vector<WGPUVertexAttribute>(attributes.begin(), attributes.end());
-        return wgpu_attributes;
-    }
 
 public:
     std::uint64_t array_stride;
@@ -1808,22 +1787,19 @@ public:
         attributes(l.attributes, l.attributes + l.attributeCount) {}
 
     constexpr operator WGPUVertexBufferLayout() {
+        wgpu_attributes = std::vector<WGPUVertexAttribute>(attributes.begin(), attributes.end());
+
         return WGPUVertexBufferLayout{
             .arrayStride    = array_stride,
             .stepMode       = step_mode,
             .attributeCount = attributes.size(),
-            .attributes     = this->get_wgpu_attributes().data(),
+            .attributes     = wgpu_attributes.data(),
         };
     }
 };
 
 class bind_group_layout_descriptor {
     std::vector<WGPUBindGroupLayoutEntry> wgpu_entries;
-
-    constexpr auto get_wgpu_entries() {
-        wgpu_entries = std::vector<WGPUBindGroupLayoutEntry>(entries.begin(), entries.end());
-        return wgpu_entries;
-    }
 
 public:
     const chained_struct* next;
@@ -1843,23 +1819,19 @@ public:
         next(nullptr), label(label), entries(entries) {}
 
     constexpr operator WGPUBindGroupLayoutDescriptor() {
+        wgpu_entries = std::vector<WGPUBindGroupLayoutEntry>(entries.begin(), entries.end());
+
         return WGPUBindGroupLayoutDescriptor{
             .nextInChain = next,
             .label       = label.c_str(),
             .entryCount  = entries.size(),
-            .entries     = this->get_wgpu_entries().data(),
+            .entries     = wgpu_entries.data(),
         };
     }
 };
 
-// TODO: If blend changes, wgpu_blend will be outdated
 class color_target_state {
     WGPUBlendState wgpu_blend;
-
-    constexpr auto get_wgpu_blend() {
-        wgpu_blend = blend;
-        return &wgpu_blend;
-    }
 
 public:
     const chained_struct* next;
@@ -1882,10 +1854,11 @@ public:
         write_mask(s.writeMask) {}
 
     constexpr operator WGPUColorTargetState() {
+        wgpu_blend = blend;
         return WGPUColorTargetState{
             .nextInChain = next,
             .format      = format,
-            .blend       = this->get_wgpu_blend(),
+            .blend       = &wgpu_blend,
             .writeMask   = write_mask,
         };
     }
@@ -1920,16 +1893,6 @@ struct ECHIDNA_EXPORT compute_pipeline_descriptor {
 class device_descriptor {
     WGPURequiredLimits wgpu_limits;
     std::vector<WGPUFeatureName> wgpu_features;
-
-    constexpr auto get_wgpu_limits() {
-        wgpu_limits = required_lims;
-        return &wgpu_limits;
-    }
-
-    constexpr auto get_wgpu_features() {
-        return wgpu_features =
-                   std::vector<WGPUFeatureName>(required_features.begin(), required_features.end());
-    }
 
     static constexpr auto device_lost = [](WGPUDeviceLostReason reason, const char* msg, void*) {
         std::cerr << "Device lost: " << reason;
@@ -1981,12 +1944,16 @@ public:
         device_lost_user_data(d.deviceLostUserdata) {}
 
     constexpr operator WGPUDeviceDescriptor() {
+        wgpu_limits = required_lims;
+        wgpu_features =
+            std::vector<WGPUFeatureName>(required_features.begin(), required_features.end());
+
         return WGPUDeviceDescriptor{
             .nextInChain          = next,
             .label                = label.c_str(),
             .requiredFeatureCount = required_features.size(),
-            .requiredFeatures     = this->get_wgpu_features().data(),
-            .requiredLimits       = this->get_wgpu_limits(),
+            .requiredFeatures     = wgpu_features.data(),
+            .requiredLimits       = &wgpu_limits,
             .defaultQueue         = default_queue,
             .deviceLostCallback   = dev_lost_callback,
             .deviceLostUserdata   = device_lost_user_data,
@@ -1998,24 +1965,6 @@ class render_pass_descriptor {
     WGPURenderPassDepthStencilAttachment wgpu_ds;
     WGPURenderPassTimestampWrites wgpu_tsw;
     std::vector<WGPURenderPassColorAttachment> wgpu_ca;
-
-    constexpr auto get_wgpu_ds() {
-        wgpu_ds = depth_stencil_attachment;
-        return &wgpu_ds;
-    }
-
-    constexpr auto get_wgpu_tsw() {
-        wgpu_tsw = timestamp_writes;
-        return &wgpu_tsw;
-    }
-
-    constexpr auto get_wgpu_ca() {
-        wgpu_ca = std::vector<WGPURenderPassColorAttachment>(
-            color_attachments.begin(),
-            color_attachments.end()
-        );
-        return wgpu_ca;
-    }
 
 public:
     const chained_struct* next;
@@ -2034,8 +1983,7 @@ public:
         next(nullptr),
         color_attachments(color_attachments),
         depth_stencil_attachment(depth_stencil_attachment),
-        occlusion_query_set(),
-        timestamp_writes() {}
+        occlusion_query_set() {}
 
     render_pass_descriptor(
         const std::string& label,
@@ -2069,14 +2017,21 @@ public:
     }
 
     constexpr operator WGPURenderPassDescriptor() {
+        wgpu_ds  = depth_stencil_attachment;
+        wgpu_tsw = timestamp_writes;
+        wgpu_ca  = std::vector<WGPURenderPassColorAttachment>(
+            color_attachments.begin(),
+            color_attachments.end()
+        );
+
         return WGPURenderPassDescriptor{
             .nextInChain            = next,
             .label                  = label.c_str(),
             .colorAttachmentCount   = color_attachments.size(),
-            .colorAttachments       = this->get_wgpu_ca().data(),
-            .depthStencilAttachment = this->get_wgpu_ds(),
+            .colorAttachments       = wgpu_ca.data(),
+            .depthStencilAttachment = &wgpu_ds,
             .occlusionQuerySet      = occlusion_query_set,
-            .timestampWrites        = this->get_wgpu_tsw(),
+            .timestampWrites        = (wgpu_tsw.querySet != nullptr) ? &wgpu_tsw : nullptr,
         };
     }
 };
@@ -2084,16 +2039,6 @@ public:
 class vertex_state {
     std::vector<WGPUConstantEntry> wgpu_constants;
     std::vector<WGPUVertexBufferLayout> wgpu_buffers;
-
-    constexpr auto get_wgpu_constants() {
-        wgpu_constants = std::vector<WGPUConstantEntry>(constants.begin(), constants.end());
-        return wgpu_constants;
-    }
-
-    constexpr auto get_wgpu_buffers() {
-        wgpu_buffers = std::vector<WGPUVertexBufferLayout>(buffers.begin(), buffers.end());
-        return wgpu_buffers;
-    }
 
 public:
     const chained_struct* next;
@@ -2118,14 +2063,17 @@ public:
         buffers(s.buffers, s.buffers + s.bufferCount) {}
 
     constexpr operator WGPUVertexState() {
+        wgpu_constants = std::vector<WGPUConstantEntry>(constants.begin(), constants.end());
+        wgpu_buffers   = std::vector<WGPUVertexBufferLayout>(buffers.begin(), buffers.end());
+
         return WGPUVertexState{
             .nextInChain   = next,
             .module        = module,
             .entryPoint    = entry_point.c_str(),
             .constantCount = constants.size(),
-            .constants     = this->get_wgpu_constants().data(),
+            .constants     = wgpu_constants.data(),
             .bufferCount   = buffers.size(),
-            .buffers       = this->get_wgpu_buffers().data(),
+            .buffers       = wgpu_buffers.data(),
         };
     }
 };
@@ -2133,16 +2081,6 @@ public:
 class fragment_state {
     std::vector<WGPUConstantEntry> wgpu_constants;
     std::vector<WGPUColorTargetState> wgpu_targets;
-
-    constexpr auto get_wgpu_constants() {
-        wgpu_constants = std::vector<WGPUConstantEntry>(constants.begin(), constants.end());
-        return wgpu_constants;
-    }
-
-    constexpr auto get_wgpu_targets() {
-        wgpu_targets = std::vector<WGPUColorTargetState>(targets.begin(), targets.end());
-        return wgpu_targets;
-    }
 
 public:
     const chained_struct* next;
@@ -2167,14 +2105,17 @@ public:
         targets(s.targets, s.targets + s.targetCount) {}
 
     constexpr operator WGPUFragmentState() {
+        wgpu_constants = std::vector<WGPUConstantEntry>(constants.begin(), constants.end());
+        wgpu_targets   = std::vector<WGPUColorTargetState>(targets.begin(), targets.end());
+
         return WGPUFragmentState{
             .nextInChain   = next,
             .module        = module,
             .entryPoint    = entry_point.c_str(),
             .constantCount = constants.size(),
-            .constants     = this->get_wgpu_constants().data(),
+            .constants     = wgpu_constants.data(),
             .targetCount   = targets.size(),
-            .targets       = this->get_wgpu_targets().data(),
+            .targets       = wgpu_targets.data(),
         };
     }
 };
@@ -2182,16 +2123,6 @@ public:
 class render_pipeline_descriptor {
     WGPUDepthStencilState wgpu_ds;
     WGPUFragmentState wgpu_fs;
-
-    constexpr auto get_wgpu_ds() {
-        wgpu_ds = depth_stencil;
-        return &wgpu_ds;
-    }
-
-    constexpr auto get_wgpu_fs() {
-        wgpu_fs = fragment;
-        return &wgpu_fs;
-    }
 
 public:
     const chained_struct* next;
@@ -2236,15 +2167,18 @@ public:
         fragment(*d.fragment) {}
 
     constexpr operator WGPURenderPipelineDescriptor() {
+        wgpu_ds = depth_stencil;
+        wgpu_fs = fragment;
+
         return WGPURenderPipelineDescriptor{
             .nextInChain  = next,
             .label        = label.c_str(),
             .layout       = layout,
             .vertex       = vertex,
             .primitive    = primitive,
-            .depthStencil = this->get_wgpu_ds(),
+            .depthStencil = &wgpu_ds,
             .multisample  = multisample,
-            .fragment     = this->get_wgpu_fs(),
+            .fragment     = &wgpu_fs,
         };
     }
 };

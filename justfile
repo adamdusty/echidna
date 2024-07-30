@@ -23,15 +23,15 @@ clean:
     cmake --build --preset dev --target clean
 
 samples: build
-    cp "build\dev\_deps\wgpu-src\wgpu_native.dll" "build\dev\samples\"
-    cp "build\dev\_deps\admat-build\libadmat.dll" "build\dev\samples\"
-    cp "build\dev\libechidna.dll" "build\dev\samples\"
+    cp "build/dev/_deps/wgpu-src/wgpu_native.dll" "build/dev/samples/"
+    cp "build/dev/_deps/admat-build/libadmat.dll" "build/dev/samples/"
+    cp "build/dev/libechidna.dll" "build/dev/samples/"
 
 phong:
-    .\build\dev\samples\phong.exe
+    ./build/dev/samples/phong
     
 triangle:
-    .\build\dev\samples\triangle.exe
+    ./build/dev/samples/triangle
 
 build-test: build test
 configure-build-test: configure build test

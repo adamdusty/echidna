@@ -39,8 +39,9 @@ auto surface::current_texture() -> std::shared_ptr<texture> {
     // All texture errors should probably be handled regardless
     while(tex.texture == nullptr) {
         wgpuSurfaceGetCurrentTexture(_handle, &tex);
-        current->set_handle(tex.texture);
     }
+
+    *current = texture(tex.texture);
 
     return current;
 }

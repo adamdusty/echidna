@@ -202,8 +202,9 @@ auto main() -> int {
     );
 
     // auto bgld = bind_group_layout_desc(bind_group_layout_entries);
-    auto bgld = bind_group_layout_descriptor("Bind group 1", bind_group_layout_entries);
-    auto bgl  = dev.create_bind_group_layout(bgld);
+    auto bgld      = bind_group_layout_descriptor("Bind group 1", bind_group_layout_entries);
+    auto wgpu_bgld = static_cast<WGPUBindGroupLayoutDescriptor>(bgld);
+    auto bgl       = dev.create_bind_group_layout(bgld);
 
     // Bind group entries
     auto mvp_bge = bind_group_entry(0, mvp_buffer, 0, mvp_buffer.size());
@@ -216,8 +217,8 @@ auto main() -> int {
 
     auto clear_color = WGPUColor{0.05, 0.05, 0.05, 1.0};
 
-    // auto shader_descriptor = echidna::shader_descriptor::create(shader_code);
-    auto shader_descriptor = shader_module_descriptor();
+    auto wgsl_desc         = shader_module_wgsl_descriptor(shader_code);
+    auto shader_descriptor = shader_module_descriptor(wgsl_desc);
     auto shader_module     = dev.create_shader_module(shader_descriptor);
 
     auto blend_state = WGPUBlendState{
@@ -345,25 +346,19 @@ auto main() -> int {
         render_pass_timestamp_writes()
     );
 
-    auto pipeline_layout_descriptor = WGPUPipelineLayoutDescriptor{
-        .nextInChain          = nullptr,
-        .label                = nullptr,
-        .bindGroupLayoutCount = 1,
-        .bindGroupLayouts     = bgl.addr(),
-    };
+    auto pipeline_layout_descriptor = echidna::webgpu::pipeline_layout_descriptor("pld", {bgl});
 
     auto pipeline_layout = dev.create_pipeline_layout(pipeline_layout_descriptor);
 
-    auto pipeline_desc = WGPURenderPipelineDescriptor{
-        .nextInChain  = nullptr,
-        .label        = nullptr,
-        .layout       = pipeline_layout,
-        .vertex       = vertex_state,
-        .primitive    = primitive_state,
-        .depthStencil = &depth_state,
-        .multisample  = multi_sample_state,
-        .fragment     = &fragment_state,
-    };
+    auto pipeline_desc = render_pipeline_descriptor(
+        "pipeline",
+        pipeline_layout,
+        vertex_state,
+        primitive_state,
+        depth_state,
+        multi_sample_state,
+        fragment_state
+    );
 
     auto pipeline = dev.create_render_pipeline(pipeline_desc);
 
@@ -422,7 +417,8 @@ auto main() -> int {
         const auto tex_view = tex->create_texture_view();
         // const auto depth_view = depth_texture.create_texture_view(depth_texture_view_desc);
 
-        color_attach.view = tex_view;
+        color_attach.view                          = tex_view;
+        render_pass_desc.color_attachments[0].view = tex_view;
         // depth_attachment.view = depth_view;
 
         auto cmd_enc = dev.create_command_encoder("phong encoder");

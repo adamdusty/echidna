@@ -4,8 +4,8 @@
 #include "echidna/webgpu/enums.hpp"
 #include "echidna/webgpu/handle.hpp"
 #include "echidna/webgpu/texture_view.hpp"
+#include <cassert>
 #include <cstdint>
-#include <vector>
 #include <webgpu.h>
 
 namespace echidna::webgpu {
@@ -18,8 +18,6 @@ class ECHIDNA_EXPORT texture : public handle_base<texture, WGPUTexture> {
 public:
     using handle_base::handle_base;
     using handle_base::operator=;
-
-    constexpr auto set_handle(WGPUTexture tex) -> void { _handle = tex; }
 
     auto texture_view_descriptor(const char* label = nullptr) const -> WGPUTextureViewDescriptor;
     auto create_texture_view(const WGPUTextureViewDescriptor& desc) const -> texture_view;
@@ -38,11 +36,10 @@ public:
 //     const char* label                           = nullptr;
 //     WGPUTextureUsage usage                      = WGPUTextureUsage_None;
 //     WGPUTextureDimension dimension              = WGPUTextureDimension_2D;
-//     WGPUExtent3D size                           = WGPUExtent3D{.width = 0, .height = 0, .depthOrArrayLayers = 0};
-//     WGPUTextureFormat format                    = WGPUTextureFormat_Undefined;
-//     std::uint32_t mip_count                     = 0;
-//     std::uint32_t sample_count                  = 0;
-//     std::vector<WGPUTextureFormat> view_formats = {};
+//     WGPUExtent3D size                           = WGPUExtent3D{.width = 0, .height = 0,
+//     .depthOrArrayLayers = 0}; WGPUTextureFormat format                    =
+//     WGPUTextureFormat_Undefined; std::uint32_t mip_count                     = 0; std::uint32_t
+//     sample_count                  = 0; std::vector<WGPUTextureFormat> view_formats = {};
 
 //     constexpr texture_descriptor(
 //         const char* label,
@@ -104,7 +101,8 @@ public:
 //         .sampleCount     = sample_count,
 //         .viewFormatCount = view_fmt_count,
 //         .viewFormats     = static_cast<WGPUTextureFormat*>(view_formats.data()), // NOLINT
-//         // .viewFormats     = reinterpret_cast<WGPUTextureFormat*>(view_formats.data()), // NOLINT
+//         // .viewFormats     = reinterpret_cast<WGPUTextureFormat*>(view_formats.data()), //
+//         NOLINT
 //     };
 // }
 
