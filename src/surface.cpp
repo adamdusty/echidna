@@ -25,24 +25,18 @@ auto surface::capabilities(const WGPUAdapter& adapter) const -> WGPUSurfaceCapab
 }
 
 auto surface::current_texture() -> texture {
-    auto tex = WGPUSurfaceTexture{
-        .texture    = nullptr,
-        .suboptimal = static_cast<WGPUBool>(true),
-        .status     = WGPUSurfaceGetCurrentTextureStatus_Outdated,
-    };
+    current.texture = nullptr;
 
     // TODO:
     // HACK:
     // This is an ugly hack to get around amdvlk driver issue on linux
     // https://github.com/gfx-rs/wgpu/issues/2941
     // All texture errors should probably be handled regardless
-    while(tex.texture == nullptr) {
-        wgpuSurfaceGetCurrentTexture(_handle, &tex);
+    while(current.texture == nullptr) {
+        wgpuSurfaceGetCurrentTexture(_handle, &current);
     }
 
-    current = texture(tex.texture);
-
-    return current;
+    return current.texture;
 }
 
 } // namespace echidna::webgpu

@@ -12,7 +12,7 @@ namespace echidna::webgpu {
 class surface_capabilities;
 
 class ECHIDNA_EXPORT surface : public handle_base<surface, WGPUSurface> {
-    texture current = nullptr;
+    WGPUSurfaceTexture current;
 
     friend handle_base<surface, WGPUSurface>;
     static auto release(WGPUSurface handle) { wgpuSurfaceRelease(handle); }
