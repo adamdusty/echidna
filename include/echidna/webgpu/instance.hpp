@@ -5,7 +5,6 @@
 #include "echidna/export.hpp"
 #include "echidna/webgpu/adapter.hpp"
 #include "echidna/webgpu/handle.hpp"
-#include "echidna/webgpu/structs.hpp"
 #include "echidna/webgpu/surface.hpp"
 #include "echidna/webgpu/surface_descriptor.hpp"
 
@@ -24,8 +23,8 @@ public:
         handle_base(wgpuCreateInstance(&desc)) {}
 
     auto process_events() const -> void;
-    auto create_surface(const surface_descriptor& descriptor) const -> surface;
-    auto request_adapter(const request_adapter_options& options) const -> adapter;
+    auto create_surface(const WGPUSurfaceDescriptor& descriptor) const -> surface;
+    auto request_adapter(const WGPURequestAdapterOptions& options) const -> adapter;
 };
 
 // constexpr auto instance_descriptor(const WGPUChainedStruct& next) {

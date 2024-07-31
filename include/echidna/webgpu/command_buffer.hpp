@@ -9,7 +9,7 @@ namespace echidna::webgpu {
 class ECHIDNA_EXPORT command_buffer : public handle_base<command_buffer, WGPUCommandBuffer> {
     friend handle_base<command_buffer, WGPUCommandBuffer>;
     static auto release(WGPUCommandBuffer handle) { wgpuCommandBufferRelease(handle); }
-    static auto reference(WGPUBuffer handle) { wgpuBufferReference(handle); }
+    static auto reference(WGPUCommandBuffer handle) { wgpuCommandBufferReference(handle); }
 
 public:
     using handle_base::handle_base;

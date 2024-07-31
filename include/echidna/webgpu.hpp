@@ -19,7 +19,6 @@
 #include "echidna/webgpu/render_pass_encoder.hpp"
 #include "echidna/webgpu/render_pipeline.hpp"
 #include "echidna/webgpu/shader.hpp"
-#include "echidna/webgpu/structs.hpp"
 #include "echidna/webgpu/surface.hpp"
 #include "echidna/webgpu/surface_descriptor.hpp"
 #include "echidna/webgpu/texture.hpp"

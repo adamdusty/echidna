@@ -1,8 +1,9 @@
-#include <echidna/webgpu.hpp>
+#include <echidna/echidna.hpp>
 #include <snitch/snitch.hpp>
 
 #include "utils.hpp"
 
+using namespace echidna;
 using namespace echidna::webgpu;
 
 TEST_CASE("Constructors", "[instance]") {

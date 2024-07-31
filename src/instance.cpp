@@ -15,12 +15,12 @@ auto instance::process_events() const -> void {
     wgpuInstanceProcessEvents(_handle);
 }
 
-auto instance::create_surface(const surface_descriptor& descriptor) const -> surface {
+auto instance::create_surface(const WGPUSurfaceDescriptor& descriptor) const -> surface {
     WGPUSurfaceDescriptor wgpu_desc = descriptor;
     return wgpuInstanceCreateSurface(_handle, &wgpu_desc);
 }
 
-auto instance::request_adapter(const request_adapter_options& options) const -> adapter {
+auto instance::request_adapter(const WGPURequestAdapterOptions& options) const -> adapter {
     struct user_data {
         WGPUAdapter adapter = nullptr;
         bool request_ended  = false;

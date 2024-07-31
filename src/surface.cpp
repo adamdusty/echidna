@@ -1,5 +1,5 @@
 #include "echidna/webgpu/surface.hpp"
-#include "echidna/webgpu/structs.hpp"
+#include "echidna/structs.hpp"
 
 namespace echidna::webgpu {
 
@@ -18,14 +18,14 @@ auto surface::preferred_format(const WGPUAdapter& adapter) const -> texture_form
     return static_cast<texture_format>(wgpuSurfaceGetPreferredFormat(_handle, adapter));
 }
 
-auto surface::capabilities(const WGPUAdapter& adapter) const -> surface_capabilities {
+auto surface::capabilities(const WGPUAdapter& adapter) const -> WGPUSurfaceCapabilities {
     WGPUSurfaceCapabilities cap;
     wgpuSurfaceGetCapabilities(_handle, adapter, &cap);
 
     return cap;
 }
 
-auto surface::current_texture() -> std::shared_ptr<texture> {
+auto surface::current_texture() -> texture {
     auto tex = WGPUSurfaceTexture{
         .texture    = nullptr,
         .suboptimal = static_cast<WGPUBool>(true),
@@ -41,7 +41,7 @@ auto surface::current_texture() -> std::shared_ptr<texture> {
         wgpuSurfaceGetCurrentTexture(_handle, &tex);
     }
 
-    *current = texture(tex.texture);
+    current = texture(tex.texture);
 
     return current;
 }

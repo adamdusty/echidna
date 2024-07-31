@@ -16,6 +16,7 @@
 
 #include <bit>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 #include <webgpu.h>
@@ -25,7 +26,9 @@
         they can be pointed to on conversion. Need to determine if there is a way to avoid this.
 */
 
-namespace echidna::webgpu {
+using namespace echidna::webgpu;
+
+namespace echidna {
 
 using device_lost_callback = WGPUDeviceLostCallback;
 
@@ -69,11 +72,11 @@ struct ECHIDNA_EXPORT adapter_properties {
 struct ECHIDNA_EXPORT bind_group_entry {
     const chained_struct* next;
     std::uint32_t binding;
-    buffer buffer_binding;
+    std::optional<buffer> buffer_binding;
     std::uint64_t offset;
     std::uint64_t size;
-    sampler sampler_binding;
-    texture_view texture_view_binding;
+    std::optional<sampler> sampler_binding;
+    std::optional<texture_view> texture_view_binding;
 
     bind_group_entry(
         std::uint32_t binding,
@@ -81,30 +84,16 @@ struct ECHIDNA_EXPORT bind_group_entry {
         std::uint64_t offset,
         std::uint64_t size
     ) :
-        next(nullptr),
-        binding(binding),
-        buffer_binding(buf),
-        offset(offset),
-        size(size),
-        sampler_binding(nullptr),
-        texture_view_binding(nullptr) {}
+        next(nullptr), binding(binding), buffer_binding(buf), offset(offset), size(size) {}
 
     bind_group_entry(std::uint32_t binding, const sampler& sampler) :
-        next(nullptr),
-        binding(binding),
-        buffer_binding(nullptr),
-        offset(0),
-        size(0),
-        sampler_binding(sampler),
-        texture_view_binding(nullptr) {}
+        next(nullptr), binding(binding), offset(0), size(0), sampler_binding(sampler) {}
 
     bind_group_entry(std::uint32_t binding, const texture_view& texture_view_binding) :
         next(nullptr),
         binding(binding),
-        buffer_binding(nullptr),
         offset(0),
         size(0),
-        sampler_binding(nullptr),
         texture_view_binding(texture_view_binding) {}
 
     constexpr bind_group_entry(const WGPUBindGroupEntry& e) :
@@ -116,15 +105,15 @@ struct ECHIDNA_EXPORT bind_group_entry {
         sampler_binding(e.sampler),
         texture_view_binding(e.textureView) {}
 
-    constexpr operator WGPUBindGroupEntry() const {
+    operator WGPUBindGroupEntry() const {
         return WGPUBindGroupEntry{
             .nextInChain = next,
             .binding     = binding,
-            .buffer      = buffer_binding,
+            .buffer      = buffer_binding ? buffer_binding.value() : nullptr,
             .offset      = offset,
             .size        = size,
-            .sampler     = sampler_binding,
-            .textureView = texture_view_binding,
+            .sampler     = sampler_binding ? sampler_binding.value() : nullptr,
+            .textureView = texture_view_binding ? texture_view_binding.value() : nullptr,
         };
     }
 };
@@ -1398,11 +1387,6 @@ struct ECHIDNA_EXPORT blend_state {
 class compilation_info {
     std::vector<WGPUCompilationMessage> wgpu_messages;
 
-    constexpr auto get_wgpu_messages() {
-        wgpu_messages = std::vector<WGPUCompilationMessage>(messages.begin(), messages.end());
-        return wgpu_messages;
-    }
-
 public:
     const chained_struct* next;
     std::vector<compilation_message> messages;
@@ -1424,7 +1408,7 @@ public:
 };
 
 class compute_pass_descriptor {
-    WGPUComputePassTimestampWrites wgpu_tsw;
+    std::optional<WGPUComputePassTimestampWrites> wgpu_tsw;
 
 public:
     const chained_struct* next;
@@ -1445,7 +1429,7 @@ public:
         return WGPUComputePassDescriptor{
             .nextInChain     = next,
             .label           = label.c_str(),
-            .timestampWrites = &wgpu_tsw,
+            .timestampWrites = wgpu_tsw ? std::to_address(wgpu_tsw) : nullptr,
         };
     }
 };
@@ -1659,11 +1643,6 @@ struct ECHIDNA_EXPORT required_limits {
 class shader_module_descriptor {
     std::vector<WGPUShaderModuleCompilationHint> wgpu_hints;
 
-    constexpr auto get_wgpu_hints() {
-        wgpu_hints = std::vector<WGPUShaderModuleCompilationHint>(hints.begin(), hints.end());
-        return wgpu_hints;
-    }
-
 public:
     const chained_struct* next;
     std::string label;
@@ -1831,7 +1810,7 @@ public:
 };
 
 class color_target_state {
-    WGPUBlendState wgpu_blend;
+    std::optional<WGPUBlendState> wgpu_blend;
 
 public:
     const chained_struct* next;
@@ -1844,7 +1823,7 @@ public:
         const blend_state& blend,
         const color_write_mask& mask
     ) :
-        wgpu_blend(), next(nullptr), format(format), blend(blend), write_mask(mask) {}
+        next(nullptr), format(format), blend(blend), write_mask(mask) {}
 
     constexpr color_target_state(const WGPUColorTargetState& s) :
         wgpu_blend(*s.blend),
@@ -1858,7 +1837,7 @@ public:
         return WGPUColorTargetState{
             .nextInChain = next,
             .format      = format,
-            .blend       = &wgpu_blend,
+            .blend       = wgpu_blend ? std::to_address(wgpu_blend) : nullptr,
             .writeMask   = write_mask,
         };
     }
@@ -1891,7 +1870,7 @@ struct ECHIDNA_EXPORT compute_pipeline_descriptor {
 };
 
 class device_descriptor {
-    WGPURequiredLimits wgpu_limits;
+    std::optional<WGPURequiredLimits> wgpu_limits;
     std::vector<WGPUFeatureName> wgpu_features;
 
     static constexpr auto device_lost = [](WGPUDeviceLostReason reason, const char* msg, void*) {
@@ -1918,7 +1897,6 @@ public:
         const device_lost_callback& device_lost_callback,
         void* device_lost_user_data
     ) :
-        wgpu_limits(),
         next(nullptr),
         label(label),
         required_features(features),
@@ -1928,7 +1906,6 @@ public:
         device_lost_user_data(device_lost_user_data) {}
 
     device_descriptor() :
-        wgpu_limits(),
         next(nullptr),
         dev_lost_callback(device_descriptor::device_lost),
         device_lost_user_data(nullptr) {}
@@ -1953,7 +1930,7 @@ public:
             .label                = label.c_str(),
             .requiredFeatureCount = required_features.size(),
             .requiredFeatures     = wgpu_features.data(),
-            .requiredLimits       = &wgpu_limits,
+            .requiredLimits       = wgpu_limits ? std::to_address(wgpu_limits) : nullptr,
             .defaultQueue         = default_queue,
             .deviceLostCallback   = dev_lost_callback,
             .deviceLostUserdata   = device_lost_user_data,
@@ -1962,8 +1939,8 @@ public:
 };
 
 class render_pass_descriptor {
-    WGPURenderPassDepthStencilAttachment wgpu_ds;
-    WGPURenderPassTimestampWrites wgpu_tsw;
+    std::optional<WGPURenderPassDepthStencilAttachment> wgpu_ds;
+    std::optional<WGPURenderPassTimestampWrites> wgpu_tsw;
     std::vector<WGPURenderPassColorAttachment> wgpu_ca;
 
 public:
@@ -1971,19 +1948,26 @@ public:
     std::string label;
     std::vector<render_pass_color_attachment> color_attachments;
     render_pass_depth_stencil_attachment depth_stencil_attachment;
-    query_set occlusion_query_set;
-    render_pass_timestamp_writes timestamp_writes;
+    std::optional<query_set> occlusion_query_set;
+    std::optional<render_pass_timestamp_writes> timestamp_writes;
 
     render_pass_descriptor(
         const std::vector<render_pass_color_attachment>& color_attachments,
         const render_pass_depth_stencil_attachment& depth_stencil_attachment
     ) :
-        wgpu_ds(),
-        wgpu_tsw(),
         next(nullptr),
         color_attachments(color_attachments),
-        depth_stencil_attachment(depth_stencil_attachment),
-        occlusion_query_set() {}
+        depth_stencil_attachment(depth_stencil_attachment) {}
+
+    render_pass_descriptor(
+        const std::string& label,
+        const std::vector<render_pass_color_attachment>& color_attachments,
+        const render_pass_depth_stencil_attachment& depth_stencil_attachment
+    ) :
+        next(nullptr),
+        label(label),
+        color_attachments(color_attachments),
+        depth_stencil_attachment(depth_stencil_attachment) {}
 
     render_pass_descriptor(
         const std::string& label,
@@ -1992,8 +1976,6 @@ public:
         const query_set& occlusion_query,
         const render_pass_timestamp_writes& tsw
     ) :
-        wgpu_ds(),
-        wgpu_tsw(),
         next(nullptr),
         label(label),
         color_attachments(color_attachments),
@@ -2016,7 +1998,7 @@ public:
         );
     }
 
-    constexpr operator WGPURenderPassDescriptor() {
+    operator WGPURenderPassDescriptor() {
         wgpu_ds  = depth_stencil_attachment;
         wgpu_tsw = timestamp_writes;
         wgpu_ca  = std::vector<WGPURenderPassColorAttachment>(
@@ -2029,9 +2011,9 @@ public:
             .label                  = label.c_str(),
             .colorAttachmentCount   = color_attachments.size(),
             .colorAttachments       = wgpu_ca.data(),
-            .depthStencilAttachment = &wgpu_ds,
-            .occlusionQuerySet      = occlusion_query_set,
-            .timestampWrites        = (wgpu_tsw.querySet != nullptr) ? &wgpu_tsw : nullptr,
+            .depthStencilAttachment = wgpu_ds ? std::to_address(wgpu_ds) : nullptr,
+            .occlusionQuerySet      = occlusion_query_set ? occlusion_query_set.value() : nullptr,
+            .timestampWrites        = wgpu_tsw ? std::to_address(wgpu_tsw) : nullptr,
         };
     }
 };
@@ -2121,8 +2103,8 @@ public:
 };
 
 class render_pipeline_descriptor {
-    WGPUDepthStencilState wgpu_ds;
-    WGPUFragmentState wgpu_fs;
+    std::optional<WGPUDepthStencilState> wgpu_ds;
+    std::optional<WGPUFragmentState> wgpu_fs;
 
 public:
     const chained_struct* next;
@@ -2143,8 +2125,6 @@ public:
         const multisample_state& multisample,
         const fragment_state& fragment
     ) :
-        wgpu_ds(),
-        wgpu_fs(),
         next(nullptr),
         label(label),
         layout(layout),
@@ -2176,11 +2156,11 @@ public:
             .layout       = layout,
             .vertex       = vertex,
             .primitive    = primitive,
-            .depthStencil = &wgpu_ds,
+            .depthStencil = wgpu_ds ? std::to_address(wgpu_ds) : nullptr,
             .multisample  = multisample,
-            .fragment     = &wgpu_fs,
+            .fragment     = wgpu_fs ? std::to_address(wgpu_fs) : nullptr,
         };
     }
 };
 
-} // namespace echidna::webgpu
+} // namespace echidna

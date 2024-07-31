@@ -13,7 +13,7 @@ namespace echidna::webgpu {
 class surface_capabilities;
 
 class ECHIDNA_EXPORT surface : public handle_base<surface, WGPUSurface> {
-    std::shared_ptr<texture> current = std::make_shared<texture>(nullptr);
+    texture current = nullptr;
 
     friend handle_base<surface, WGPUSurface>;
     static auto release(WGPUSurface handle) { wgpuSurfaceRelease(handle); }
@@ -27,8 +27,8 @@ public:
     auto unconfigure() const -> void;
     auto present() const -> void;
     auto preferred_format(const WGPUAdapter& adapter) const -> texture_format;
-    auto capabilities(const WGPUAdapter& adapter) const -> surface_capabilities;
-    auto current_texture() -> std::shared_ptr<texture>;
+    auto capabilities(const WGPUAdapter& adapter) const -> WGPUSurfaceCapabilities;
+    auto current_texture() -> texture;
 };
 
 } // namespace echidna::webgpu

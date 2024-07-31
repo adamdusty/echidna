@@ -7,10 +7,11 @@
 #include <array>
 #include <chrono>
 #include <cstdint>
-#include <echidna/webgpu.hpp>
+#include <echidna/echidna.hpp>
 #include <iostream>
 #include <vector>
 
+using namespace echidna;
 using namespace echidna::webgpu;
 
 static constexpr auto shader_code = R"(
@@ -138,13 +139,6 @@ auto main() -> int {
     SDL_VERSION(&info.version);
     SDL_GetWindowWMInfo(window, &info);
 
-    // WGPUInstanceExtras instanceExtras = {};
-    // instanceExtras.chain.sType        = (WGPUSType)WGPUSType_InstanceExtras;
-    // instanceExtras.backends           = WGPUInstanceBackend_GL;
-
-    // WGPUInstanceDescriptor instanceDescriptor = {};
-    // instanceDescriptor.nextInChain            = &instanceExtras.chain;
-
     auto inst = instance(instance_descriptor());
 
     auto surf_desc = surface_descriptor();
@@ -175,7 +169,6 @@ auto main() -> int {
     auto surf_conf = surface_configuration(dev, surf.preferred_format(adapt), 1920, 1080);
     surf.configure(surf_conf);
 
-    // Initialize rendering buffers
     auto vertex_buffer = dev.create_buffer(
         buffer_usage::vertex | buffer_usage::copy_dst,
         sizeof(float) * vertices.size()
@@ -189,11 +182,9 @@ auto main() -> int {
     auto light_buffer =
         dev.create_buffer(buffer_usage::uniform | buffer_usage::copy_dst, sizeof(admat::vec3) * 3);
 
-    // Write static buffer data
     queue.write_buffer(vertex_buffer, 0, vertices.data(), sizeof(float) * vertices.size());
     queue.write_buffer(index_buffer, 0, indices.data(), sizeof(float) * indices.size());
 
-    // Bind group layout
     auto bind_group_layout_entries = std::vector<bind_group_layout_entry>();
     bind_group_layout_entries.emplace_back(
         0,
@@ -201,19 +192,18 @@ auto main() -> int {
         buffer_binding_layout(buffer_binding_type::uniform, false, mvp_buffer.size())
     );
 
-    // auto bgld = bind_group_layout_desc(bind_group_layout_entries);
-    auto bgld      = bind_group_layout_descriptor("Bind group 1", bind_group_layout_entries);
-    auto wgpu_bgld = static_cast<WGPUBindGroupLayoutDescriptor>(bgld);
-    auto bgl       = dev.create_bind_group_layout(bgld);
+    auto bgld = bind_group_layout_descriptor("Bind group 1", bind_group_layout_entries);
+    auto bgl  = dev.create_bind_group_layout(bgld);
 
-    // Bind group entries
+    // Bind group entrie
     auto mvp_bge = bind_group_entry(0, mvp_buffer, 0, mvp_buffer.size());
 
     auto bind_group_entries = std::vector<bind_group_entry>();
     bind_group_entries.emplace_back(mvp_bge);
+    auto bgd                         = bind_group_descriptor(bgl, bind_group_entries);
+    WGPUBindGroupDescriptor wgpu_bgd = bgd;
 
-    // Bind group
-    auto bind_group = dev.create_bind_group(bind_group_descriptor(bgl, bind_group_entries));
+    auto bind_group = dev.create_bind_group(wgpu_bgd);
 
     auto clear_color = WGPUColor{0.05, 0.05, 0.05, 1.0};
 
@@ -241,23 +231,11 @@ auto main() -> int {
         }
     );
 
-    auto vertex_state =
-        echidna::webgpu::vertex_state(shader_module, "vs_main", {}, {vertex_layout});
+    auto vertex_state = echidna::vertex_state(shader_module, "vs_main", {}, {vertex_layout});
 
-    // auto fragment_state = WGPUFragmentState{
-    //     .nextInChain   = nullptr,
-    //     .module        = shader_module,
-    //     .entryPoint    = "fs_main",
-    //     .constantCount = 0,
-    //     .constants     = nullptr,
-    //     .targetCount   = 1,
-    //     .targets       = &color_state,
-    // };
+    auto fragment_state = echidna::fragment_state(shader_module, "fs_main", {}, {color_state});
 
-    auto fragment_state =
-        echidna::webgpu::fragment_state(shader_module, "fs_main", {}, {color_state});
-
-    auto primitive_state = echidna::webgpu::primitive_state(
+    auto primitive_state = echidna::primitive_state(
         primitive_topology::triangle_list,
         index_format::undefined,
         front_face::ccw,
@@ -290,17 +268,7 @@ auto main() -> int {
     );
 
     auto depth_formats = std::vector<texture_format>();
-    depth_formats.emplace_back(static_cast<texture_format>(depth_state.format));
-    // auto depth_texture_desc = texture_descriptor(
-    //     "depth tex",
-    //     texture_usage::render_attachment,
-    //     texture_dimension::dim2,
-    //     {1920, 1080, 1},
-    //     texture_format::depth32_float,
-    //     1,
-    //     1,
-    //     depth_formats
-    // );
+    depth_formats.emplace_back(depth_state.format);
     auto depth_texture_desc = texture_descriptor(
         "depth",
         texture_usage::render_attachment,
@@ -337,16 +305,15 @@ auto main() -> int {
         .stencilReadOnly   = true,
     };
 
-    auto color_attach = render_pass_color_attachment(load_op::clear, store_op::store, clear_color);
-    auto render_pass_desc = render_pass_descriptor(
-        "renderpass",
-        {color_attach},
-        {depth_attachment},
-        query_set(),
-        render_pass_timestamp_writes()
-    );
+    // auto depth_attachment = render_pass_depth_stencil_attachment(
+    //     depth_texture_view,
+    // )
 
-    auto pipeline_layout_descriptor = echidna::webgpu::pipeline_layout_descriptor("pld", {bgl});
+    auto color_attach = render_pass_color_attachment(load_op::clear, store_op::store, clear_color);
+    auto render_pass_desc =
+        render_pass_descriptor("renderpass", {color_attach}, {depth_attachment});
+
+    auto pipeline_layout_descriptor = echidna::pipeline_layout_descriptor("pld", {bgl});
 
     auto pipeline_layout = dev.create_pipeline_layout(pipeline_layout_descriptor);
 
@@ -414,10 +381,9 @@ auto main() -> int {
         queue.write_buffer(mvp_buffer, 3 * sizeof(admat::mat4), &model_it, sizeof(admat::mat4));
 
         auto tex            = surf.current_texture();
-        const auto tex_view = tex->create_texture_view();
+        const auto tex_view = tex.create_texture_view();
         // const auto depth_view = depth_texture.create_texture_view(depth_texture_view_desc);
 
-        color_attach.view                          = tex_view;
         render_pass_desc.color_attachments[0].view = tex_view;
         // depth_attachment.view = depth_view;
 
