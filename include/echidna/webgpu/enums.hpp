@@ -2,15 +2,7 @@
 
 #include "echidna/export.hpp"
 
-#include <type_traits>
 #include <webgpu.h>
-
-// TODO: Implement equality operators between echidna enums and wgpu-native enums
-// TODO: Add static asserts for underlying types
-
-template<typename T, typename U>
-constexpr bool same_underlying =
-    std::is_same_v<std::underlying_type_t<T>, std::underlying_type_t<U>>;
 
 namespace echidna::webgpu {
 

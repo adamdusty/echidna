@@ -6,7 +6,8 @@ auto device::create_bind_group(const WGPUBindGroupDescriptor& desc) const -> bin
     return bind_group{wgpuDeviceCreateBindGroup(_handle, &desc)};
 }
 
-auto device::create_bind_group_layout(const WGPUBindGroupLayoutDescriptor& desc) const -> bind_group_layout {
+auto device::create_bind_group_layout(const WGPUBindGroupLayoutDescriptor& desc
+) const -> bind_group_layout {
     return bind_group_layout{wgpuDeviceCreateBindGroupLayout(_handle, &desc)};
 }
 
@@ -18,7 +19,7 @@ auto device::create_buffer(buffer_usage usage, std::uint64_t size) const -> buff
     auto desc = WGPUBufferDescriptor{
         .nextInChain      = nullptr,
         .label            = nullptr,
-        .usage            = static_cast<WGPUBufferUsageFlags>(usage),
+        .usage            = usage,
         .size             = size,
         .mappedAtCreation = static_cast<WGPUBool>(false),
     };
@@ -30,19 +31,23 @@ auto device::create_command_encoder(const char* label) const -> command_encoder 
     return command_encoder{wgpuDeviceCreateCommandEncoder(_handle, &desc)};
 }
 
-auto device::create_command_encoder(const WGPUCommandEncoderDescriptor& desc) const -> command_encoder {
+auto device::create_command_encoder(const WGPUCommandEncoderDescriptor& desc
+) const -> command_encoder {
     return command_encoder{wgpuDeviceCreateCommandEncoder(_handle, &desc)};
 }
 
-auto device::create_compute_pipeline(const WGPUComputePipelineDescriptor& desc) const -> compute_pipeline {
+auto device::create_compute_pipeline(const WGPUComputePipelineDescriptor& desc
+) const -> compute_pipeline {
     return compute_pipeline{wgpuDeviceCreateComputePipeline(_handle, &desc)};
 }
 
-auto device::create_pipeline_layout(const WGPUPipelineLayoutDescriptor& desc) const -> pipeline_layout {
+auto device::create_pipeline_layout(const WGPUPipelineLayoutDescriptor& desc
+) const -> pipeline_layout {
     return pipeline_layout{wgpuDeviceCreatePipelineLayout(_handle, &desc)};
 }
 
-auto device::create_render_pipeline(const WGPURenderPipelineDescriptor& desc) const -> render_pipeline {
+auto device::create_render_pipeline(const WGPURenderPipelineDescriptor& desc
+) const -> render_pipeline {
     return render_pipeline{wgpuDeviceCreateRenderPipeline(_handle, &desc)};
 }
 
@@ -58,7 +63,7 @@ auto device::features() const -> std::vector<feature_name> {
 
     auto features = std::vector<feature_name>{};
     for(const auto& feat: wgpu_features) {
-        features.emplace_back(static_cast<feature_name>(feat));
+        features.emplace_back(feat);
     }
 
     return features;
@@ -71,18 +76,15 @@ auto device::limits() const -> WGPUSupportedLimits {
 }
 
 auto device::has_feature(feature_name feature) const -> bool {
-    return static_cast<bool>(wgpuDeviceHasFeature(_handle, static_cast<WGPUFeatureName>(feature)));
+    return static_cast<bool>(wgpuDeviceHasFeature(_handle, feature));
 }
 
 auto device::get_queue() const -> queue {
     return queue{wgpuDeviceGetQueue(_handle)};
 }
 
-// auto device::set_label(const char* label) const -> void {
-//     wgpuDeviceSetLabel(_handle, label);
-// }
-
-auto device::set_uncaptured_error_callback(WGPUErrorCallback callback, void* user_data) const -> void {
+auto device::set_uncaptured_error_callback(WGPUErrorCallback callback, void* user_data) const
+    -> void {
     wgpuDeviceSetUncapturedErrorCallback(_handle, callback, user_data);
 }
 
@@ -93,17 +95,5 @@ auto device::create_texture(const WGPUTextureDescriptor& desc) const -> texture 
 auto device::create_shader_module(const WGPUShaderModuleDescriptor& desc) const -> shader_module {
     return shader_module{wgpuDeviceCreateShaderModule(_handle, &desc)};
 }
-
-// auto device::shader_moudle_from_wgsl(const char* code) const -> shader_module {
-//     auto code_desc = wgsl_descriptor(code);
-//     auto mod_desc  = WGPUShaderModuleDescriptor{
-//          .nextInChain = &code_desc.chain,
-//          .label       = nullptr,
-//          .hintCount   = 0,
-//          .hints       = nullptr,
-//     };
-
-//     return create_shader_module(mod_desc);
-// }
 
 } // namespace echidna::webgpu

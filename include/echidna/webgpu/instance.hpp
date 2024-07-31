@@ -6,7 +6,6 @@
 #include "echidna/webgpu/adapter.hpp"
 #include "echidna/webgpu/handle.hpp"
 #include "echidna/webgpu/surface.hpp"
-#include "echidna/webgpu/surface_descriptor.hpp"
 
 namespace echidna::webgpu {
 
@@ -19,6 +18,10 @@ public:
     using handle_base::handle_base;
     using handle_base::operator=;
 
+    instance() {
+        auto desc = WGPUInstanceDescriptor{.nextInChain = nullptr};
+        _handle   = wgpuCreateInstance(&desc);
+    }
     explicit instance(const WGPUInstanceDescriptor& desc) :
         handle_base(wgpuCreateInstance(&desc)) {}
 

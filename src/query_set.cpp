@@ -7,7 +7,7 @@ auto query_set::count() const -> std::uint32_t {
 }
 
 auto query_set::type() const -> query_type {
-    return static_cast<query_type>(wgpuQuerySetGetType(_handle));
+    return wgpuQuerySetGetType(_handle);
 }
 
 } // namespace echidna::webgpu

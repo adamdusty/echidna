@@ -2,15 +2,18 @@
 
 namespace echidna::webgpu {
 
-auto command_encoder::begin_compute_pass(const WGPUComputePassDescriptor& desc) const -> compute_pass_encoder {
+auto command_encoder::begin_compute_pass(const WGPUComputePassDescriptor& desc
+) const -> compute_pass_encoder {
     return compute_pass_encoder{wgpuCommandEncoderBeginComputePass(_handle, &desc)};
 }
 
-auto command_encoder::begin_render_pass(const WGPURenderPassDescriptor& desc) const -> render_pass_encoder {
+auto command_encoder::begin_render_pass(const WGPURenderPassDescriptor& desc
+) const -> render_pass_encoder {
     return render_pass_encoder{wgpuCommandEncoderBeginRenderPass(_handle, &desc)};
 }
 
-auto command_encoder::clear_buffer(const buffer& buffer, std::uint64_t offset, std::uint64_t size) const -> void {
+auto command_encoder::clear_buffer(const buffer& buffer, std::uint64_t offset, std::uint64_t size)
+    const -> void {
     wgpuCommandEncoderClearBuffer(_handle, buffer, offset, size);
 }
 

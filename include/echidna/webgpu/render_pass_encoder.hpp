@@ -13,7 +13,8 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT render_pass_encoder : public handle_base<render_pass_encoder, WGPURenderPassEncoder> {
+class ECHIDNA_EXPORT render_pass_encoder
+    : public handle_base<render_pass_encoder, WGPURenderPassEncoder> {
     friend handle_base<render_pass_encoder, WGPURenderPassEncoder>;
     static auto release(WGPURenderPassEncoder handle) { wgpuRenderPassEncoderRelease(handle); }
     static auto reference(WGPURenderPassEncoder handle) { wgpuRenderPassEncoderReference(handle); }
@@ -44,27 +45,34 @@ public:
     auto insert_debug_marker(const char* label) const -> void;
     auto pop_debug_group() const -> void;
     auto push_debug_group(const char* label) const -> void;
-    auto set_bind_group(std::uint32_t index, const bind_group& group, std::vector<std::uint32_t> dyn_offsets) const
-        -> void;
+    auto set_bind_group(
+        std::uint32_t index,
+        const bind_group& group,
+        std::vector<std::uint32_t> dyn_offsets
+    ) const -> void;
     auto set_blend_constant(const WGPUColor& color) const -> void;
-    auto set_index_buffer(const buffer& buffer, index_format fmt, std::uint64_t offset, std::uint64_t size) const
-        -> void;
+    auto set_index_buffer(
+        const buffer& buffer,
+        index_format fmt,
+        std::uint64_t offset,
+        std::uint64_t size
+    ) const -> void;
     auto set_pipeline(const render_pipeline& pipeline) const -> void;
-    auto set_scissor_rect(std::uint32_t x, std::uint32_t y, std::uint32_t width, std::uint32_t height) const -> void;
+    auto set_scissor_rect(
+        std::uint32_t x,
+        std::uint32_t y,
+        std::uint32_t width,
+        std::uint32_t height
+    ) const -> void;
     auto set_stencil_ref(std::uint32_t ref) const -> void;
-    auto set_vertex_buffer(std::uint32_t slot, const buffer& buffer, std::uint64_t offset, std::uint64_t size) const
-        -> void;
-    auto set_viewport(float x, float y, float width, float height, float min_depth, float max_depth) const -> void;
+    auto set_vertex_buffer(
+        std::uint32_t slot,
+        const buffer& buffer,
+        std::uint64_t offset,
+        std::uint64_t size
+    ) const -> void;
+    auto set_viewport(float x, float y, float width, float height, float min_depth, float max_depth)
+        const -> void;
 };
 
 } // namespace echidna::webgpu
-
-// clang-format off
-// WGPU_EXPORT void wgpuRenderPassEncoderSetLabel(WGPURenderPassEncoder renderPassEncoder, char const * label) WGPU_FUNCTION_ATTRIBUTE;
-// WGPU_EXPORT void wgpuRenderPassEncoderSetScissorRect(WGPURenderPassEncoder renderPassEncoder, uint32_t x, uint32_t y, uint32_t width, uint32_t height) WGPU_FUNCTION_ATTRIBUTE;
-// WGPU_EXPORT void wgpuRenderPassEncoderSetStencilReference(WGPURenderPassEncoder renderPassEncoder, uint32_t reference) WGPU_FUNCTION_ATTRIBUTE;
-// WGPU_EXPORT void wgpuRenderPassEncoderSetVertexBuffer(WGPURenderPassEncoder renderPassEncoder, uint32_t slot, WGPU_NULLABLE WGPUBuffer buffer, uint64_t offset, uint64_t size) WGPU_FUNCTION_ATTRIBUTE;
-// WGPU_EXPORT void wgpuRenderPassEncoderSetViewport(WGPURenderPassEncoder renderPassEncoder, float x, float y, float width, float height, float minDepth, float maxDepth) WGPU_FUNCTION_ATTRIBUTE;
-// WGPU_EXPORT void wgpuRenderPassEncoderReference(WGPURenderPassEncoder renderPassEncoder) WGPU_FUNCTION_ATTRIBUTE;
-// WGPU_EXPORT void wgpuRenderPassEncoderRelease(WGPURenderPassEncoder renderPassEncoder) WGPU_FUNCTION_ATTRIBUTE;
-// clang-format on

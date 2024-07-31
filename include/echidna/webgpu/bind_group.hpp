@@ -15,4 +15,5 @@ public:
     using handle_base::handle_base;
     using handle_base::operator=;
 };
+
 } // namespace echidna::webgpu

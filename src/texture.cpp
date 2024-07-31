@@ -24,13 +24,13 @@ auto texture::texture_view_descriptor(const char* label) const -> WGPUTextureVie
     return WGPUTextureViewDescriptor{
         .nextInChain     = nullptr,
         .label           = label,
-        .format          = static_cast<WGPUTextureFormat>(this->format()),
-        .dimension       = static_cast<WGPUTextureViewDimension>(dim),
+        .format          = this->format(),
+        .dimension       = dim,
         .baseMipLevel    = 0,
         .mipLevelCount   = this->mip_level_count(),
         .baseArrayLayer  = 0,
         .arrayLayerCount = this->get_depth_or_array_layers(),
-        .aspect          = static_cast<WGPUTextureAspect>(texture_aspect::all),
+        .aspect          = texture_aspect::all,
     };
 }
 
@@ -48,11 +48,11 @@ auto texture::get_depth_or_array_layers() const -> std::uint32_t {
 }
 
 auto texture::dimension() const -> texture_dimension {
-    return static_cast<texture_dimension>(wgpuTextureGetDimension(_handle));
+    return wgpuTextureGetDimension(_handle);
 }
 
 auto texture::format() const -> texture_format {
-    return static_cast<texture_format>(wgpuTextureGetFormat(_handle));
+    return wgpuTextureGetFormat(_handle);
 }
 
 auto texture::width() const -> std::uint32_t {
@@ -72,7 +72,7 @@ auto texture::sample_count() const -> std::uint32_t {
 }
 
 auto texture::usage() const -> texture_usage {
-    return static_cast<texture_usage>(wgpuTextureGetUsage(_handle));
+    return wgpuTextureGetUsage(_handle);
 }
 
 } // namespace echidna::webgpu

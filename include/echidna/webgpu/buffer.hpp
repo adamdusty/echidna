@@ -9,8 +9,6 @@
 
 namespace echidna::webgpu {
 
-// TODO: Functions for buffer descriptor creation
-
 class ECHIDNA_EXPORT buffer : public handle_base<buffer, WGPUBuffer> {
     friend handle_base<buffer, WGPUBuffer>;
     static auto release(WGPUBuffer handle) { wgpuBufferRelease(handle); }
@@ -25,8 +23,13 @@ public:
     auto get_map_state() const -> buffer_map_state;
     auto size() const -> std::uint64_t;
     auto unmap() const -> void;
-    auto map_async(map_mode mode, size_t offset, size_t size, WGPUBufferMapCallback callback, void* user_data) const
-        -> void;
+    auto map_async(
+        map_mode mode,
+        size_t offset,
+        size_t size,
+        WGPUBufferMapCallback callback,
+        void* user_data
+    ) const -> void;
 };
 
 } // namespace echidna::webgpu

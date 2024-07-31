@@ -1,16 +1,4 @@
 #pragma once
 
-#include "echidna/adapter_options.hpp"
-#include "echidna/buffer_descriptor.hpp"
-#include "echidna/callbacks.hpp"
-#include "echidna/chained.hpp"
-#include "echidna/color_attachment.hpp"
-#include "echidna/convenience.hpp"
-#include "echidna/defaults.hpp"
-#include "echidna/device_descriptor.hpp"
-#include "echidna/limits.hpp"
-#include "echidna/shader_descriptor.hpp"
 #include "echidna/structs.hpp"
-#include "echidna/surface_configuration.hpp"
-#include "echidna/surface_descriptor.hpp"
 #include "echidna/webgpu.hpp"

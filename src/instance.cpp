@@ -42,8 +42,7 @@ auto instance::request_adapter(const WGPURequestAdapterOptions& options) const -
         user_data.request_ended = true;
     };
 
-    auto adapter_options = static_cast<WGPURequestAdapterOptions>(options);
-    wgpuInstanceRequestAdapter(_handle, &adapter_options, callback, &data);
+    wgpuInstanceRequestAdapter(_handle, &options, callback, &data);
     assert(data.request_ended);
 
     return adapter{data.adapter};

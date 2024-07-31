@@ -20,17 +20,10 @@ public:
     using handle_base::handle_base;
     using handle_base::operator=;
 
-    // auto set_label(const char* label) const -> void; Unimplemented by wgpu-native
     auto submit(std::vector<command_buffer>& commands) const -> void;
-    auto write_buffer(const buffer& buffer, std::uint64_t offset, const void* data, size_t size) const -> void;
+    auto write_buffer(const buffer& buffer, std::uint64_t offset, const void* data, size_t size)
+        const -> void;
 };
-
-// constexpr auto queue_descriptor(const char* label = nullptr) {
-//     return WGPUQueueDescriptor{
-//         .nextInChain = nullptr,
-//         .label       = label,
-//     };
-// }
 
 } // namespace echidna::webgpu
 

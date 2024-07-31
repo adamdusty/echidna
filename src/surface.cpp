@@ -1,5 +1,4 @@
 #include "echidna/webgpu/surface.hpp"
-#include "echidna/structs.hpp"
 
 namespace echidna::webgpu {
 
@@ -15,7 +14,7 @@ auto surface::present() const -> void {
 }
 
 auto surface::preferred_format(const WGPUAdapter& adapter) const -> texture_format {
-    return static_cast<texture_format>(wgpuSurfaceGetPreferredFormat(_handle, adapter));
+    return wgpuSurfaceGetPreferredFormat(_handle, adapter);
 }
 
 auto surface::capabilities(const WGPUAdapter& adapter) const -> WGPUSurfaceCapabilities {

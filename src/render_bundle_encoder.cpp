@@ -18,14 +18,23 @@ auto render_bundle_encoder::draw_indexed(
     std::int32_t base_vert,
     std::uint32_t first_inst
 ) const -> void {
-    wgpuRenderBundleEncoderDrawIndexed(_handle, index_count, instance_count, first_ind, base_vert, first_inst);
+    wgpuRenderBundleEncoderDrawIndexed(
+        _handle,
+        index_count,
+        instance_count,
+        first_ind,
+        base_vert,
+        first_inst
+    );
 }
 
-auto render_bundle_encoder::draw_indexed_indirect(const buffer& buffer, std::uint64_t offset) const -> void {
+auto render_bundle_encoder::draw_indexed_indirect(const buffer& buffer, std::uint64_t offset) const
+    -> void {
     wgpuRenderBundleEncoderDrawIndexedIndirect(_handle, buffer, offset);
 }
 
-auto render_bundle_encoder::draw_indirect(const buffer& buffer, std::uint64_t offset) const -> void {
+auto render_bundle_encoder::draw_indirect(const buffer& buffer, std::uint64_t offset) const
+    -> void {
     wgpuRenderBundleEncoderDrawIndirect(_handle, buffer, offset);
 }
 
@@ -50,7 +59,13 @@ auto render_bundle_encoder::set_bind_group(
     const bind_group& group,
     std::vector<std::uint32_t> dyn_offsets
 ) const -> void {
-    wgpuRenderBundleEncoderSetBindGroup(_handle, index, group, dyn_offsets.size(), dyn_offsets.data());
+    wgpuRenderBundleEncoderSetBindGroup(
+        _handle,
+        index,
+        group,
+        dyn_offsets.size(),
+        dyn_offsets.data()
+    );
 }
 
 auto render_bundle_encoder::set_vertex_buffer(
@@ -68,7 +83,7 @@ auto render_bundle_encoder::set_index_buffer(
     std::uint64_t offset,
     std::uint64_t size
 ) const -> void {
-    wgpuRenderBundleEncoderSetIndexBuffer(_handle, buffer, static_cast<WGPUIndexFormat>(fmt), offset, size);
+    wgpuRenderBundleEncoderSetIndexBuffer(_handle, buffer, fmt, offset, size);
 }
 
 auto render_bundle_encoder::set_pipeline(const render_pipeline& pipeline) const -> void {

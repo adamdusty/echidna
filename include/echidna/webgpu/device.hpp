@@ -31,12 +31,14 @@ public:
     using handle_base::operator=;
 
     auto create_bind_group(const WGPUBindGroupDescriptor& desc) const -> bind_group;
-    auto create_bind_group_layout(const WGPUBindGroupLayoutDescriptor& desc) const -> bind_group_layout;
+    auto create_bind_group_layout(const WGPUBindGroupLayoutDescriptor& desc
+    ) const -> bind_group_layout;
     auto create_buffer(const WGPUBufferDescriptor& desc) const -> buffer;
     auto create_buffer(buffer_usage usage, std::uint64_t size) const -> buffer;
     auto create_command_encoder(const char* label = nullptr) const -> command_encoder;
     auto create_command_encoder(const WGPUCommandEncoderDescriptor& desc) const -> command_encoder;
-    auto create_compute_pipeline(const WGPUComputePipelineDescriptor& desc) const -> compute_pipeline;
+    auto create_compute_pipeline(const WGPUComputePipelineDescriptor& desc
+    ) const -> compute_pipeline;
     auto create_pipeline_layout(const WGPUPipelineLayoutDescriptor& desc) const -> pipeline_layout;
     auto create_render_pipeline(const WGPURenderPipelineDescriptor& desc) const -> render_pipeline;
     auto create_query_set(const WGPUQuerySetDescriptor& desc) const -> query_set;
@@ -44,7 +46,8 @@ public:
     auto limits() const -> WGPUSupportedLimits;
     auto has_feature(feature_name feature) const -> bool;
     auto get_queue() const -> queue;
-    auto set_uncaptured_error_callback(WGPUErrorCallback callback, void* user_data = nullptr) const -> void;
+    auto set_uncaptured_error_callback(WGPUErrorCallback callback, void* user_data = nullptr) const
+        -> void;
 
     auto create_texture(const WGPUTextureDescriptor& desc) const -> texture;
 

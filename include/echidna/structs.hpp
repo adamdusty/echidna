@@ -590,8 +590,8 @@ struct ECHIDNA_EXPORT primitive_state {
         next((p.nextInChain)),
         topology(p.topology),
         strip_index_format(p.stripIndexFormat),
-        front_face_winding(static_cast<echidna::webgpu::front_face>(p.frontFace)),
-        cull_mode_direction(static_cast<echidna::webgpu::cull_mode>(p.cullMode)) {}
+        front_face_winding(p.frontFace),
+        cull_mode_direction(p.cullMode) {}
 
     constexpr operator WGPUPrimitiveState() const {
         return WGPUPrimitiveState{
@@ -794,7 +794,7 @@ struct ECHIDNA_EXPORT request_adapter_options {
     constexpr request_adapter_options(const WGPURequestAdapterOptions& o) :
         next(o.nextInChain),
         compatible_surface(o.compatibleSurface),
-        power_pref(static_cast<echidna::webgpu::power_preference>(o.powerPreference)),
+        power_pref(o.powerPreference),
         backend(o.backendType),
         force_fallback(o.forceFallbackAdapter != 0u) {}
 
@@ -1115,7 +1115,7 @@ public:
         alpha_mode(c.alphaMode),
         width(c.width),
         height(c.height),
-        present(static_cast<echidna::webgpu::present_mode>(c.presentMode)) {}
+        present(c.presentMode) {}
 
     constexpr operator WGPUSurfaceConfiguration() {
         wgpu_formats = std::vector<WGPUTextureFormat>(view_formats.begin(), view_formats.end());
@@ -1611,8 +1611,8 @@ struct ECHIDNA_EXPORT render_pass_color_attachment {
         next(a.nextInChain),
         view(a.view),
         resolve_target(a.resolveTarget),
-        load_operation(static_cast<echidna::webgpu::load_op>(a.loadOp)),
-        store_operation(static_cast<echidna::webgpu::store_op>(a.storeOp)),
+        load_operation(a.loadOp),
+        store_operation(a.storeOp),
         clear_value(a.clearValue) {}
 
     constexpr operator WGPURenderPassColorAttachment() {

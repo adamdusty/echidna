@@ -2,7 +2,8 @@
 
 namespace echidna::webgpu {
 
-auto shader_module::compilation_info(WGPUCompilationInfoCallback callback, void* user_data) const -> void {
+auto shader_module::compilation_info(WGPUCompilationInfoCallback callback, void* user_data) const
+    -> void {
     wgpuShaderModuleGetCompilationInfo(_handle, callback, user_data);
 }
 

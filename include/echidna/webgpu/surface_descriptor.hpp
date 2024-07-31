@@ -159,22 +159,6 @@ struct ECHIDNA_EXPORT surface_descriptor_from_xlib_window {
 };
 
 class ECHIDNA_EXPORT surface_descriptor {
-    // struct platform_desc_visitor {
-    //     auto operator()(const surface_descriptor_from_android_native_window& desc) {
-    //         return nullptr;
-    //     }
-    //     auto operator()(const surface_descriptor_from_canvas_html_selector& desc) {
-    //         return nullptr;
-    //     }
-    //     auto operator()(const surface_descriptor_from_metal_layer& desc) { return nullptr; }
-    //     auto operator()(const surface_descriptor_from_wayland_surface& desc) {
-    //         return reinterpret_cast<const chained_struct*>(&desc);
-    //     }
-    //     auto operator()(const surface_descriptor_from_windows_hwnd& desc) { return nullptr; }
-    //     auto operator()(const surface_descriptor_from_xcb_window& desc) { return nullptr; }
-    //     auto operator()(const surface_descriptor_from_xlib_window& desc) { return nullptr; }
-    //     auto operator()(auto& /*unused*/) { return nullptr; }
-    // };
     using platform_desc = std::variant<
         std::monostate,
         surface_descriptor_from_android_native_window,

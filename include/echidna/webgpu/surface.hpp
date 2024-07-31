@@ -5,7 +5,6 @@
 #include "echidna/webgpu/handle.hpp"
 #include "echidna/webgpu/texture.hpp"
 
-#include <memory>
 #include <webgpu.h>
 
 namespace echidna::webgpu {
@@ -32,6 +31,3 @@ public:
 };
 
 } // namespace echidna::webgpu
-
-// wgpuSurfaceGetCurrentTexture(WGPUSurface surface, WGPUSurfaceTexture * surfaceTexture)
-// WGPU_FUNCTION_ATTRIBUTE;

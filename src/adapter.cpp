@@ -25,14 +25,14 @@ auto adapter::features() const -> std::vector<feature_name> {
 
     auto features = std::vector<feature_name>{};
     for(const auto& feat: wgpu_features) {
-        features.emplace_back(static_cast<feature_name>(feat));
+        features.emplace_back(feat);
     }
 
     return features;
 }
 
 auto adapter::has_feature(feature_name feature) const -> bool {
-    return static_cast<bool>(wgpuAdapterHasFeature(_handle, static_cast<WGPUFeatureName>(feature)));
+    return static_cast<bool>(wgpuAdapterHasFeature(_handle, feature));
 }
 
 auto adapter::request_device(const WGPUDeviceDescriptor& desc) const -> device {
@@ -43,7 +43,10 @@ auto adapter::request_device(const WGPUDeviceDescriptor& desc) const -> device {
 
     auto data = user_data{};
 
-    auto callback = [](WGPURequestDeviceStatus status, WGPUDevice device, const char* message, void* user_data_ptr) {
+    auto callback = [](WGPURequestDeviceStatus status,
+                       WGPUDevice device,
+                       const char* message,
+                       void* user_data_ptr) {
         auto& callback_request_data = *static_cast<user_data*>(user_data_ptr); // NOLINT
 
         if(status == WGPURequestDeviceStatus_Success) {
