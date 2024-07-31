@@ -11,20 +11,27 @@ protected:
 
 public:
     handle_base() = default;
+
+    // Convert from WGPU opaque ptr
     constexpr handle_base(W handle) : _handle(handle) {}
+
+    // Move constructor
     handle_base(handle_base&& other) noexcept : _handle(std::exchange(other._handle, nullptr)) {}
+
+    // Copy constructor
     handle_base(const handle_base& other) : _handle(other._handle) {
         if(_handle != nullptr) {
             E::reference(_handle);
         }
     }
-    ~handle_base() {
-        if(_handle != nullptr) {
-            E::release(_handle);
-            _handle = nullptr;
-        }
+
+    // Move assign
+    auto operator=(handle_base&& other) noexcept -> E& { // NOLINT
+        _handle = std::exchange(other._handle, nullptr);
+        return static_cast<E&>(*this);
     }
 
+    // Copy assign
     auto operator=(const handle_base& other) -> E& { // NOLINT
         if(this == &other) {
             return static_cast<E&>(*this);
@@ -35,9 +42,11 @@ public:
         return static_cast<E&>(*this);
     }
 
-    auto operator=(handle_base&& other) noexcept -> E& { // NOLINT
-        _handle = std::exchange(other._handle, nullptr);
-        return static_cast<E&>(*this);
+    ~handle_base() {
+        if(_handle != nullptr) {
+            E::release(_handle);
+            // _handle = nullptr;
+        }
     }
 
     constexpr explicit operator bool() { return _handle != nullptr; }
@@ -47,6 +56,8 @@ public:
         }
         return _handle;
     }
+
+    // Return pointer to handle
     constexpr auto addr() const -> const W* { return &_handle; }
 };
 
