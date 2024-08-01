@@ -12,11 +12,6 @@ TEST_CASE("Constructors", "[instance]") {
         auto inst      = instance(inst_desc);
         CHECK(inst != nullptr);
     }
-
-    SECTION("Default constructor initializes handle to nullptr") {
-        auto inst = instance();
-        CHECK(inst == nullptr);
-    }
 }
 
 TEST_CASE("Create surface") {

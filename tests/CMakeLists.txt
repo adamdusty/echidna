@@ -66,3 +66,11 @@ set_tests_properties(echidna_tests PROPERTIES
 )
 
 endif()
+
+
+if(WIN32)
+set_tests_properties(echidna_tests PROPERTIES
+ENVIRONMENT_MODIFICATION
+    "PATH=path_list_append:$<TARGET_FILE_DIR:echidna::echidna>;PATH=path_list_append:$<TARGET_FILE_DIR:snitch::snitch>;PATH=path_list_append:$<TARGET_FILE_DIR:wgpu>;PATH=path_list_append:$<TARGET_FILE_DIR:SDL2::SDL2>"
+)
+endif()

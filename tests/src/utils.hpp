@@ -28,7 +28,7 @@ inline auto get_surface_descriptor_from_window(SDL_Window* win) -> ew::surface_d
     return desc;
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
     void* inst = windowWMInfo.info.win.hinstance;
-    void* hwnd = windowWMInfo.info.win.hwnd;
+    void* hwnd = windowWMInfo.info.win.window;
 
     auto plat_desc = ew::surface_descriptor_from_windows_hwnd(inst, hwnd);
     auto desc      = ew::surface_descriptor(plat_desc, "win32 test window");

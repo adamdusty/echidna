@@ -66,3 +66,10 @@ target_link_libraries(phong
         SDL2
         wgpu
 )
+
+if(WIN32)
+add_custom_command(TARGET phong POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:phong> $<TARGET_FILE_DIR:phong>
+    COMMAND_EXPAND_LISTS
+)
+endif()
