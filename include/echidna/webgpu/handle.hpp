@@ -45,15 +45,14 @@ public:
     ~handle_base() {
         if(_handle != nullptr) {
             E::release(_handle);
-            // _handle = nullptr;
         }
     }
 
     constexpr explicit operator bool() { return _handle != nullptr; }
     constexpr operator W() const {
-        if(_handle != nullptr) {
-            E::reference(_handle);
-        }
+        // if(_handle != nullptr) {
+        //     E::reference(_handle);
+        // }
         return _handle;
     }
 

@@ -125,9 +125,19 @@ static constexpr auto indices = std::array<std::uint32_t,36>{
 };
 // clang-format on
 
+struct sdl_window_deleter {
+    auto operator()(SDL_Window* w) const {
+        std::cerr << "Closing SDL stuff...\n";
+        SDL_DestroyWindow(w);
+        SDL_Quit();
+    }
+};
+
+using sdl_window = std::unique_ptr<SDL_Window, sdl_window_deleter>;
+
 auto main() -> int {
     // GPU Initialization
-    auto* window = SDL_CreateWindow(
+    auto* window_handle = SDL_CreateWindow(
         "test",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
@@ -135,9 +145,11 @@ auto main() -> int {
         1080,
         SDL_WINDOW_SHOWN
     );
+
+    auto window = sdl_window(window_handle, sdl_window_deleter());
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
-    SDL_GetWindowWMInfo(window, &info);
+    SDL_GetWindowWMInfo(window.get(), &info);
 
     auto inst = instance(instance_descriptor());
 
@@ -293,21 +305,17 @@ auto main() -> int {
     );
     auto depth_texture_view = depth_texture.create_texture_view(depth_texture_view_desc);
 
-    auto depth_attachment = WGPURenderPassDepthStencilAttachment{
-        .view              = depth_texture_view,
-        .depthLoadOp       = WGPULoadOp_Clear,
-        .depthStoreOp      = WGPUStoreOp_Store,
-        .depthClearValue   = 1.0f,
-        .depthReadOnly     = false,
-        .stencilLoadOp     = WGPULoadOp_Clear,
-        .stencilStoreOp    = WGPUStoreOp_Store,
-        .stencilClearValue = 0,
-        .stencilReadOnly   = true,
-    };
-
-    // auto depth_attachment = render_pass_depth_stencil_attachment(
-    //     depth_texture_view,
-    // )
+    auto depth_attachment = render_pass_depth_stencil_attachment(
+        depth_texture_view,
+        load_op::clear,
+        store_op::store,
+        1.0f,
+        false,
+        load_op::clear,
+        store_op::store,
+        0,
+        true
+    );
 
     auto color_attach = render_pass_color_attachment(load_op::clear, store_op::store, clear_color);
     auto render_pass_desc =
@@ -380,11 +388,12 @@ auto main() -> int {
         queue.write_buffer(mvp_buffer, 2 * sizeof(admat::mat4), &model, sizeof(admat::mat4));
         queue.write_buffer(mvp_buffer, 3 * sizeof(admat::mat4), &model_it, sizeof(admat::mat4));
 
-        auto tex            = surf.current_texture();
-        const auto tex_view = tex.create_texture_view();
+        auto tex      = surf.current_texture();
+        auto tex_view = tex.create_texture_view();
         // const auto depth_view = depth_texture.create_texture_view(depth_texture_view_desc);
 
-        render_pass_desc.color_attachments[0].view = tex_view;
+        std::swap(render_pass_desc.color_attachments[0].view, tex_view);
+        // render_pass_desc.color_attachments[0].view = std::move(tex_view);
         // depth_attachment.view = depth_view;
 
         auto cmd_enc = dev.create_command_encoder("phong encoder");
@@ -405,10 +414,6 @@ auto main() -> int {
 
         cmds.clear();
     }
-
-    // Destroying the window before destructors are called causes an issue with wgpu
-    // SDL_DestroyWindow(window);
-    // SDL_Quit();
 
     return 0;
 }
