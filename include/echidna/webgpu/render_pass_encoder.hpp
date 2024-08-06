@@ -13,13 +13,9 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT render_pass_encoder
-    : public handle_base<render_pass_encoder, WGPURenderPassEncoder> {
-    friend handle_base<render_pass_encoder, WGPURenderPassEncoder>;
-    static auto release(WGPURenderPassEncoder handle) { wgpuRenderPassEncoderRelease(handle); }
-    static auto reference(WGPURenderPassEncoder handle) { wgpuRenderPassEncoderReference(handle); }
+struct ECHIDNA_EXPORT render_pass_encoder
+    : public handle_base<render_pass_encoder, WGPURenderPassEncoderImpl> {
 
-public:
     using handle_base::handle_base;
     using handle_base::operator=;
 

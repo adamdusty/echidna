@@ -11,15 +11,9 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT compute_pass_encoder
-    : public handle_base<compute_pass_encoder, WGPUComputePassEncoder> {
-    friend handle_base<compute_pass_encoder, WGPUComputePassEncoder>;
-    static auto release(WGPUComputePassEncoder handle) { wgpuComputePassEncoderRelease(handle); }
-    static auto reference(WGPUComputePassEncoder handle) {
-        wgpuComputePassEncoderReference(handle);
-    }
+struct ECHIDNA_EXPORT compute_pass_encoder
+    : public handle_base<compute_pass_encoder, WGPUComputePassEncoderImpl> {
 
-public:
     using handle_base::handle_base;
     using handle_base::operator=;
 

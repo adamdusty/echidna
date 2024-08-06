@@ -11,12 +11,7 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT queue : public handle_base<queue, WGPUQueue> {
-    friend handle_base<queue, WGPUQueue>;
-    static auto release(WGPUQueue handle) { wgpuQueueRelease(handle); }
-    static auto reference(WGPUQueue handle) { wgpuQueueReference(handle); }
-
-public:
+struct ECHIDNA_EXPORT queue : public handle_base<queue, WGPUQueueImpl> {
     using handle_base::handle_base;
     using handle_base::operator=;
 

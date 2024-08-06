@@ -13,15 +13,9 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT render_bundle_encoder
-    : public handle_base<render_bundle_encoder, WGPURenderBundleEncoder> {
-    friend handle_base<render_bundle_encoder, WGPURenderBundleEncoder>;
-    static auto release(WGPURenderBundleEncoder handle) { wgpuRenderBundleEncoderRelease(handle); }
-    static auto reference(WGPURenderBundleEncoder handle) {
-        wgpuRenderBundleEncoderReference(handle);
-    }
+struct ECHIDNA_EXPORT render_bundle_encoder
+    : public handle_base<render_bundle_encoder, WGPURenderBundleEncoderImpl> {
 
-public:
     using handle_base::handle_base;
     using handle_base::operator=;
 

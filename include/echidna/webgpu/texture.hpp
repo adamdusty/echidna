@@ -10,12 +10,7 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT texture : public handle_base<texture, WGPUTexture> {
-    friend handle_base<texture, WGPUTexture>;
-    static auto release(WGPUTexture handle) { wgpuTextureRelease(handle); }
-    static auto reference(WGPUTexture handle) { wgpuTextureReference(handle); }
-
-public:
+struct ECHIDNA_EXPORT texture : public handle_base<texture, WGPUTextureImpl> {
     using handle_base::handle_base;
     using handle_base::operator=;
 

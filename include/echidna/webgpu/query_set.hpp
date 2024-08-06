@@ -8,12 +8,7 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT query_set : public handle_base<query_set, WGPUQuerySet> {
-    friend handle_base<query_set, WGPUQuerySet>;
-    static auto release(WGPUQuerySet handle) { wgpuQuerySetRelease(handle); }
-    static auto reference(WGPUQuerySet handle) { wgpuQuerySetReference(handle); }
-
-public:
+struct ECHIDNA_EXPORT query_set : public handle_base<query_set, WGPUQuerySetImpl> {
     using handle_base::handle_base;
     using handle_base::operator=;
 

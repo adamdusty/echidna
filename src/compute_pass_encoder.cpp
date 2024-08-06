@@ -7,33 +7,33 @@ auto compute_pass_encoder::dispatch_work_groups(
     std::uint32_t count_y,
     std::uint32_t count_z
 ) const -> void {
-    wgpuComputePassEncoderDispatchWorkgroups(_handle, count_x, count_y, count_z);
+    wgpuComputePassEncoderDispatchWorkgroups(_handle.get(), count_x, count_y, count_z);
 }
 
 auto compute_pass_encoder::dispatch_work_groups_indirect(const buffer& buffer, std::uint64_t offset)
     const -> void {
 
-    wgpuComputePassEncoderDispatchWorkgroupsIndirect(_handle, buffer, offset);
+    wgpuComputePassEncoderDispatchWorkgroupsIndirect(_handle.get(), buffer, offset);
 }
 
 auto compute_pass_encoder::end() const -> void {
-    wgpuComputePassEncoderEnd(_handle);
+    wgpuComputePassEncoderEnd(_handle.get());
 }
 
 auto compute_pass_encoder::insert_debug_marker(const char* label) const -> void {
-    wgpuComputePassEncoderInsertDebugMarker(_handle, label);
+    wgpuComputePassEncoderInsertDebugMarker(_handle.get(), label);
 }
 
 auto compute_pass_encoder::pop_debug_group() const -> void {
-    wgpuComputePassEncoderPopDebugGroup(_handle);
+    wgpuComputePassEncoderPopDebugGroup(_handle.get());
 }
 
 auto compute_pass_encoder::push_debug_group(const char* label) const -> void {
-    wgpuComputePassEncoderPushDebugGroup(_handle, label);
+    wgpuComputePassEncoderPushDebugGroup(_handle.get(), label);
 }
 
 auto compute_pass_encoder::set_pipeline(const compute_pipeline& pipeline) const -> void {
-    wgpuComputePassEncoderSetPipeline(_handle, pipeline);
+    wgpuComputePassEncoderSetPipeline(_handle.get(), pipeline);
 }
 
 auto compute_pass_encoder::set_bind_group(
@@ -42,7 +42,7 @@ auto compute_pass_encoder::set_bind_group(
     std::vector<std::uint32_t> dyn_offsets
 ) const -> void {
     wgpuComputePassEncoderSetBindGroup(
-        _handle,
+        _handle.get(),
         group_index,
         group,
         dyn_offsets.size(),

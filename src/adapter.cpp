@@ -7,21 +7,21 @@ namespace echidna::webgpu {
 
 auto adapter::limits() const -> WGPUSupportedLimits {
     auto limits = WGPUSupportedLimits{};
-    wgpuAdapterGetLimits(_handle, &limits);
+    wgpuAdapterGetLimits(_handle.get(), &limits);
     return limits;
 }
 
 auto adapter::properties() const -> WGPUAdapterProperties {
     auto props = WGPUAdapterProperties{};
-    wgpuAdapterGetProperties(_handle, &props);
+    wgpuAdapterGetProperties(_handle.get(), &props);
     return props;
 }
 
 auto adapter::features() const -> std::vector<feature_name> {
     auto wgpu_features = std::vector<WGPUFeatureName>{};
-    auto feature_count = wgpuAdapterEnumerateFeatures(_handle, nullptr);
+    auto feature_count = wgpuAdapterEnumerateFeatures(_handle.get(), nullptr);
     wgpu_features.resize(feature_count);
-    wgpuAdapterEnumerateFeatures(_handle, wgpu_features.data());
+    wgpuAdapterEnumerateFeatures(_handle.get(), wgpu_features.data());
 
     auto features = std::vector<feature_name>{};
     for(const auto& feat: wgpu_features) {
@@ -32,7 +32,7 @@ auto adapter::features() const -> std::vector<feature_name> {
 }
 
 auto adapter::has_feature(feature_name feature) const -> bool {
-    return static_cast<bool>(wgpuAdapterHasFeature(_handle, feature));
+    return static_cast<bool>(wgpuAdapterHasFeature(_handle.get(), feature));
 }
 
 auto adapter::request_device(const WGPUDeviceDescriptor& desc) const -> device {
@@ -58,7 +58,7 @@ auto adapter::request_device(const WGPUDeviceDescriptor& desc) const -> device {
         callback_request_data.request_ended = true;
     };
 
-    wgpuAdapterRequestDevice(_handle, &desc, callback, &data);
+    wgpuAdapterRequestDevice(_handle.get(), &desc, callback, &data);
     assert(data.request_ended);
 
     return device{data.device};

@@ -21,12 +21,7 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT device : public handle_base<device, WGPUDevice> {
-    friend handle_base<device, WGPUDevice>;
-    static auto release(WGPUDevice handle) { wgpuDeviceRelease(handle); }
-    static auto reference(WGPUDevice handle) { wgpuDeviceReference(handle); }
-
-public:
+struct ECHIDNA_EXPORT device : public handle_base<device, WGPUDeviceImpl> {
     using handle_base::handle_base;
     using handle_base::operator=;
 

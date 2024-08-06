@@ -9,18 +9,13 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT instance : public handle_base<instance, WGPUInstance> {
-    friend handle_base<instance, WGPUInstance>;
-    static auto release(WGPUInstance handle) { wgpuInstanceRelease(handle); }
-    static auto reference(WGPUInstance handle) { wgpuInstanceReference(handle); }
-
-public:
+struct ECHIDNA_EXPORT instance : public handle_base<instance, WGPUInstanceImpl> {
     using handle_base::handle_base;
     using handle_base::operator=;
 
     instance() {
         auto desc = WGPUInstanceDescriptor{.nextInChain = nullptr};
-        _handle   = wgpuCreateInstance(&desc);
+        _handle   = handle_type(wgpuCreateInstance(&desc));
     }
     explicit instance(const WGPUInstanceDescriptor& desc) :
         handle_base(wgpuCreateInstance(&desc)) {}
@@ -29,13 +24,5 @@ public:
     auto create_surface(const WGPUSurfaceDescriptor& descriptor) const -> surface;
     auto request_adapter(const WGPURequestAdapterOptions& options) const -> adapter;
 };
-
-// constexpr auto instance_descriptor(const WGPUChainedStruct& next) {
-//     return WGPUInstanceDescriptor{.nextInChain = &next};
-// }
-
-// constexpr auto instance_descriptor() {
-//     return WGPUInstanceDescriptor{.nextInChain = nullptr};
-// }
 
 } // namespace echidna::webgpu

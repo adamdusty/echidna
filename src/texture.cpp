@@ -35,44 +35,44 @@ auto texture::texture_view_descriptor(const char* label) const -> WGPUTextureVie
 }
 
 auto texture::create_texture_view(const WGPUTextureViewDescriptor& desc) const -> texture_view {
-    return texture_view{wgpuTextureCreateView(_handle, &desc)};
+    return texture_view{wgpuTextureCreateView(_handle.get(), &desc)};
 }
 
 auto texture::create_texture_view() const -> texture_view {
     auto desc = texture_view_descriptor();
-    return texture_view{wgpuTextureCreateView(_handle, &desc)};
+    return texture_view{wgpuTextureCreateView(_handle.get(), &desc)};
 }
 
 auto texture::get_depth_or_array_layers() const -> std::uint32_t {
-    return wgpuTextureGetDepthOrArrayLayers(_handle);
+    return wgpuTextureGetDepthOrArrayLayers(_handle.get());
 }
 
 auto texture::dimension() const -> texture_dimension {
-    return wgpuTextureGetDimension(_handle);
+    return wgpuTextureGetDimension(_handle.get());
 }
 
 auto texture::format() const -> texture_format {
-    return wgpuTextureGetFormat(_handle);
+    return wgpuTextureGetFormat(_handle.get());
 }
 
 auto texture::width() const -> std::uint32_t {
-    return wgpuTextureGetWidth(_handle);
+    return wgpuTextureGetWidth(_handle.get());
 }
 
 auto texture::height() const -> std::uint32_t {
-    return wgpuTextureGetHeight(_handle);
+    return wgpuTextureGetHeight(_handle.get());
 }
 
 auto texture::mip_level_count() const -> std::uint32_t {
-    return wgpuTextureGetMipLevelCount(_handle);
+    return wgpuTextureGetMipLevelCount(_handle.get());
 }
 
 auto texture::sample_count() const -> std::uint32_t {
-    return wgpuTextureGetSampleCount(_handle);
+    return wgpuTextureGetSampleCount(_handle.get());
 }
 
 auto texture::usage() const -> texture_usage {
-    return wgpuTextureGetUsage(_handle);
+    return wgpuTextureGetUsage(_handle.get());
 }
 
 } // namespace echidna::webgpu

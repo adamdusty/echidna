@@ -12,12 +12,12 @@ namespace echidna::webgpu {
  * not block on any GPU work
  */
 auto instance::process_events() const -> void {
-    wgpuInstanceProcessEvents(_handle);
+    wgpuInstanceProcessEvents(_handle.get());
 }
 
 auto instance::create_surface(const WGPUSurfaceDescriptor& descriptor) const -> surface {
     WGPUSurfaceDescriptor wgpu_desc = descriptor;
-    return wgpuInstanceCreateSurface(_handle, &wgpu_desc);
+    return wgpuInstanceCreateSurface(_handle.get(), &wgpu_desc);
 }
 
 auto instance::request_adapter(const WGPURequestAdapterOptions& options) const -> adapter {
@@ -42,7 +42,7 @@ auto instance::request_adapter(const WGPURequestAdapterOptions& options) const -
         user_data.request_ended = true;
     };
 
-    wgpuInstanceRequestAdapter(_handle, &options, callback, &data);
+    wgpuInstanceRequestAdapter(_handle.get(), &options, callback, &data);
     assert(data.request_ended);
 
     return adapter{data.adapter};

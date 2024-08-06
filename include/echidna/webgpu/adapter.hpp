@@ -8,12 +8,7 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT adapter : public handle_base<adapter, WGPUAdapter> {
-    friend handle_base<adapter, WGPUAdapter>;
-    static auto release(WGPUAdapter handle) { wgpuAdapterRelease(handle); }
-    static auto reference(WGPUAdapter handle) { wgpuAdapterReference(handle); }
-
-public:
+struct ECHIDNA_EXPORT adapter : public handle_base<adapter, WGPUAdapterImpl> {
     using handle_base::handle_base;
     using handle_base::operator=;
 

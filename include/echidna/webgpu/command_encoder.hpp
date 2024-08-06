@@ -12,12 +12,8 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT command_encoder : public handle_base<command_encoder, WGPUCommandEncoder> {
-    friend handle_base<command_encoder, WGPUCommandEncoder>;
-    static auto release(WGPUCommandEncoder handle) { wgpuCommandEncoderRelease(handle); }
-    static auto reference(WGPUCommandEncoder handle) { wgpuCommandEncoderReference(handle); }
-
-public:
+struct ECHIDNA_EXPORT command_encoder
+    : public handle_base<command_encoder, WGPUCommandEncoderImpl> {
     using handle_base::handle_base;
     using handle_base::operator=;
 

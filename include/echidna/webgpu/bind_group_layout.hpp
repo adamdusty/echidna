@@ -6,13 +6,9 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT bind_group_layout
-    : public handle_base<bind_group_layout, WGPUBindGroupLayout> {
-    friend handle_base<bind_group_layout, WGPUBindGroupLayout>;
-    static auto release(WGPUBindGroupLayout handle) { wgpuBindGroupLayoutRelease(handle); }
-    static auto reference(WGPUBindGroupLayout handle) { wgpuBindGroupLayoutReference(handle); }
+struct ECHIDNA_EXPORT bind_group_layout
+    : public handle_base<bind_group_layout, WGPUBindGroupLayoutImpl> {
 
-public:
     using handle_base::handle_base;
     using handle_base::operator=;
 };

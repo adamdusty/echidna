@@ -8,12 +8,8 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT render_pipeline : public handle_base<render_pipeline, WGPURenderPipeline> {
-    friend handle_base<render_pipeline, WGPURenderPipeline>;
-    static auto release(WGPURenderPipeline handle) { wgpuRenderPipelineRelease(handle); }
-    static auto reference(WGPURenderPipeline handle) { wgpuRenderPipelineReference(handle); }
-
-public:
+struct ECHIDNA_EXPORT render_pipeline
+    : public handle_base<render_pipeline, WGPURenderPipelineImpl> {
     using handle_base::handle_base;
     using handle_base::operator=;
 

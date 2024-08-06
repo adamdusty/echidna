@@ -8,12 +8,9 @@
 
 namespace echidna::webgpu {
 
-class ECHIDNA_EXPORT compute_pipeline : public handle_base<compute_pipeline, WGPUComputePipeline> {
-    friend handle_base<compute_pipeline, WGPUComputePipeline>;
-    static auto release(WGPUComputePipeline handle) { wgpuComputePipelineRelease(handle); }
-    static auto reference(WGPUComputePipeline handle) { wgpuComputePipelineReference(handle); }
+struct ECHIDNA_EXPORT compute_pipeline
+    : public handle_base<compute_pipeline, WGPUComputePipelineImpl> {
 
-public:
     using handle_base::handle_base;
     using handle_base::operator=;
 
