@@ -6,6 +6,8 @@
 - [ ] Documentation
 - [ ] Wasm with emscripten
 - [ ] Add ci testing
+- [ ] Improve build system
+    - [ ] Add project specific options for building samples and tests
 - [x] Bindings for webgpu.h
 - [ ] Bindings for wgpu.h
 - [ ] Samples
