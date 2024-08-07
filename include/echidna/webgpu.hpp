@@ -20,6 +20,5 @@
 #include "echidna/webgpu/render_pipeline.hpp"
 #include "echidna/webgpu/shader.hpp"
 #include "echidna/webgpu/surface.hpp"
-#include "echidna/webgpu/surface_descriptor.hpp"
 #include "echidna/webgpu/texture.hpp"
 #include "echidna/webgpu/texture_view.hpp"

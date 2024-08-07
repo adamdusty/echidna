@@ -100,9 +100,6 @@ public:
 
     constexpr explicit operator bool() { return _handle != nullptr; }
     constexpr operator W*() const { return _handle.get(); }
-
-    // Return pointer to handle
-    // constexpr auto addr() const -> const W* { return &_handle; }
 };
 
 } // namespace echidna::webgpu

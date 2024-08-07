@@ -1,11 +1,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 #include <cstdint>
-#include <echidna/webgpu.hpp>
+#include <echidna/echidna.hpp>
 
-namespace ew = echidna::webgpu;
-
-inline auto get_surface_descriptor_from_window(SDL_Window* win) -> ew::surface_descriptor {
+inline auto get_surface_descriptor_from_window(SDL_Window* win) -> echidna::surface_descriptor {
 
     SDL_SysWMinfo windowWMInfo;
     SDL_VERSION(&windowWMInfo.version);
@@ -15,8 +13,9 @@ inline auto get_surface_descriptor_from_window(SDL_Window* win) -> ew::surface_d
     struct wl_display* wayland_display = windowWMInfo.info.wl.display;
     struct wl_surface* wayland_surface = windowWMInfo.info.wl.surface;
 
-    auto plat_desc = ew::surface_descriptor_from_wayland_surface(wayland_display, wayland_surface);
-    auto desc      = ew::surface_descriptor(plat_desc, "wayland test surface");
+    auto plat_desc =
+        echidna::surface_descriptor_from_wayland_surface(wayland_display, wayland_surface);
+    auto desc = echidna::surface_descriptor(plat_desc, "wayland test surface");
     return desc;
 #elif defined(SDL_VIDEO_DRIVER_X11)
     void* display        = windowWMInfo.info.x11.display;

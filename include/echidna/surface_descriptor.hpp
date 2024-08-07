@@ -8,14 +8,15 @@
 #include "echidna/export.hpp"
 #include "echidna/webgpu/chained_struct.hpp"
 
-namespace echidna::webgpu {
+namespace echidna {
 
 struct ECHIDNA_EXPORT surface_descriptor_from_android_native_window {
-    chained_struct chain;
+    webgpu::chained_struct chain;
     void* window;
 
     constexpr surface_descriptor_from_android_native_window(void* win) :
-        chain(make_chained(stype::surface_descriptor_from_android_native_window)), window(win) {}
+        chain(webgpu::make_chained(webgpu::stype::surface_descriptor_from_android_native_window)),
+        window(win) {}
 
     constexpr surface_descriptor_from_android_native_window(
         const WGPUSurfaceDescriptorFromAndroidNativeWindow& d
@@ -31,11 +32,12 @@ struct ECHIDNA_EXPORT surface_descriptor_from_android_native_window {
 };
 
 struct ECHIDNA_EXPORT surface_descriptor_from_canvas_html_selector {
-    chained_struct chain;
+    webgpu::chained_struct chain;
     std::string selector;
 
     constexpr surface_descriptor_from_canvas_html_selector(const std::string& sel) :
-        chain(make_chained(stype::surface_descriptor_from_canvas_html_selector)), selector(sel) {}
+        chain(webgpu::make_chained(webgpu::stype::surface_descriptor_from_canvas_html_selector)),
+        selector(sel) {}
 
     constexpr surface_descriptor_from_canvas_html_selector(
         const WGPUSurfaceDescriptorFromCanvasHTMLSelector& d
@@ -51,11 +53,12 @@ struct ECHIDNA_EXPORT surface_descriptor_from_canvas_html_selector {
 };
 
 struct ECHIDNA_EXPORT surface_descriptor_from_metal_layer {
-    chained_struct chain;
+    webgpu::chained_struct chain;
     void* layer;
 
     constexpr surface_descriptor_from_metal_layer(void* layer) :
-        chain(make_chained(stype::surface_descriptor_from_metal_layer)), layer(layer) {}
+        chain(webgpu::make_chained(webgpu::stype::surface_descriptor_from_metal_layer)),
+        layer(layer) {}
 
     constexpr surface_descriptor_from_metal_layer(const WGPUSurfaceDescriptorFromMetalLayer& d) :
         chain(d.chain), layer(d.layer) {}
@@ -69,12 +72,13 @@ struct ECHIDNA_EXPORT surface_descriptor_from_metal_layer {
 };
 
 struct ECHIDNA_EXPORT surface_descriptor_from_wayland_surface {
-    chained_struct chain;
+    webgpu::chained_struct chain;
     void* display;
     void* surface;
 
     surface_descriptor_from_wayland_surface(void* disp, void* surf) :
-        chain(make_chained(nullptr, stype::surface_descriptor_from_wayland_surface)),
+        chain(webgpu::make_chained(nullptr, webgpu::stype::surface_descriptor_from_wayland_surface)
+        ),
         display(disp),
         surface(surf) {}
 
@@ -93,12 +97,12 @@ struct ECHIDNA_EXPORT surface_descriptor_from_wayland_surface {
 };
 
 struct ECHIDNA_EXPORT surface_descriptor_from_windows_hwnd {
-    chained_struct chain;
+    webgpu::chained_struct chain;
     void* instance;
     void* hwnd;
 
     constexpr surface_descriptor_from_windows_hwnd(void* instance, void* hwnd) :
-        chain(make_chained(stype::surface_descriptor_from_windows_hwnd)),
+        chain(webgpu::make_chained(webgpu::stype::surface_descriptor_from_windows_hwnd)),
         instance(instance),
         hwnd(hwnd) {}
 
@@ -115,12 +119,12 @@ struct ECHIDNA_EXPORT surface_descriptor_from_windows_hwnd {
 };
 
 struct ECHIDNA_EXPORT surface_descriptor_from_xcb_window {
-    chained_struct chain;
+    webgpu::chained_struct chain;
     void* connection;
     std::uint32_t window;
 
     constexpr surface_descriptor_from_xcb_window(void* conn, std::uint32_t win) :
-        chain(make_chained(stype::surface_descriptor_from_xcb_window)),
+        chain(webgpu::make_chained(webgpu::stype::surface_descriptor_from_xcb_window)),
         connection(conn),
         window(win) {}
 
@@ -137,12 +141,12 @@ struct ECHIDNA_EXPORT surface_descriptor_from_xcb_window {
 };
 
 struct ECHIDNA_EXPORT surface_descriptor_from_xlib_window {
-    chained_struct chain;
+    webgpu::chained_struct chain;
     void* display;
     std::uint64_t window;
 
     constexpr surface_descriptor_from_xlib_window(void* disp, std::uint64_t win) :
-        chain(make_chained(stype::surface_descriptor_from_xlib_window)),
+        chain(webgpu::make_chained(webgpu::stype::surface_descriptor_from_xlib_window)),
         display(disp),
         window(win) {}
 
@@ -181,10 +185,10 @@ public:
 
     operator WGPUSurfaceDescriptor() const {
         return WGPUSurfaceDescriptor{
-            .nextInChain = reinterpret_cast<const chained_struct*>(&platform),
+            .nextInChain = reinterpret_cast<const webgpu::chained_struct*>(&platform),
             .label       = label.c_str(),
         };
     }
 };
 
-} // namespace echidna::webgpu
+} // namespace echidna
