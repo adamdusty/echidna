@@ -4,10 +4,6 @@ Handcrafted idiomatic C++ wrapper for [wgpu-native](https://github.com/gfx-rs/wg
 
 I originally set out to implement a zero-ish overhead wrapper for wgpu-native. Currently, the file [structs.hpp](include/echidna/structs.hpp) contains a handful of structs matching the transparent structs and descriptors in [webgpu.h](https://github.com/webgpu-native/webgpu-headers/blob/043af6c77e566f707db36759d9c9f161ebb616fd/webgpu.h), but they are extremely naive implementations that do a lot of duplicating and storing data.
 
-## Docs
-
-I will work on documentation once I feel the api is decent.
-
 ## Use
 
 Incorporate with cmake FetchContent.
