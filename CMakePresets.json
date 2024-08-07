@@ -27,12 +27,27 @@
                 "BUILD_TESTING": "ON",
                 "BUILD_SAMPLES": "ON"
             }
+        },
+        {
+            "name": "release",
+            "binaryDir": "build/release",
+            "inherits": [
+                "base"
+            ],
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "release",
+                "CMAKE_COLOR_DIAGNOSTICS": "ON"
+            }
         }
     ],
     "buildPresets": [
         {
             "name": "dev",
             "configurePreset": "dev"
+        },
+        {
+            "name": "release",
+            "configurePreset": "release"
         }
     ],
     "testPresets": [
