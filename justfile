@@ -4,9 +4,6 @@ alias c := configure
 alias b := build
 alias t := test
 
-alias bt := build-test
-alias cbt := configure-build-test
-
 configure:
     cmake --preset dev -G Ninja
 
@@ -32,6 +29,3 @@ phong:
     
 triangle:
     ./build/dev/samples/triangle
-
-build-test: build test
-configure-build-test: configure build test
