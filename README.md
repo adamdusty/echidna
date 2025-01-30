@@ -1,3 +1,5 @@
+This was a bad idea. Easy enough to wrap all the functionality in c++ semantics, but it's not really useful, at least not to me. 
+
 # Echidna
 
 Handcrafted idiomatic C++ wrapper for [wgpu-native](https://github.com/gfx-rs/wgpu-native)
